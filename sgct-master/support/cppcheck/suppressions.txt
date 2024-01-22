@@ -1,0 +1,6 @@
+missingInclude
+preprocessorErrorDirective
+unknownMacro
+unusedFunction
+unusedStructMember
+useStlAlgorithm
