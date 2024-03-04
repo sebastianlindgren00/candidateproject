@@ -8,7 +8,8 @@ function App() {
         <h1>SPACE DOME</h1>
         <label for="gameID">Game ID:</label>
         <input type="text" id="gameID" name="gID" placeholder="Game ID: 1234"/>
-        <input type="submit" value="Submit"></input>
+        <input type="submit" value="Submit"></input><br></br>
+        <button type="button">INFO</button>
       </header>
     </div>
   );
