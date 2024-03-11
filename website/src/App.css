@@ -13,10 +13,36 @@
   color: white;
 }
 
+.InfoBox{
+  background-color: #444c53;
+  display: flex;
+  border-radius: 1em 1em 0 0;
+  width: 100%;
+  height: 3.5em;
+  margin-top: -3.5em;
+  flex-direction: row;
+  justify-content: left;
+}
+
+#InfoButton{
+  background: none;
+	color: white;
+	border: none;
+	padding: 0;
+	font: inherit;
+  font-size: calc(10px + 2vmin);
+	cursor: pointer;
+}
+
 input[type=text]{
-  width: 25%;
+  width: 30%;
   padding: 12px 20px;
   margin: 8px 0;
   box-sizing: border-box;
   border-radius: 1em;
+}
+
+svg{
+  padding-left: 1em;
+  padding-right: 0.5em;
 }
