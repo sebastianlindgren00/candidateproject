@@ -22,7 +22,9 @@
   margin-top: -3.5em;
   flex-direction: row;
   justify-content: left;
-  color: white
+  transition-property: margin-top;
+  transition-duration: 1s;
+  color: white;
 }
 
 #InfoButton{
@@ -47,4 +49,25 @@ svg{
   padding-left: 1em;
   padding-right: 0.5em;
   transform: rotate(0);
+}
+
+@keyframes iBAnimUp{
+  from{
+    height: "3.5em";
+    margin-top: "-3.5em";
+  }
+  to{
+    height: "20em";
+    margin-top: "-20em";
+  }
+}
+@keyframes iBAnimDown{
+  from{
+    height: "20em";
+    margin-top: "-20em";
+  }
+  to{
+    height: "3.5em";
+    margin-top: "-3.5em";
+  }
 }

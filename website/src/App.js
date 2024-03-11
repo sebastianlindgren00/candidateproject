@@ -4,15 +4,17 @@ import './App.css';
 // Icon for the arrow will be changed current solution is not good enough
 
 function showInfoBox(){
-  //TODO: Add rolling up and down InfoBox
+  //TODO: Add rolling up and down InfoBox, very bad solution at the moment
   const iB = document.getElementById('InfoBox');
   const svg = document.getElementById('svgArrow');
   if(iB.style.height === "3.5em"){
+    iB.style.transitionProperty = "margin-top"
     iB.style.height = "20em"
     iB.style.marginTop = "-20em"
     svg.style.transform = "rotate(0)"
     console.log(iB.style.height)
   }else{
+    iB.style.transitionProperty = "height"
     iB.style.height = "3.5em"
     iB.style.marginTop = "-3.5em"
     svg.style.transform = "rotate(3.142rad)"
