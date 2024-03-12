@@ -1,6 +1,0 @@
-[submodule "ext/sgct"]
-	path = ext/sgct
-	url = https://github.com/sgct/sgct.git
-[submodule "ext/libwebsockets"]
-	path = ext/libwebsockets
-	url = https://github.com/warmcat/libwebsockets.git
