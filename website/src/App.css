@@ -16,14 +16,15 @@
 .InfoBox{
   background-color: #444c53;
   display: flex;
+  flex-direction: column;
   border-radius: 1em 1em 0 0;
   width: 100%;
-  height: 3.5em;
+  height: 20em;
   margin-top: -3.5em;
-  flex-direction: row;
-  justify-content: left;
+  align-items: center;
+  justify-content: center;
   transition-property: margin-top;
-  transition-duration: 1s;
+  transition-duration: 0.5s;
   color: white;
 }
 
@@ -31,7 +32,7 @@
   background: none;
 	color: white;
 	border: none;
-	padding: 0;
+	margin-top: -2em;
 	font: inherit;
   font-size: calc(10px + 2vmin);
 	cursor: pointer;
@@ -49,25 +50,4 @@ svg{
   padding-left: 1em;
   padding-right: 0.5em;
   transform: rotate(0);
-}
-
-@keyframes iBAnimUp{
-  from{
-    height: "3.5em";
-    margin-top: "-3.5em";
-  }
-  to{
-    height: "20em";
-    margin-top: "-20em";
-  }
-}
-@keyframes iBAnimDown{
-  from{
-    height: "20em";
-    margin-top: "-20em";
-  }
-  to{
-    height: "3.5em";
-    margin-top: "-3.5em";
-  }
 }
