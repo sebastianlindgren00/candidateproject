@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 
 // Icon for the arrow will be changed current solution is not good enough
