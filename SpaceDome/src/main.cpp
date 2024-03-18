@@ -13,7 +13,7 @@
 namespace {
     std::unique_ptr<WebSocketHandler> wsHandler;
 
-
+    
     int64_t exampleInt = 0;
     std::string exampleString;
 } // namespace
