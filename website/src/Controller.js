@@ -1,25 +1,8 @@
 import './Controller.css';
 
-function checkOrientation(){
-    window.screen.addEventListener("orientationchange", () => {
-        console.log(`The orientation of the screen is: ${window.screen.orientation}`);
-      });
-    if(window.screen.orientation){
-
-    }
-}
-
 function Controller() {
-    if(!checkOrientation()){
-        return(
-            <p>please change phone orientation</p>
-        );
-    }else{
-        window.screen.orientation.lock();
-        return(
-            <p>test</p>
-        );
-    }
+    //TODO: Add function to check screen orientation, alt. force screen into landscape
+    <p>work in progress</p>
 }
 
 export default Controller;
