@@ -7,7 +7,6 @@ function App() {
 
   function showInfoBox(){
     const iB = document.getElementById('InfoBox');
-    const svg = document.getElementById('svgArrow');
     if(iB.style.marginTop === "-3.5em"){
       iB.style.marginTop = "-20em"
     }else{
