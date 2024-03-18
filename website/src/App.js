@@ -1,28 +1,33 @@
+import React from 'react'
 import './App.css';
-
-// Icon for the arrow will be changed current solution is not good enough
-
-function showInfoBox(){
-  //TODO: Add rolling up and down InfoBox, very bad solution at the moment
-  const iB = document.getElementById('InfoBox');
-  const svg = document.getElementById('svgArrow');
-  if(iB.style.marginTop === "-3.5em"){
-    iB.style.marginTop = "-20em"
-  }else{
-    iB.style.marginTop = "-3.5em"
-    console.log(iB.style.height)
-  }
-}
+import { useNavigate } from "react-router-dom";
 
 
 function App() {
+
+  function showInfoBox(){
+    const iB = document.getElementById('InfoBox');
+    const svg = document.getElementById('svgArrow');
+    if(iB.style.marginTop === "-3.5em"){
+      iB.style.marginTop = "-20em"
+    }else{
+      iB.style.marginTop = "-3.5em"
+      console.log(iB.style.height)
+    }
+  }
+
+  const navigate = useNavigate();
+ 
+    const controller = () => {
+        navigate("/controller")
+    }
   return (
     <div className="App">
       <header className="App-header">
         <h1>SPACE DOME</h1>
         <label htmlFor="gameID">Game ID:</label>
         <input type="text" id="gameID" name="gID" placeholder="1234"/>
-        <input type="submit" value="Submit"></input><br></br>
+        <input type="submit" value="Submit" onClick={controller}></input><br></br>
       </header>
 
       <div className="InfoBox" id="InfoBox">
