@@ -1,0 +1,11 @@
+.Controller {
+    text-align: center;
+    position: fixed;
+    top: 0%;
+    right: 0%;
+    background-image: url(../public/spaceBackground.png);
+    background-size: cover;
+    width: 100%;
+    height: 100%;
+    background-color: #090a0b;
+  }
