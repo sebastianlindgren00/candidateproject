@@ -20,7 +20,7 @@ class AssimpLoader
     private:
         // model data
         std::vector<Mesh> meshes;
-        std::string directory;
+        std::string mDirectory;
 
         void loadModel(const std::string& path);
         void processNode(aiNode *node, const aiScene *scene);

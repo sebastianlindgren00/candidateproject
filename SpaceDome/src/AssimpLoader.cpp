@@ -24,7 +24,7 @@ void AssimpLoader::loadModel(const std::string& path) {
         std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << "\n";
         return;
     }
-    directory = path.substr(0, path.find_last_of('/'));
+    mDirectory = path.substr(0, path.find_last_of('/'));
 
     processNode(scene->mRootNode, scene);
 }
@@ -96,7 +96,7 @@ Mesh AssimpLoader::processMesh(aiMesh *mesh, const aiScene *scene){
     return Mesh(vertices, indices, textures);
 } 
 
-std::vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName)
+std::vector<Texture> AssimpLoader::loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName)
 {
     std::vector<Texture> textures;
     for(unsigned int i = 0; i < mat->GetTextureCount(type); i++)
@@ -104,9 +104,9 @@ std::vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, s
         aiString str;
         mat->GetTexture(type, i, &str);
         Texture texture;
-        texture.mId = Utility::textureFromFile(str.C_Str(), directory);
+        texture.mId = Utility::textureFromFile(str.C_Str(), mDirectory);
         texture.mType = typeName;
-        texture.mPath = str;
+        texture.mPath = mDirectory + "/" + str.C_Str();
         textures.push_back(texture);
     }
     return textures;
