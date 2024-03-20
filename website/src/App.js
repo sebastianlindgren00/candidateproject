@@ -39,13 +39,13 @@ function App() {
 
   const navigate = useNavigate();
  
-  useEffect(() => { // Is called every render, thus an if statement is used before the user is navigated to the controller page
+  useEffect(() => { // Is called every render cycle, because of this an if statement is used before the user is navigated to the controller page
     console.log('State updated: \n', userID,' : ', userName);
 
-    if(userID != 'inital' && userName != 'inital' && userName !=''){
+    if(userID != 'inital' && userName != 'inital' && userName !=''){ // The ID and Name must be separate from the inital values, and the username cannot be blank
       navigate({
-          pathname: '/controller',
-          search: createSearchParams({
+          pathname: '/controller', 
+          search: createSearchParams({ // Creates and extension to the URL which is used by Controller.js to read ID and Name
             userID:userID,
             userName:userName
           }).toString()
@@ -53,7 +53,7 @@ function App() {
     }
   }, [userID, userName]);
 
-  const updateUserValues = () => {
+  const updateUserValues = () => { // Set user states
       setUserId(generateUUID())
       setUserName(document.getElementById("userName").value)
   }
@@ -68,7 +68,7 @@ function App() {
         <input type="submit" value="Gå med" onClick={updateUserValues}></input><br></br>
       </header>
       <div className="InfoBox" id="InfoBox">
-        <button id="InfoButton" type="button" onClick={showInfoBox}>
+        <button id="InfoButton" type="button" onClick={showInfoBox}>  {/*TODO: only pops up after second press, should be first*/}
           INFO
         </button>
         <p style={{padding:"0.5em"}}>

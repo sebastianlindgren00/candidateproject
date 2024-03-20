@@ -5,7 +5,8 @@ import { useSearchParams } from 'react-router-dom';
 function Controller() {
     //TODO: Add function to check screen orientation, alt. force screen into landscape
     //TODO: Add controll buttons
-    const [searchparams] = useSearchParams()
+
+    const [searchparams] = useSearchParams() // Used to search in the URL
 
     return(
         <div className="Controller">
