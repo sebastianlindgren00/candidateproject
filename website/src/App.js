@@ -7,18 +7,23 @@ import {useEffect} from 'react';
 
 function App() {
 
-  const [userID, setUserId] = useState('initail')
+  const [userID, setUserId] = useState('inital')
   const [userName, setUserName] = useState('inital')
+  var infoBoxStatus = true; // Is the info box opened, when the page loads in this is incorrect but the var needs to be true for the if statement to work
 
-  function showInfoBox(){
-    const iB = document.getElementById('InfoBox');
-    if(iB.style.marginTop === "-3.5em"){
-      iB.style.marginTop = "-20em"
-    }else{
-      iB.style.marginTop = "-3.5em"
-      console.log(iB.style.height)
-    }
+  window.onload=function(){
+    document.getElementById("InfoButton").addEventListener('click', function(){ 
+      const iB = document.getElementById('InfoBox');
+      if(infoBoxStatus){
+        iB.style.marginTop = "-20em"
+        infoBoxStatus = false;
+      }else{
+        iB.style.marginTop = "-3.5em"
+        infoBoxStatus = true;
+      }
+    })
   }
+
 
   // Source for generateUUID(): https://stackoverflow.com/a/8809472 , acquired 2024-03-20
   function generateUUID() { // Public Domain/MIT
@@ -68,7 +73,7 @@ function App() {
         <input type="submit" value="Gå med" onClick={updateUserValues}></input><br></br>
       </header>
       <div className="InfoBox" id="InfoBox">
-        <button id="InfoButton" type="button" onClick={showInfoBox}>  {/*TODO: only pops up after second press, should be first*/}
+        <button id="InfoButton" type="button">
           INFO
         </button>
         <p style={{padding:"0.5em"}}>
