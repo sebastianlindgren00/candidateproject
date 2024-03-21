@@ -13,9 +13,11 @@ Player::Player(const int id, const std::string& name){
     if(amountOfPlayers % 2 == 0) {
         mPlayerColour = {1.f, 0.2f, 0.2f};		// Red
         //mPos = position of red spawn;
+        mPosition = glm::vec3(0.0f, 0.0f, -2.0f); // Add default position
     } else {
         mPlayerColour = {0.4f, 1.f, 0.2f};		// Green
         //mPos = position of green spawn;
+        mPosition = glm::vec3(0.0f, 0.0f, 2.0f); // Add default position
     }
 	
 
@@ -36,9 +38,6 @@ void Player::update(float deltaTime, int turn)
   if (!mIsAlive)
 		return;  
     float forwardMovement = mSpeed * deltaTime;
-    
-    // Turning Based on Input
-    float turnSpeed = 0.2f; // Radians per second
 
     if (turn == 1) { // Assuming 'isKeyPressed' is a function that checks if a key is pressed
         setOrientation(getOrientation() - mTurnSpeed * deltaTime);
@@ -57,6 +56,7 @@ void Player::draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuin
 	if (!mIsAlive)
 		return;
 
+    glUseProgram(shaderProgram);
 	// frans; Even more color things!
 	glUniform3fv(mColLoc, 1, glm::value_ptr(mPlayerColour));
 
@@ -81,7 +81,7 @@ void Player::draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuin
     glm::vec3 upDirection = glm::vec3(0.0f, 1.0f, 0.0f); //
     glm::mat4 viewMatrix = glm::lookAt(viewPos, cameraTarget, upDirection);
 
-    glUseProgram(shaderProgram);
+    
     // Set the matrices
     // And check so there are no problems
     if (modelLoc != -1) glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));

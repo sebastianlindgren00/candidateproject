@@ -95,7 +95,7 @@ private:
     bool mIsAlive = false;
 	std::string mName;
 
-    glm::vec3 mPosition = glm::vec3(0.0f, 0.0f, 0.0f); // Add default position
+    glm::vec3 mPosition;
     float mOrientation = 0.0f;
 
 	// frans; Trying something with colors

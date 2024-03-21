@@ -32,6 +32,7 @@ namespace {
 using namespace sgct;
 
 std::unique_ptr<AssimpLoader> assimpLoader;
+std::vector<std::unique_ptr<AssimpLoader>> objects;
 GLuint shaderProgram;
 
 const char* vertexShaderSource = R"glsl(
@@ -127,10 +128,16 @@ void initOGL(GLFWwindow*) {
 
     //Get the model via Assimp
     std::cout << "before file path \n";
-    std::string currentModel = allModelNames[2];
-    std::string filePath = "/Users/viktorsvensson/Desktop/MT/År 3/Termin 2/TNM094 - Kandidat/BachelorRep/candidateproject/SpaceDome/src/models/" + currentModel + ".fbx";
+    std::string filePath1 = "/Users/viktorsvensson/Desktop/MT/År 3/Termin 2/TNM094 - Kandidat/BachelorRep/candidateproject/SpaceDome/src/models/" + allModelNames[2] + ".fbx";
+    std::string filePath2 = "/Users/viktorsvensson/Desktop/MT/År 3/Termin 2/TNM094 - Kandidat/BachelorRep/candidateproject/SpaceDome/src/models/" + allModelNames[4] + ".fbx";
+    std::string filePath3 = "/Users/viktorsvensson/Desktop/MT/År 3/Termin 2/TNM094 - Kandidat/BachelorRep/candidateproject/SpaceDome/src/models/" + allModelNames[5] + ".fbx";
 
-    assimpLoader = std::make_unique<AssimpLoader>(filePath);
+
+
+    assimpLoader = std::make_unique<AssimpLoader>(filePath1);
+
+    objects.push_back(std::make_unique<AssimpLoader>(filePath2));
+    objects.push_back(std::make_unique<AssimpLoader>(filePath3));
     std::cout << "after assimpLoader \n";
 }
 
@@ -177,15 +184,27 @@ void postSyncPreDraw() {
 }
 
 GLuint compileShader(GLenum type, const char* source) {
+    GLint success;
+    GLchar infoLog[512];
+
     GLuint shader = glCreateShader(type);
     glShaderSource(shader, 1, &source, NULL);
     glCompileShader(shader);
 
     // Check for compile errors...
+    
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+    glGetShaderInfoLog(shader, 512, NULL, infoLog);
+    std::cerr << "ERROR::SHADER::COMPILATION_FAILED\n" << infoLog << std::endl;
+}
     return shader;
 }
 
 GLuint createShaderProgram(const char* vertexSource, const char* fragmentSource) {
+    GLint success;
+    GLchar infoLog[512];
+    
     GLuint vertexShader = compileShader(GL_VERTEX_SHADER, vertexSource);
     GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, fragmentSource);
 
@@ -195,6 +214,11 @@ GLuint createShaderProgram(const char* vertexSource, const char* fragmentSource)
     glLinkProgram(program);
 
     // Check for linking errors...
+    glGetProgramiv(program, GL_LINK_STATUS, &success);
+if (!success) {
+    glGetProgramInfoLog(program, 512, NULL, infoLog);
+    std::cerr << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+}
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
@@ -205,7 +229,7 @@ GLuint createShaderProgram(const char* vertexSource, const char* fragmentSource)
 std::vector<std::unique_ptr<Player>> players;
 void addPlayer(int id, const std::string& name) {
     players.push_back(std::make_unique<Player>(id, name));
-    std::cout << "Added new player: " << name << " with ID: " << id << std::endl;
+    std::cout << "Player: " << name << " joined with ID: " << id << std::endl;
 }
 
 void removePlayer(int id) {
@@ -214,7 +238,7 @@ void removePlayer(int id) {
                                 return player->getID() == id;
                              });
     players.erase(it, players.end());
-    std::cout << "Player with ID: " << id << " removed.\n";
+    std::cout << "Player with ID: " << id << " was removed.\n";
 }
 
 
@@ -231,6 +255,63 @@ if (!players.empty()) {
         // Or, if storing objects directly: player.draw(assimpLoader, shaderProgram);
         }
     }
+
+
+    for(size_t i = 0; i < objects.size(); i++ ){
+        glUseProgram(shaderProgram);
+    glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), 800.0f / 500.0f, 0.1f, 100.0f);
+
+
+    glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, 2.0f));
+    glm::vec3 objectColor = glm::vec3(0.4f, 1.f, 0.2f);
+    if(i == 0){
+        objectColor = glm::vec3(1.f, 0.2f, 0.2f);
+        modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, -2.0f));
+    }
+
+    // Convert glm matrices to OpenGL format and set uniforms
+    GLint modelLoc = glGetUniformLocation(shaderProgram, "model");
+    GLint viewLoc = glGetUniformLocation(shaderProgram, "view");
+    GLint projectionLoc = glGetUniformLocation(shaderProgram, "projection");
+
+    glm::vec3 lightPos = glm::vec3(5.0f, 0.0f, 3.0f);
+    glm::vec3 viewPos = glm::vec3(5.0f, 0.0f, 3.0f);
+    glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
+
+    glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f); // Assuming you want to look at the origin
+    glm::vec3 upDirection = glm::vec3(0.0f, 1.0f, 0.0f); //
+    glm::mat4 viewMatrix = glm::lookAt(viewPos, cameraTarget, upDirection);
+
+    
+    // Set the matrices
+    // And check so there are no problems
+    if (modelLoc != -1) glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+        else std::cerr << "Uniform 'model' not found in shader program\n";
+
+    if (viewLoc != -1) glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(viewMatrix));
+        else std::cerr << "Uniform 'view' not found in shader program\n";
+
+    if (projectionLoc != -1) glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+        else std::cerr << "Uniform 'projection' not found in shader program\n";
+
+    glUniform3fv(glGetUniformLocation(shaderProgram, "lightPos"), 1, glm::value_ptr(lightPos));
+    glUniform3fv(glGetUniformLocation(shaderProgram, "viewPos"), 1, glm::value_ptr(viewPos));
+    glUniform3fv(glGetUniformLocation(shaderProgram, "lightColor"), 1, glm::value_ptr(lightColor));
+    glUniform3fv(glGetUniformLocation(shaderProgram, "objectColor"), 1, glm::value_ptr(objectColor));
+
+    //draw
+    auto& meshes = objects[i]->getMeshes(); // Using getMeshes() method to access the meshes
+
+    for (unsigned int p = 0; p < meshes.size(); p++) {
+        meshes[p].Draw(); // Draw each mesh
+    }
+    //check for errors
+    GLenum err;
+    while ((err = glGetError()) != GL_NO_ERROR) {
+        std::cerr << "OpenGL error after linking shader program: " << err << std::endl;
+    }
+    }
+    
 }
 
 
