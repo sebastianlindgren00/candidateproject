@@ -18,6 +18,8 @@
 #include "objectValues.h"
 #include "globals.h"
 #include "player.h"
+#include <cmath>
+#include <GLFW/glfw3.h>
 
 namespace {
     std::unique_ptr<WebSocketHandler> wsHandler;
@@ -200,10 +202,6 @@ GLuint createShaderProgram(const char* vertexSource, const char* fragmentSource)
 }
 
 
-//Player myPlayer(1, "PlayerName");
-//Player myPlayer2(2, "Player2Name");
-//Player myPlayer3(3, "Player3Name");
-
 std::vector<std::unique_ptr<Player>> players;
 void addPlayer(int id, const std::string& name) {
     players.push_back(std::make_unique<Player>(id, name));
@@ -227,7 +225,7 @@ void draw(const RenderData& data) {
     glEnable(GL_DEPTH_TEST);
     
 
-if (!players.empty()) {
+if (!players.empty()) { 
     for (const auto& player : players) {
         player->draw(assimpLoader, shaderProgram); // If using unique_ptr
         // Or, if storing objects directly: player.draw(assimpLoader, shaderProgram);
@@ -249,11 +247,43 @@ void keyboard(Key key, Modifier modifier, Action action, int, Window*) {
         Engine::instance().terminate();
     }
 
+
     if (key == Key::Space && modifier == Modifier::Shift && action == Action::Release) {
         Log::Info("Released space key");
         wsHandler->disconnect();
     }
-}
+
+    if (players.empty()) return;
+
+    // Assuming we control the first player for simplicity
+    auto& player = players[0];
+    /*
+    float deltaTime = calculateDeltaTime();
+
+    if (action == Action::Press || action == Action::Repeat) {
+        if (key == Key::Right) {
+            player->update(deltaTime,1);
+        } else if (key == Key::Left) {
+            player->update(deltaTime,2);
+        };
+*/
+
+        const float moveSpeed = 0.1f; // Adjust as needed
+        const float turnSpeed = 0.05f; // Adjust as needed
+
+        if (key == Key::Right) {
+            player->setOrientation(-turnSpeed);
+        } else if (key == Key::Left) {
+            player->setOrientation(turnSpeed);
+        } else if (key == Key::Up) {
+            // Move forward
+            player->setPosition(glm::vec3(0.0f, cos(player->getOrientation()) * moveSpeed, sin(player->getOrientation()) * moveSpeed));
+        } else if (key == Key::Down) {
+            // Move backward
+            player->setPosition(-glm::vec3(0.0f, cos(player->getOrientation()) * moveSpeed, sin(player->getOrientation()) * moveSpeed));
+        }
+
+    }
 
 
 void connectionEstablished() {
@@ -271,34 +301,19 @@ void messageReceived(const void* data, size_t length) {
     Log::Info(fmt::format("Message received: {}", msg));
 }
 
+double lastFrameTime = 0.0;
+
+double calculateDeltaTime() {
+    double currentFrameTime = glfwGetTime(); // Get current time
+    double deltaTime = currentFrameTime - lastFrameTime; // Calculate difference
+    lastFrameTime = currentFrameTime; // Update last frame time for the next frame
+    return deltaTime;
+}
 
 int main(int argc, char** argv) {
 
-    std::string command;
-
-    while (true) {
-        std::cout << "Enter command (add, remove, exit): ";
-        std::cin >> command;
-
-        if (command == "add") {
-            int id;
-            std::string name;
-            std::cout << "Enter ID: ";
-            std::cin >> id;
-            std::cout << "Enter name: ";
-            std::cin >> name;
-            addPlayer( id, name);
-        } else if (command == "remove") {
-            int id;
-            std::cout << "Enter ID of player to remove: ";
-            std::cin >> id;
-            removePlayer(id);
-        } else if (command == "exit") {
-            break;
-        } else {
-            std::cout << "Unknown command.\n";
-        }
-    }
+    addPlayer(1, "Viktor");
+    addPlayer(2, "Alex");
 
     std::vector<std::string> arg(argv + 1, argv + argc);
     Configuration config = sgct::parseArguments(arg);

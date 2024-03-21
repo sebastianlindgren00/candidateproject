@@ -51,7 +51,7 @@ public:
 	void setPlayerData(const PlayerData& newPlayerData);
 
 	//Update position
-	void update(float deltaTime);
+	void update(float deltaTime, int turn);
 
 	//Draw objects
 	void draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram) const;
@@ -60,10 +60,10 @@ public:
 	float getSpeed() const { return mSpeed; };
 	float getTurnSpeed() const { return mTurnSpeed; }
     int getID() const { return mPlayerID; }
-	const int getStars() const { return mStars; };
-    const int getHoldingStars() {return mStarsHolding; }
+	//const int getStars() const { return mStars; };
+    //const int getHoldingStars() {return mStarsHolding; }
 	const std::string& getName() const { return mName; };
-    const bool isAlive() const { return mIsAlive; };
+    //const bool isAlive() const { return mIsAlive; };
     
     // Iris: trying to send colours
     glm::vec3 getColours() const { return mPlayerColour; };
@@ -75,15 +75,28 @@ public:
 	//void setTurnSpeed(float turnSpeed) override { mTurnSpeed = turnSpeed; 
     void setIsAlive(bool isAlive) { mIsAlive = isAlive; };
 
+    void setPosition(const glm::vec3& positionChange) {
+        mPosition += positionChange;
+    }
+    
+    // Method to adjust orientation
+    void setOrientation(float angleSpeed) {
+        mOrientation += angleSpeed;
+    }
+    float getOrientation(){return mOrientation; }
+
 private:
 	//Player information/data
 	float mTurnSpeed = 0.2f;
 	int   mStars    = 0;
     int mStarsHolding = 0;
-	float mSpeed     = 0.2f;
+	float mSpeed     = 0.1f;
     int mPlayerID;
     bool mIsAlive = false;
 	std::string mName;
+
+    glm::vec3 mPosition = glm::vec3(0.0f, 0.0f, 0.0f); // Add default position
+    float mOrientation = 0.0f;
 
 	// frans; Trying something with colors
 	glm::vec3 mPlayerColour;	

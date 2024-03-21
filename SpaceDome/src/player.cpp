@@ -31,24 +31,28 @@ void Player::Player::setPlayerData(const PlayerData& newPlayerData)
 {
 }
 
-void Player::update(float deltaTime)
+void Player::update(float deltaTime, int turn)
 {
   if (!mIsAlive)
 		return;  
-	//float oldOrient = getOrientation();
-	//setOrientation(oldOrient + deltaTime * mTurnSpeed);	
+    float forwardMovement = mSpeed * deltaTime;
+    
+    // Turning Based on Input
+    float turnSpeed = 0.2f; // Radians per second
 
-	//glm::quat newPos = getPosition();
-	//newPos *= glm::quat(mSpeed * deltaTime * glm::vec3(cos(oldOrient), sin(oldOrient), 0.f));
+    if (turn == 1) { // Assuming 'isKeyPressed' is a function that checks if a key is pressed
+        setOrientation(getOrientation() - mTurnSpeed * deltaTime);
+    }
+    if (turn == 2) {
+        setOrientation(getOrientation() + mTurnSpeed * deltaTime);
+    }
 
-	//Make sure player does not leave visible area
-	//mConstraint.apply(newPos);
+    // Update position based on orientation
+    setPosition(glm::vec3(0.0f, cos(getOrientation()) * forwardMovement, sin(getOrientation()) * -forwardMovement));
 
-	//setPosition(glm::normalize(newPos));
 }
 
 void Player::draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram) const
-
 {
 	if (!mIsAlive)
 		return;
@@ -56,8 +60,11 @@ void Player::draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuin
 	// frans; Even more color things!
 	glUniform3fv(mColLoc, 1, glm::value_ptr(mPlayerColour));
 
-	glm::mat4 modelMatrix = glm::mat4(1.0f);
-    glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+	//glm::mat4 modelMatrix = glm::mat4(1.0f);
+    glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), 800.0f / 500.0f, 0.1f, 100.0f);
+
+    glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), mPosition);
+    modelMatrix = glm::rotate(modelMatrix, mOrientation, glm::vec3(1.0f, 0.0f, 0.0f));
 
 
     // Convert glm matrices to OpenGL format and set uniforms
