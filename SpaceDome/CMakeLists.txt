@@ -38,7 +38,25 @@ add_executable(${PROJECT_NAME}
   src/main.cpp
   src/websockethandler.h
   src/websockethandler.cpp
+  src/AssimpLoader.h 
+  src/AssimpLoader.cpp 
+  src/mesh.cpp
+  src/mesh.h
+  src/utility.h
+  src/utility.cpp
+  src/objectValues.h
+  src/shader.h
+  src/globals.h
+  src/player.cpp
+  src/player.h
 )
+#---------- MAC
+#include_directories(/opt/homebrew/Cellar/libpng/1.6.43/include)
+#link_directories(/opt/homebrew/Cellar/libpng/1.6.43/lib)
+
+#-----------END MAC
+
+
 target_include_directories(${PROJECT_NAME} PRIVATE
   src
   ext/sgct/include

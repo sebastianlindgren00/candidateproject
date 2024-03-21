@@ -5,10 +5,19 @@
 #include "sgct/sgct.h"
 #include "websockethandler.h"
 #include <glm/glm.hpp>
+#include <glad/glad.h>
 #include <memory>
 #include <string>
 #include <vector>
-#include <assimp/Importer.hpp>
+#include "assimp/Importer.hpp"
+#include <AssimpLoader.h>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <iostream>
+#include "utility.h"
+#include "objectValues.h"
+#include "globals.h"
+#include "player.h"
 
 namespace {
     std::unique_ptr<WebSocketHandler> wsHandler;
@@ -20,10 +29,107 @@ namespace {
 
 using namespace sgct;
 
-void initOGL(GLFWwindow*) {
-    // Perform OpenGL initialization here, loading textures, shaders, etc that are static
-    // throughout the application lifetime
+std::unique_ptr<AssimpLoader> assimpLoader;
+GLuint shaderProgram;
 
+const char* vertexShaderSource = R"glsl(
+#version 330 core
+layout (location = 0) in vec3 aPos; // Position
+layout (location = 1) in vec3 aNormal; // Normal vector
+
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+out vec3 Normal; // Pass normal to the fragment shader
+out vec3 FragPos; // Pass fragment position to the fragment shader
+
+void main() {
+    FragPos = vec3(model * vec4(aPos, 1.0)); // Calculate fragment position in world space
+    Normal = mat3(transpose(inverse(model))) * aNormal; // Calculate normal for the fragment
+    gl_Position = projection * view * model * vec4(aPos, 1.0);
+}
+)glsl";
+
+const char* fragmentShaderSource = R"glsl(
+#version 330 core
+out vec4 FragColor;
+
+in vec3 Normal; // Received from vertex shader
+in vec3 FragPos; // Received from vertex shader
+
+uniform vec3 lightPos; // Position of the light source in world space
+uniform vec3 viewPos; // Position of the camera in world space
+uniform vec3 lightColor; // Color of the light
+uniform vec3 objectColor; // Color of the object
+
+void main() {
+    // Ambient light
+    float ambientStrength = 0.1;
+    vec3 ambient = ambientStrength * lightColor;
+
+    // Diffuse light
+    vec3 norm = normalize(Normal);
+    vec3 lightDir = normalize(lightPos - FragPos);
+    float diff = max(dot(norm, lightDir), 0.0);
+    vec3 diffuse = diff * lightColor;
+
+    // Combine the two components
+    vec3 result = (ambient + diffuse) * objectColor;
+    FragColor = vec4(result, 1.0);
+}
+
+)glsl";
+
+void initOGL(GLFWwindow*) {
+    glEnable(GL_DEPTH_TEST);
+    GLint success;
+    GLchar infoLog[1024];
+
+
+    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    // Set vertex shader source code and compile
+    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+    glCompileShader(vertexShader);
+    // Check for compile errors...
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(vertexShader, 1024, NULL, infoLog);
+        std::cerr << "ERROR::SHADER_COMPILATION_ERROR of type: VERTEX\n" << infoLog << std::endl;
+    }
+
+    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    // Set fragment shader source code and compile
+    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+    glCompileShader(fragmentShader);
+    // Check for compile errors...
+    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(fragmentShader, 1024, NULL, infoLog);
+        std::cerr << "ERROR::SHADER_COMPILATION_ERROR of type: FRAGMENT\n" << infoLog << std::endl;
+    }
+
+    shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+    // Check for linking errors...
+    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+    if (!success) {
+        glGetProgramInfoLog(shaderProgram, 1024, NULL, infoLog);
+        std::cerr << "ERROR::PROGRAM_LINKING_ERROR\n" << infoLog << std::endl;
+    }
+
+    // Delete shaders; they're linked into our program now and no longer necessary
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+    //Get the model via Assimp
+    std::cout << "before file path \n";
+    std::string currentModel = allModelNames[2];
+    std::string filePath = "/Users/viktorsvensson/Desktop/MT/År 3/Termin 2/TNM094 - Kandidat/BachelorRep/candidateproject/SpaceDome/src/models/" + currentModel + ".fbx";
+
+    assimpLoader = std::make_unique<AssimpLoader>(filePath);
+    std::cout << "after assimpLoader \n";
 }
 
 
@@ -31,14 +137,11 @@ void preSync() {
     // Do the application simulation step on the server node in here and make sure that
     // the computed state is serialized and deserialized in the encode/decode calls
 
-
     if (Engine::instance().isMaster() && wsHandler->isConnected() &&
         Engine::instance().currentFrameNumber() % 100 == 0)
     {
         wsHandler->queueMessage("ping");
     }
-
-
 
     if (Engine::instance().isMaster()) {
         // This doesn't have to happen every frame, but why not?
@@ -54,7 +157,6 @@ std::vector<std::byte> encode() {
     serializeObject(data, exampleInt);
     serializeObject(data, exampleString);
 
-
     return data;
 }
 
@@ -65,8 +167,6 @@ void decode(const std::vector<std::byte>& data) {
     unsigned pos = 0;
     deserializeObject(data, pos, exampleInt);
     deserializeObject(data, pos, exampleString);
-
-
 }
 
 
@@ -74,13 +174,65 @@ void postSyncPreDraw() {
     // Apply the (now synchronized) application state before the rendering will start
 }
 
+GLuint compileShader(GLenum type, const char* source) {
+    GLuint shader = glCreateShader(type);
+    glShaderSource(shader, 1, &source, NULL);
+    glCompileShader(shader);
+
+    // Check for compile errors...
+    return shader;
+}
+
+GLuint createShaderProgram(const char* vertexSource, const char* fragmentSource) {
+    GLuint vertexShader = compileShader(GL_VERTEX_SHADER, vertexSource);
+    GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, fragmentSource);
+
+    GLuint program = glCreateProgram();
+    glAttachShader(program, vertexShader);
+    glAttachShader(program, fragmentShader);
+    glLinkProgram(program);
+
+    // Check for linking errors...
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+    return program;
+}
+
+
+//Player myPlayer(1, "PlayerName");
+//Player myPlayer2(2, "Player2Name");
+//Player myPlayer3(3, "Player3Name");
+
+std::vector<std::unique_ptr<Player>> players;
+void addPlayer(int id, const std::string& name) {
+    players.push_back(std::make_unique<Player>(id, name));
+    std::cout << "Added new player: " << name << " with ID: " << id << std::endl;
+}
+
+void removePlayer(int id) {
+    auto it = std::remove_if(players.begin(), players.end(), 
+                             [id](const std::unique_ptr<Player>& player) {
+                                return player->getID() == id;
+                             });
+    players.erase(it, players.end());
+    std::cout << "Player with ID: " << id << " removed.\n";
+}
+
+
 
 void draw(const RenderData& data) {
-    // Do the rendering in here using the provided projection matrix
+    glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
+    
 
-    const sgct::mat4 projectionMatrix = data.modelViewProjectionMatrix;
-
-
+if (!players.empty()) {
+    for (const auto& player : players) {
+        player->draw(assimpLoader, shaderProgram); // If using unique_ptr
+        // Or, if storing objects directly: player.draw(assimpLoader, shaderProgram);
+        }
+    }
 }
 
 
@@ -106,27 +258,48 @@ void keyboard(Key key, Modifier modifier, Action action, int, Window*) {
 
 void connectionEstablished() {
     Log::Info("Connection established");
-
-
 }
 
 
 void connectionClosed() {
     Log::Info("Connection closed");
-
-
 }
 
 
 void messageReceived(const void* data, size_t length) {
     std::string_view msg = std::string_view(reinterpret_cast<const char*>(data), length);
     Log::Info(fmt::format("Message received: {}", msg));
-
-
 }
 
 
 int main(int argc, char** argv) {
+
+    std::string command;
+
+    while (true) {
+        std::cout << "Enter command (add, remove, exit): ";
+        std::cin >> command;
+
+        if (command == "add") {
+            int id;
+            std::string name;
+            std::cout << "Enter ID: ";
+            std::cin >> id;
+            std::cout << "Enter name: ";
+            std::cin >> name;
+            addPlayer( id, name);
+        } else if (command == "remove") {
+            int id;
+            std::cout << "Enter ID of player to remove: ";
+            std::cin >> id;
+            removePlayer(id);
+        } else if (command == "exit") {
+            break;
+        } else {
+            std::cout << "Unknown command.\n";
+        }
+    }
+
     std::vector<std::string> arg(argv + 1, argv + argc);
     Configuration config = sgct::parseArguments(arg);
     config::Cluster cluster = sgct::loadCluster(config.configFilename);
