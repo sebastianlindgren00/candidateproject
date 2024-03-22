@@ -11,10 +11,10 @@ function Controller() {
     const baseColor = 'radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(70,70,70,1) 69%, rgba(101,101,101,1) 100%)'
     const stickColor = 'radial-gradient(circle, rgba(16,187,0,1) 0%, rgba(31,147,0,1) 71%, rgba(3,62,0,1) 100%)'
     
-    
+
     scrOrientation.addEventListener('change', function() { //When screen orientation is changed
         setScreenOrientation(window.screen.orientation)
-        if(scrOrientation.type === 'landscape-primary' ||scrOrientation.type === 'landscape-secondary'){
+        if(scrOrientation.type === 'landscape-primary' || scrOrientation.type === 'landscape-secondary'){
             document.getElementById('orientationDisclaimer').style.display = 'none'
             document.getElementById('jStick').style.display = 'flex'
             document.getElementById('fireButton').style.display = 'flex'
@@ -26,7 +26,7 @@ function Controller() {
     })
 
     useEffect(()=>{ // When page loads
-        if(scrOrientation.type === 'landscape-primary' ||scrOrientation.type === 'landscape-secondary'){
+        if(scrOrientation.type === 'landscape-primary' || scrOrientation.type === 'landscape-secondary'){
             document.getElementById('orientationDisclaimer').style.display = 'none'
             document.getElementById('jStick').style.display = 'flex'
             document.getElementById('fireButton').style.display = 'flex'
@@ -39,7 +39,7 @@ function Controller() {
 
     
     
-    function joystickController({
+    function joystickController({ // Constructs a joystick based on given parameters
         move,
         start,
         stop
@@ -59,7 +59,8 @@ function Controller() {
         );
     }
 
-    const handleMove = (e) => {
+    // Called by joystick
+    const handleMove = (e) => { 
         console.log(e);
       };
       const handleStop = (e) => {
@@ -68,6 +69,8 @@ function Controller() {
       const handleStart = (e) => {
         console.log(e);
       };
+
+      //Called by fireButton
       const handleShoot = (e) =>{
         console.log(e);
       }
@@ -79,7 +82,7 @@ function Controller() {
             <div className="devBox">
                 <p style={{color:'white'}}>UserID: {searchparams.get('userID')}</p>
                 <p style={{color:'white'}}>UserName: {searchparams.get('userName')}</p>
-                <p style={{color:'white'}}>Screen orientation: {scrOrientation.type}</p>
+                <p style={{color:'white'}}>Screen orientation: {scrOrientation.type}</p> {/*Does not update, needs to be fixed*/}
             </div>
             {/**/}
             <div className="controllsContainer">
