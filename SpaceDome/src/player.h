@@ -88,10 +88,10 @@ public:
 
 private:
 	//Player information/data
-	float mTurnSpeed = 0.2f;
+	float mTurnSpeed = 0.0f;
 	int   mStars    = 0;
     int mStarsHolding = 0;
-	float mSpeed     = 0.1f;
+	float mSpeed     = 0.01f;
     int mPlayerID;
     bool mIsAlive = false;
 	std::string mName;

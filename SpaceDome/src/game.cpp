@@ -24,17 +24,17 @@ void Game::updateTurnSpeed(std::tuple<unsigned int, float>&& input)
 	mPlayers[id]->setTurnSpeed(rotAngle);
 }
 
-/*
+
 void Game::update(){
     //First update?	
     if (mLastFrameTime == -1) {
-			mLastFrameTime = getCurrentTime();
+			mLastFrameTime = sgct::time();
 		return;
 		}
 
     //ger current time 
     //may be wrong not sure yet
-	float currentFrameTime = getCurrentTime();
+	float currentFrameTime = sgct::time();
 
 	float deltaTime = currentFrameTime - mLastFrameTime;
 	this->mTotalTime += deltaTime;
@@ -43,4 +43,3 @@ void Game::update(){
 		player->update(deltaTime);
 
 }
-*/

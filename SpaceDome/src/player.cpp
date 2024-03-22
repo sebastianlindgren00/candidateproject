@@ -34,11 +34,12 @@ void Player::update(float deltaTime)
 {
   if (!mIsAlive)
 		return;  
-    float forwardMovement = mSpeed * deltaTime;
+    float forwardMovement = mSpeed;
 
-    setOrientation(deltaTime * mTurnSpeed);
+    setOrientation(mTurnSpeed);
     // Update position based on orientation
-    setPosition(glm::vec3(0.0f, cos(getOrientation()) * forwardMovement, sin(getOrientation()) * -forwardMovement));
+    setPosition(glm::vec3(0.0f, cos(getOrientation()) * forwardMovement, sin(getOrientation()) * forwardMovement));
+    setTurnSpeed(0);
 
 }
 

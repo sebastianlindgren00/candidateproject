@@ -153,6 +153,8 @@ void preSync() {
         // This doesn't have to happen every frame, but why not?
         wsHandler->tick();
     }
+    Game::instance().update();
+
 }
 
 
@@ -316,6 +318,18 @@ void keyboard(Key key, Modifier modifier, Action action, int, Window*) {
 
     // Assuming we control the first player for simplicity
     auto& player = game.getPlayers()[0];
+    const float turnSpeed = 0.05f; // Adjust as needed
+
+    // Reset turn speed to 0 each frame to stop turning when keys are released
+    player->setTurnSpeed(0.0f);
+
+    if (action == Action::Press || action == Action::Repeat) {
+        if (key == Key::Right) {
+            player->setTurnSpeed(-turnSpeed);
+        } else if (key == Key::Left) {
+            player->setTurnSpeed(turnSpeed);
+        }
+    }
     /*
     float deltaTime = calculateDeltaTime();
 
@@ -325,7 +339,7 @@ void keyboard(Key key, Modifier modifier, Action action, int, Window*) {
         } else if (key == Key::Left) {
             player->update(deltaTime,2);
         };
-*/
+
 
         const float moveSpeed = 0.1f; // Adjust as needed
         const float turnSpeed = 0.05f; // Adjust as needed
@@ -341,7 +355,7 @@ void keyboard(Key key, Modifier modifier, Action action, int, Window*) {
             // Move backward
             player->setPosition(-glm::vec3(0.0f, cos(player->getOrientation()) * moveSpeed, sin(player->getOrientation()) * moveSpeed));
         }
-
+*/
 }
 
 void connectionEstablished() {
