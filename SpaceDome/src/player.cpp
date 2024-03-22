@@ -19,9 +19,6 @@ Player::Player(const int id, const std::string& name){
         //mPos = position of green spawn;
         mPosition = glm::vec3(0.0f, 0.0f, 2.0f); // Add default position
     }
-	
-
-
 }
 
 Player::~Player()
@@ -33,19 +30,13 @@ void Player::Player::setPlayerData(const PlayerData& newPlayerData)
 {
 }
 
-void Player::update(float deltaTime, int turn)
+void Player::update(float deltaTime)
 {
   if (!mIsAlive)
 		return;  
     float forwardMovement = mSpeed * deltaTime;
 
-    if (turn == 1) { // Assuming 'isKeyPressed' is a function that checks if a key is pressed
-        setOrientation(getOrientation() - mTurnSpeed * deltaTime);
-    }
-    if (turn == 2) {
-        setOrientation(getOrientation() + mTurnSpeed * deltaTime);
-    }
-
+    setOrientation(deltaTime * mTurnSpeed);
     // Update position based on orientation
     setPosition(glm::vec3(0.0f, cos(getOrientation()) * forwardMovement, sin(getOrientation()) * -forwardMovement));
 
@@ -66,7 +57,6 @@ void Player::draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuin
     glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), mPosition);
     modelMatrix = glm::rotate(modelMatrix, mOrientation, glm::vec3(1.0f, 0.0f, 0.0f));
 
-
     // Convert glm matrices to OpenGL format and set uniforms
     GLint modelLoc = glGetUniformLocation(shaderProgram, "model");
     GLint viewLoc = glGetUniformLocation(shaderProgram, "view");
@@ -81,7 +71,6 @@ void Player::draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuin
     glm::vec3 upDirection = glm::vec3(0.0f, 1.0f, 0.0f); //
     glm::mat4 viewMatrix = glm::lookAt(viewPos, cameraTarget, upDirection);
 
-    
     // Set the matrices
     // And check so there are no problems
     if (modelLoc != -1) glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));

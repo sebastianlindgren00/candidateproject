@@ -49,9 +49,10 @@ public:
 
 	//Get/set playerdata during synchronisation
 	void setPlayerData(const PlayerData& newPlayerData);
+	void setTurnSpeed(float turnSpeed) { mTurnSpeed = turnSpeed; };
 
 	//Update position
-	void update(float deltaTime, int turn);
+	void update(float deltaTime);
 
 	//Draw objects
 	void draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram) const;

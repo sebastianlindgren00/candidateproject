@@ -1,5 +1,17 @@
 #include "utility.h"
 
+
+std::tuple<unsigned int, float> Utility::getTurnSpeed(std::istringstream& input)
+{
+	unsigned int id;
+	float rotation;
+
+	input >> id;
+	input >> rotation;
+
+	return std::make_tuple(id, rotation);
+}
+
 unsigned int Utility::textureFromFile(const char* path, const std::string& directory/* bool gamma*/)
 {
 	std::filesystem::path filename{ directory + '/' + std::string(path) };

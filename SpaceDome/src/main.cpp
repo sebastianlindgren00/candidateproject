@@ -20,6 +20,7 @@
 #include "player.h"
 #include <cmath>
 #include <GLFW/glfw3.h>
+#include "game.h"
 
 namespace {
     std::unique_ptr<WebSocketHandler> wsHandler;
@@ -88,7 +89,6 @@ void initOGL(GLFWwindow*) {
     GLint success;
     GLchar infoLog[1024];
 
-
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
     // Set vertex shader source code and compile
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
@@ -132,10 +132,7 @@ void initOGL(GLFWwindow*) {
     std::string filePath2 = "/Users/viktorsvensson/Desktop/MT/År 3/Termin 2/TNM094 - Kandidat/BachelorRep/candidateproject/SpaceDome/src/models/" + allModelNames[4] + ".fbx";
     std::string filePath3 = "/Users/viktorsvensson/Desktop/MT/År 3/Termin 2/TNM094 - Kandidat/BachelorRep/candidateproject/SpaceDome/src/models/" + allModelNames[5] + ".fbx";
 
-
-
     assimpLoader = std::make_unique<AssimpLoader>(filePath1);
-
     objects.push_back(std::make_unique<AssimpLoader>(filePath2));
     objects.push_back(std::make_unique<AssimpLoader>(filePath3));
     std::cout << "after assimpLoader \n";
@@ -225,42 +222,24 @@ if (!success) {
     return program;
 }
 
-
-std::vector<std::unique_ptr<Player>> players;
-void addPlayer(int id, const std::string& name) {
-    players.push_back(std::make_unique<Player>(id, name));
-    std::cout << "Player: " << name << " joined with ID: " << id << std::endl;
-}
-
-void removePlayer(int id) {
-    auto it = std::remove_if(players.begin(), players.end(), 
-                             [id](const std::unique_ptr<Player>& player) {
-                                return player->getID() == id;
-                             });
-    players.erase(it, players.end());
-    std::cout << "Player with ID: " << id << " was removed.\n";
-}
-
-
-
 void draw(const RenderData& data) {
+
+    std::cout << "Draw called\n";
+    Game& game = Game::instance();
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
     
-
-if (!players.empty()) { 
-    for (const auto& player : players) {
+if (game.hasPlayers()) { 
+    for (const auto& player : game.getPlayers()) {
         player->draw(assimpLoader, shaderProgram); // If using unique_ptr
         // Or, if storing objects directly: player.draw(assimpLoader, shaderProgram);
         }
     }
 
-
     for(size_t i = 0; i < objects.size(); i++ ){
         glUseProgram(shaderProgram);
     glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), 800.0f / 500.0f, 0.1f, 100.0f);
-
 
     glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, 2.0f));
     glm::vec3 objectColor = glm::vec3(0.4f, 1.f, 0.2f);
@@ -282,7 +261,6 @@ if (!players.empty()) {
     glm::vec3 upDirection = glm::vec3(0.0f, 1.0f, 0.0f); //
     glm::mat4 viewMatrix = glm::lookAt(viewPos, cameraTarget, upDirection);
 
-    
     // Set the matrices
     // And check so there are no problems
     if (modelLoc != -1) glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
@@ -322,22 +300,22 @@ void cleanup() {
 
 }
 
-
 void keyboard(Key key, Modifier modifier, Action action, int, Window*) {
+    Game& game = Game::instance();
+
     if (key == Key::Esc && action == Action::Press) {
         Engine::instance().terminate();
     }
-
 
     if (key == Key::Space && modifier == Modifier::Shift && action == Action::Release) {
         Log::Info("Released space key");
         wsHandler->disconnect();
     }
 
-    if (players.empty()) return;
+    if (!game.hasPlayers()) return;
 
     // Assuming we control the first player for simplicity
-    auto& player = players[0];
+    auto& player = game.getPlayers()[0];
     /*
     float deltaTime = calculateDeltaTime();
 
@@ -364,8 +342,7 @@ void keyboard(Key key, Modifier modifier, Action action, int, Window*) {
             player->setPosition(-glm::vec3(0.0f, cos(player->getOrientation()) * moveSpeed, sin(player->getOrientation()) * moveSpeed));
         }
 
-    }
-
+}
 
 void connectionEstablished() {
     Log::Info("Connection established");
@@ -382,19 +359,10 @@ void messageReceived(const void* data, size_t length) {
     Log::Info(fmt::format("Message received: {}", msg));
 }
 
-double lastFrameTime = 0.0;
-
-double calculateDeltaTime() {
-    double currentFrameTime = glfwGetTime(); // Get current time
-    double deltaTime = currentFrameTime - lastFrameTime; // Calculate difference
-    lastFrameTime = currentFrameTime; // Update last frame time for the next frame
-    return deltaTime;
-}
-
 int main(int argc, char** argv) {
-
-    addPlayer(1, "Viktor");
-    addPlayer(2, "Alex");
+    
+    Game::instance().addPlayer(1, "Viktor");
+    Game::instance().addPlayer(2, "Alex");
 
     std::vector<std::string> arg(argv + 1, argv + argc);
     Configuration config = sgct::parseArguments(arg);
