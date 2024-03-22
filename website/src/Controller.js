@@ -6,24 +6,38 @@ import { Joystick } from 'react-joystick-component'; // Package source: https://
 
 function Controller() {
     const [searchparams] = useSearchParams() // Used to search in the URL
-    var scrOrientation = window.screen.orientation // Simplification
-    console.log(scrOrientation)
+    const [scrOrientation, setScreenOrientation] = useState(window.screen.orientation)
 
-    // Bugs while loading page is present and must be fixed
-
-    scrOrientation.addEventListener('change', function() {console.log(scrOrientation)})
-
-    scrOrientation.onchange = function() {
-        if(document.getElementById("jStick") != null){
-            if(scrOrientation.type =='portrait-primary'){
-                document.getElementById("jStick").style.display = 'none'
-                document.getElementById("orientationDisclaimer").style.display ='flex'
-            }else if(scrOrientation.type =='landscape-primary'){
-                document.getElementById("jStick").style.display = 'flex'
-                document.getElementById("orientationDisclaimer").style.display ='none'
-            }
+    const baseColor = 'radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(70,70,70,1) 69%, rgba(101,101,101,1) 100%)'
+    const stickColor = 'radial-gradient(circle, rgba(16,187,0,1) 0%, rgba(31,147,0,1) 71%, rgba(3,62,0,1) 100%)'
+    
+    
+    scrOrientation.addEventListener('change', function() { //When screen orientation is changed
+        setScreenOrientation(window.screen.orientation)
+        if(scrOrientation.type === 'landscape-primary' ||scrOrientation.type === 'landscape-secondary'){
+            document.getElementById('orientationDisclaimer').style.display = 'none'
+            document.getElementById('jStick').style.display = 'flex'
+            document.getElementById('fireButton').style.display = 'flex'
+        }else{
+            document.getElementById('orientationDisclaimer').style.display = 'flex'
+            document.getElementById('jStick').style.display = 'none'
+            document.getElementById('fireButton').style.display = 'none'
         }
-    }
+    })
+
+    useEffect(()=>{ // When page loads
+        if(scrOrientation.type === 'landscape-primary' ||scrOrientation.type === 'landscape-secondary'){
+            document.getElementById('orientationDisclaimer').style.display = 'none'
+            document.getElementById('jStick').style.display = 'flex'
+            document.getElementById('fireButton').style.display = 'flex'
+        }else{
+            document.getElementById('orientationDisclaimer').style.display = 'flex'
+            document.getElementById('jStick').style.display = 'none'
+            document.getElementById('fireButton').style.display = 'none'
+        }
+    })
+
+    
     
     function joystickController({
         move,
@@ -34,8 +48,8 @@ function Controller() {
         <div id = 'jStick'>
             <Joystick
                 size={100}
-                baseColor={'green'}
-                stickColor={'red'}
+                baseColor={baseColor}
+                stickColor={stickColor}
                 throttle={200}
                 move={move}
                 stop={stop}
@@ -55,23 +69,24 @@ function Controller() {
         console.log(e);
       };
       const handleShoot = (e) =>{
-
+        console.log(e);
       }
 
 
     return(
         <div className="Controller">
-            {/* Developer tools
-            <label htmlFor="devBox" style={{color:'white'}}> Developer Box
-                <div className="devBox">
-                    <p style={{color:'white'}}>UserID: {searchparams.get('userID')}</p>
-                    <p style={{color:'white'}}>UserName: {searchparams.get('userName')}</p>
-                    <p style={{color:'white'}}>Screen orientation: {scrOrientation}</p>
-                </div>
-            </label>
-            */}
-            {joystickController(handleMove, handleStart, handleStop)}
-            <h1 id='orientationDisclaimer'>Rotera mobilen för att spela</h1>
+            {/* Developer tools*/}
+            <div className="devBox">
+                <p style={{color:'white'}}>UserID: {searchparams.get('userID')}</p>
+                <p style={{color:'white'}}>UserName: {searchparams.get('userName')}</p>
+                <p style={{color:'white'}}>Screen orientation: {scrOrientation.type}</p>
+            </div>
+            {/**/}
+            <div className="controllsContainer">
+                {joystickController(handleMove, handleStart, handleStop)}
+                <h1 id='orientationDisclaimer'>Rotera mobilen för att spela</h1>
+                <span id='fireButton' onClick={handleShoot}>FIRE</span>
+            </div>
 
         </div>
     );

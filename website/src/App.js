@@ -11,8 +11,8 @@ function App() {
   const [userName, setUserName] = useState('inital')
   var infoBoxStatus = true; // Is the info box opened, when the page loads in this is incorrect but the var needs to be true for the if statement to work
 
-  window.onload=function(){
-    document.getElementById("InfoButton").addEventListener('click', function(){ 
+  window.onload=function(){ //TODO: Fix bug that disables the opening and closing of the info box when navigating back to this page
+    document.getElementById("InfoButton").addEventListener('click', function(){
       const iB = document.getElementById('InfoBox');
       if(infoBoxStatus){
         iB.style.marginTop = "-20em"
@@ -56,7 +56,7 @@ function App() {
           }).toString()
       })
     }
-  }, [userID, userName]);
+  }, [userID, userName])
 
   const updateUserValues = () => { // Set user states
       setUserId(generateUUID())
