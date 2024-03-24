@@ -11,6 +11,34 @@ std::tuple<unsigned int, float> Utility::getTurnSpeed(std::istringstream& input)
 
 	return std::make_tuple(id, rotation);
 }
+void Utility::setupShaderForDrawing(const GLuint shaderProgram, const glm::vec3& position, const glm::vec3& color, float orientation, float scale) {
+    glUseProgram(shaderProgram);
+
+    // Create transformation matrices
+    glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), position);
+    modelMatrix = glm::scale(modelMatrix, glm::vec3(scale, scale, scale));
+    modelMatrix = glm::rotate(modelMatrix, orientation, glm::vec3(1.0f, 0.0f, 0.0f));
+    glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), 800.0f / 500.0f, 0.1f, 100.0f);
+    glm::vec3 viewPos = glm::vec3(5.0f, 0.0f, 3.0f);
+    glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 upDirection = glm::vec3(0.0f, 1.0f, 0.0f);
+    glm::mat4 viewMatrix = glm::lookAt(viewPos, cameraTarget, upDirection);
+
+    // Lighting configuration
+    glm::vec3 lightPos = glm::vec3(5.0f, 0.0f, 3.0f);
+    glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
+    glm::vec3 objectColor = color;
+
+    // Set uniforms
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+    glUniform3fv(glGetUniformLocation(shaderProgram, "lightPos"), 1, glm::value_ptr(lightPos));
+    glUniform3fv(glGetUniformLocation(shaderProgram, "viewPos"), 1, glm::value_ptr(viewPos));
+    glUniform3fv(glGetUniformLocation(shaderProgram, "lightColor"), 1, glm::value_ptr(lightColor));
+    glUniform3fv(glGetUniformLocation(shaderProgram, "objectColor"), 1, glm::value_ptr(objectColor));
+}
+
 
 unsigned int Utility::textureFromFile(const char* path, const std::string& directory/* bool gamma*/)
 {

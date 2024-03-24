@@ -14,6 +14,7 @@
 #include "mesh.h"
 #include "utility.h"
 #include "shader.h"
+#include "bullets.h"
 
 struct PlayerData
 {
@@ -52,7 +53,7 @@ public:
 	void setTurnSpeed(float turnSpeed) { mTurnSpeed = turnSpeed; };
 
 	//Update position
-	void update(float deltaTime);
+	void update(float deltaTime,const std::vector<std::unique_ptr<Bullet>>& mBullets);
 
 	//Draw objects
 	void draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram) const;
@@ -67,7 +68,7 @@ public:
     //const bool isAlive() const { return mIsAlive; };
     
     // Iris: trying to send colours
-    glm::vec3 getColours() const { return mPlayerColour; };
+    glm::vec3 getColours() const { return mPlayerColor; };
 
 	//Mutators
 	void addStarHolding() { mStarsHolding += 1; }
@@ -79,6 +80,25 @@ public:
     void setPosition(const glm::vec3& positionChange) {
         mPosition += positionChange;
     }
+
+	void setChargeMode(bool mode){
+		chargeActive = mode;
+	}
+	int getSuperCharge(){
+		return superCharge;
+	}
+	void useSuperCharge(){
+		superCharge -= 1;
+	}
+	void fillSuperCharge(){
+		superCharge += 1;
+	}
+	glm::vec3 getPosition(){
+		return mPosition;
+	}
+	int getTeam(){
+		return mTeam;
+	}
     
     // Method to adjust orientation
     void setOrientation(float angleSpeed) {
@@ -91,15 +111,20 @@ private:
 	float mTurnSpeed = 0.0f;
 	int   mStars    = 0;
     int mStarsHolding = 0;
-	float mSpeed     = 0.01f;
+	float mSpeed     = 0.0001f;
     int mPlayerID;
     bool mIsAlive = false;
+	int superCharge = 300;
 	std::string mName;
-
+	bool chargeActive = false;
+	int delayForRefill = 0;
+	int wait = 5;
     glm::vec3 mPosition;
     float mOrientation = 0.0f;
-
+	int respawnTimer = 0;
+	int mTeam = 0;
 	// frans; Trying something with colors
-	glm::vec3 mPlayerColour;	
+	glm::vec3 mPlayerColor;	
     GLint mColLoc = -1;
+	float hitRadius = 0.4f;
 };

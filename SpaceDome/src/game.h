@@ -24,6 +24,7 @@
 
 #include "player.h"
 #include "utility.h"
+#include "bullets.h"
 
 //Implemented as explicit singleton, handles pretty much everything
 class Game
@@ -38,8 +39,16 @@ static Game& instance() {
 bool hasPlayers() const {
     return !mPlayers.empty();
 }
+bool hasBullets() const {
+    return !mBullets.empty();
+}
+
 const std::vector<std::unique_ptr<Player>>& getPlayers() const {
     return mPlayers;
+}
+
+const std::vector<std::unique_ptr<Bullet>>& getBullets() const {
+    return mBullets;
 }
 
 //Copying forbidden
@@ -48,10 +57,17 @@ void operator=(Game const&) = delete;
 
 void addPlayer(int id, const std::string& name);
 
+void addBullet(int team, float speed, glm::vec3 position,float orientation);
+
+void shotBullet(int id);
+
 void removePlayer(int id);
 
-void updateTurnSpeed(std::tuple<unsigned int, float>&& input);
+void updateTurnSpeed(unsigned int id, float rotAngle);
 
+void setChargeActive(unsigned int id, bool mode){
+    mPlayers[id]->setChargeMode(mode);
+}
 void update();
 
 private:
@@ -60,6 +76,7 @@ private:
 Game()  {}
 
 std::vector<std::unique_ptr<Player>> mPlayers;
+std::vector<std::unique_ptr<Bullet>> mBullets;
 
 bool mGameActive = true;
 

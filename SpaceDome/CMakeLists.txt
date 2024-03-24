@@ -49,6 +49,10 @@ add_executable(${PROJECT_NAME}
   src/globals.h
   src/player.cpp
   src/player.h
+  src/game.h
+  src/game.cpp
+  src/bullets.h
+  src/bullets.cpp
 )
 #---------- MAC
 #include_directories(/opt/homebrew/Cellar/libpng/1.6.43/include)

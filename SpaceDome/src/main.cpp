@@ -32,8 +32,9 @@ namespace {
 
 using namespace sgct;
 
-std::unique_ptr<AssimpLoader> assimpLoader;
-std::vector<std::unique_ptr<AssimpLoader>> objects;
+std::unique_ptr<AssimpLoader> modelsAssimp;
+std::unique_ptr<AssimpLoader> bulletsAssimp;
+std::vector<std::unique_ptr<AssimpLoader>> objectsAssimp;
 GLuint shaderProgram;
 
 const char* vertexShaderSource = R"glsl(
@@ -131,13 +132,15 @@ void initOGL(GLFWwindow*) {
     std::string filePath1 = "/Users/viktorsvensson/Desktop/MT/År 3/Termin 2/TNM094 - Kandidat/BachelorRep/candidateproject/SpaceDome/src/models/" + allModelNames[2] + ".fbx";
     std::string filePath2 = "/Users/viktorsvensson/Desktop/MT/År 3/Termin 2/TNM094 - Kandidat/BachelorRep/candidateproject/SpaceDome/src/models/" + allModelNames[4] + ".fbx";
     std::string filePath3 = "/Users/viktorsvensson/Desktop/MT/År 3/Termin 2/TNM094 - Kandidat/BachelorRep/candidateproject/SpaceDome/src/models/" + allModelNames[5] + ".fbx";
+    std::string filePath4 = "/Users/viktorsvensson/Desktop/MT/År 3/Termin 2/TNM094 - Kandidat/BachelorRep/candidateproject/SpaceDome/src/models/" + allModelNames[7] + ".fbx";
 
-    assimpLoader = std::make_unique<AssimpLoader>(filePath1);
-    objects.push_back(std::make_unique<AssimpLoader>(filePath2));
-    objects.push_back(std::make_unique<AssimpLoader>(filePath3));
+
+    modelsAssimp = std::make_unique<AssimpLoader>(filePath1);
+    bulletsAssimp = std::make_unique<AssimpLoader>(filePath4);
+    objectsAssimp.push_back(std::make_unique<AssimpLoader>(filePath2));
+    objectsAssimp.push_back(std::make_unique<AssimpLoader>(filePath3));
     std::cout << "after assimpLoader \n";
 }
-
 
 void preSync() {
     // Do the application simulation step on the server node in here and make sure that
@@ -157,7 +160,6 @@ void preSync() {
 
 }
 
-
 std::vector<std::byte> encode() {
     // These are just two examples;  remove them and replace them with the logic of your
     // application that you need to synchronize
@@ -168,7 +170,6 @@ std::vector<std::byte> encode() {
     return data;
 }
 
-
 void decode(const std::vector<std::byte>& data) {
     // These are just two examples;  remove them and replace them with the logic of your
     // application that you need to synchronize
@@ -176,7 +177,6 @@ void decode(const std::vector<std::byte>& data) {
     deserializeObject(data, pos, exampleInt);
     deserializeObject(data, pos, exampleString);
 }
-
 
 void postSyncPreDraw() {
     // Apply the (now synchronized) application state before the rendering will start
@@ -226,74 +226,48 @@ if (!success) {
 
 void draw(const RenderData& data) {
 
-    std::cout << "Draw called\n";
+    //std::cout << "Draw called\n";
     Game& game = Game::instance();
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
     
-if (game.hasPlayers()) { 
-    for (const auto& player : game.getPlayers()) {
-        player->draw(assimpLoader, shaderProgram); // If using unique_ptr
-        // Or, if storing objects directly: player.draw(assimpLoader, shaderProgram);
+    if (game.hasPlayers()) { 
+        for (const auto& player : game.getPlayers()) {
+            player->draw(modelsAssimp, shaderProgram); 
+        }
+    }
+    if (game.hasBullets()) { 
+    for (const auto& bullet : game.getBullets()) {
+        bullet->draw(bulletsAssimp, shaderProgram); 
         }
     }
 
-    for(size_t i = 0; i < objects.size(); i++ ){
-        glUseProgram(shaderProgram);
-    glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), 800.0f / 500.0f, 0.1f, 100.0f);
+    for(size_t i = 0; i < objectsAssimp.size(); i++ ){
 
-    glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, 2.0f));
-    glm::vec3 objectColor = glm::vec3(0.4f, 1.f, 0.2f);
-    if(i == 0){
-        objectColor = glm::vec3(1.f, 0.2f, 0.2f);
-        modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, -2.0f));
-    }
-
-    // Convert glm matrices to OpenGL format and set uniforms
-    GLint modelLoc = glGetUniformLocation(shaderProgram, "model");
-    GLint viewLoc = glGetUniformLocation(shaderProgram, "view");
-    GLint projectionLoc = glGetUniformLocation(shaderProgram, "projection");
-
-    glm::vec3 lightPos = glm::vec3(5.0f, 0.0f, 3.0f);
-    glm::vec3 viewPos = glm::vec3(5.0f, 0.0f, 3.0f);
-    glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
-
-    glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f); // Assuming you want to look at the origin
-    glm::vec3 upDirection = glm::vec3(0.0f, 1.0f, 0.0f); //
-    glm::mat4 viewMatrix = glm::lookAt(viewPos, cameraTarget, upDirection);
-
-    // Set the matrices
-    // And check so there are no problems
-    if (modelLoc != -1) glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
-        else std::cerr << "Uniform 'model' not found in shader program\n";
-
-    if (viewLoc != -1) glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(viewMatrix));
-        else std::cerr << "Uniform 'view' not found in shader program\n";
-
-    if (projectionLoc != -1) glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
-        else std::cerr << "Uniform 'projection' not found in shader program\n";
-
-    glUniform3fv(glGetUniformLocation(shaderProgram, "lightPos"), 1, glm::value_ptr(lightPos));
-    glUniform3fv(glGetUniformLocation(shaderProgram, "viewPos"), 1, glm::value_ptr(viewPos));
-    glUniform3fv(glGetUniformLocation(shaderProgram, "lightColor"), 1, glm::value_ptr(lightColor));
-    glUniform3fv(glGetUniformLocation(shaderProgram, "objectColor"), 1, glm::value_ptr(objectColor));
-
-    //draw
-    auto& meshes = objects[i]->getMeshes(); // Using getMeshes() method to access the meshes
-
-    for (unsigned int p = 0; p < meshes.size(); p++) {
-        meshes[p].Draw(); // Draw each mesh
-    }
-    //check for errors
-    GLenum err;
-    while ((err = glGetError()) != GL_NO_ERROR) {
-        std::cerr << "OpenGL error after linking shader program: " << err << std::endl;
-    }
-    }
+        glm::vec3 objectColor = glm::vec3(0.4f, 1.f, 0.2f);
+        glm::vec3 pos = glm::vec3(-1.0f, 0.0f, 2.0f);
     
-}
+        if(i == 0){
+            objectColor = glm::vec3(1.f, 0.2f, 0.2f);
+            pos = glm::vec3(-1.0f, 0.0f, -2.0f);
+        }
 
+        Utility::setupShaderForDrawing(shaderProgram, pos, objectColor, 0, 0.4);
+    
+        //draw
+        auto& meshes = objectsAssimp[i]->getMeshes(); // Using getMeshes() method to access the meshes
+
+        for (unsigned int p = 0; p < meshes.size(); p++) {
+            meshes[p].Draw(); // Draw each mesh
+        }
+        //check for errors
+        GLenum err;
+        while ((err = glGetError()) != GL_NO_ERROR) {
+            std::cerr << "OpenGL error after linking shader program: " << err << std::endl;
+        }
+    } 
+}
 
 void cleanup() {
     // Cleanup all of your state, particularly the OpenGL state in here.  This function
@@ -317,56 +291,34 @@ void keyboard(Key key, Modifier modifier, Action action, int, Window*) {
     if (!game.hasPlayers()) return;
 
     // Assuming we control the first player for simplicity
-    auto& player = game.getPlayers()[0];
-    const float turnSpeed = 0.05f; // Adjust as needed
+    //auto& player = game.getPlayers()[0];
+    //player->setTurnSpeed(0.0f);
 
+    const float turnSpeed = 0.1f; // Adjust as needed
+    unsigned int id = 1;
     // Reset turn speed to 0 each frame to stop turning when keys are released
-    player->setTurnSpeed(0.0f);
-
+    
+    game.setChargeActive(id, false);
     if (action == Action::Press || action == Action::Repeat) {
         if (key == Key::Right) {
-            player->setTurnSpeed(-turnSpeed);
+            game.updateTurnSpeed(id, -turnSpeed);
         } else if (key == Key::Left) {
-            player->setTurnSpeed(turnSpeed);
+            game.updateTurnSpeed(id, turnSpeed);
+        }else if(key == Key::LeftShift){
+            game.setChargeActive(id, true);
+        }else if(key == Key::S){
+            game.shotBullet(id);
         }
     }
-    /*
-    float deltaTime = calculateDeltaTime();
-
-    if (action == Action::Press || action == Action::Repeat) {
-        if (key == Key::Right) {
-            player->update(deltaTime,1);
-        } else if (key == Key::Left) {
-            player->update(deltaTime,2);
-        };
-
-
-        const float moveSpeed = 0.1f; // Adjust as needed
-        const float turnSpeed = 0.05f; // Adjust as needed
-
-        if (key == Key::Right) {
-            player->setOrientation(-turnSpeed);
-        } else if (key == Key::Left) {
-            player->setOrientation(turnSpeed);
-        } else if (key == Key::Up) {
-            // Move forward
-            player->setPosition(glm::vec3(0.0f, cos(player->getOrientation()) * moveSpeed, sin(player->getOrientation()) * moveSpeed));
-        } else if (key == Key::Down) {
-            // Move backward
-            player->setPosition(-glm::vec3(0.0f, cos(player->getOrientation()) * moveSpeed, sin(player->getOrientation()) * moveSpeed));
-        }
-*/
 }
 
 void connectionEstablished() {
     Log::Info("Connection established");
 }
 
-
 void connectionClosed() {
     Log::Info("Connection closed");
 }
-
 
 void messageReceived(const void* data, size_t length) {
     std::string_view msg = std::string_view(reinterpret_cast<const char*>(data), length);
