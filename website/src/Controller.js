@@ -61,7 +61,7 @@ function Controller() {
 
     // Called by joystick
     const handleMove = (e) => { 
-        console.log(e);
+        console.log(e)
       };
       const handleStop = (e) => {
         console.log(e);
