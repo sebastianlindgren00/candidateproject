@@ -75,7 +75,7 @@ function Controller() {
       };
 
       //Called by fireButton
-      const handleShoot = (e) =>{
+      const handleShoot = (e) =>{ //Cannot be called while steering with the joystick, must be fixed
         console.log(e);
       }
 
