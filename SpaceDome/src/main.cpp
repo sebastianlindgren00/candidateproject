@@ -129,10 +129,10 @@ void initOGL(GLFWwindow*) {
 
     //Get the model via Assimp
     std::cout << "before file path \n";
-    std::string filePath1 = "/Users/viktorsvensson/Desktop/MT/År 3/Termin 2/TNM094 - Kandidat/BachelorRep/candidateproject/SpaceDome/src/models/" + allModelNames[2] + ".fbx";
-    std::string filePath2 = "/Users/viktorsvensson/Desktop/MT/År 3/Termin 2/TNM094 - Kandidat/BachelorRep/candidateproject/SpaceDome/src/models/" + allModelNames[4] + ".fbx";
-    std::string filePath3 = "/Users/viktorsvensson/Desktop/MT/År 3/Termin 2/TNM094 - Kandidat/BachelorRep/candidateproject/SpaceDome/src/models/" + allModelNames[5] + ".fbx";
-    std::string filePath4 = "/Users/viktorsvensson/Desktop/MT/År 3/Termin 2/TNM094 - Kandidat/BachelorRep/candidateproject/SpaceDome/src/models/" + allModelNames[7] + ".fbx";
+    std::string filePath1 = "C:/Users/bmwpe/Desktop/Candidate sgct/candidateproject/SpaceDome/src/models/" + allModelNames[2] + ".fbx";
+    std::string filePath2 = "C:/Users/bmwpe/Desktop/Candidate sgct/candidateproject/SpaceDome/src/models/" + allModelNames[4] + ".fbx";
+    std::string filePath3 = "C:/Users/bmwpe/Desktop/Candidate sgct/candidateproject/SpaceDome/src/models/" + allModelNames[5] + ".fbx";
+    std::string filePath4 = "C:/Users/bmwpe/Desktop/Candidate sgct/candidateproject/SpaceDome/src/models/" + allModelNames[7] + ".fbx";
 
 
     modelsAssimp = std::make_unique<AssimpLoader>(filePath1);
