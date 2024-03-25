@@ -129,12 +129,18 @@ void initOGL(GLFWwindow*) {
     glDeleteShader(fragmentShader);
 
     //Get the model via Assimp
+    
+    //std::string baseDirectory = "../..models/";
+
     std::cout << "before file path \n";
-    std::string filePath1 = "/Users/viktorsvensson/Desktop/MT/År 3/Termin 2/TNM094 - Kandidat/BachelorRep/candidateproject/SpaceDome/src/models/" + allModelNames[2] + ".fbx";
-    std::string filePath2 = "/Users/viktorsvensson/Desktop/MT/År 3/Termin 2/TNM094 - Kandidat/BachelorRep/candidateproject/SpaceDome/src/models/" + allModelNames[4] + ".fbx";
-    std::string filePath3 = "/Users/viktorsvensson/Desktop/MT/År 3/Termin 2/TNM094 - Kandidat/BachelorRep/candidateproject/SpaceDome/src/models/" + allModelNames[5] + ".fbx";
-    std::string filePath4 = "/Users/viktorsvensson/Desktop/MT/År 3/Termin 2/TNM094 - Kandidat/BachelorRep/candidateproject/SpaceDome/src/models/" + allModelNames[7] + ".fbx";
-    std::string filePath5 = "/Users/viktorsvensson/Desktop/MT/År 3/Termin 2/TNM094 - Kandidat/BachelorRep/candidateproject/SpaceDome/src/models/" + allModelNames[8] + ".fbx";
+    std::string filePath1 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[2] + ".fbx";
+    std::string filePath2 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[4] + ".fbx";
+    std::string filePath3 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[5] + ".fbx";
+    std::string filePath4 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[7] + ".fbx";
+    std::string filePath5 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[8] + ".fbx";
+
+    
+
 
     modelsAssimp = std::make_unique<AssimpLoader>(filePath1);
     bulletsAssimp = std::make_unique<AssimpLoader>(filePath4);
