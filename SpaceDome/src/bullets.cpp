@@ -8,7 +8,7 @@ Bullet::~Bullet()
 
 void Bullet::update(float deltaTime)
 {
-    //dont have to check life here, its checked in game::update
+    //dont have to check life here, its checked in game::update?
    
     lifeTime++;
     if(lifeTime >= 300){
@@ -17,7 +17,6 @@ void Bullet::update(float deltaTime)
     
     // Update position based on orientation
     bPosition += glm::vec3(0.0f, cos(bOrientation) * bSpeed, sin(bOrientation) * bSpeed);
-
 }
 
 void Bullet::draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram) const
@@ -28,7 +27,6 @@ void Bullet::draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuin
 
     Utility::setupShaderForDrawing(shaderProgram, bPosition, bColor, bOrientation, 0.05);
 
-   
     //draw
     auto& meshes = assimpLoader->getMeshes(); // Using getMeshes() method to access the meshes
     for (unsigned int i = 0; i < meshes.size(); i++) {

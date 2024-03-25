@@ -238,8 +238,14 @@ void draw(const RenderData& data) {
         }
     }
     if (game.hasBullets()) { 
-    for (const auto& bullet : game.getBullets()) {
-        bullet->draw(bulletsAssimp, shaderProgram); 
+        for (const auto& bullet : game.getBullets()) {
+            bullet->draw(bulletsAssimp, shaderProgram); 
+        }
+    }
+
+    if(game.hasStars()) {
+        for (const auto& stars : game.getStars()){
+            stars->draw(modelsAssimp, shaderProgram);
         }
     }
 
@@ -288,6 +294,7 @@ void keyboard(Key key, Modifier modifier, Action action, int, Window*) {
         wsHandler->disconnect();
     }
 
+/*
     if (!game.hasPlayers()) return;
 
     // Assuming we control the first player for simplicity
@@ -310,6 +317,7 @@ void keyboard(Key key, Modifier modifier, Action action, int, Window*) {
             game.shotBullet(id);
         }
     }
+    */
 }
 
 void connectionEstablished() {
@@ -324,6 +332,12 @@ void messageReceived(const void* data, size_t length) {
     std::string_view msg = std::string_view(reinterpret_cast<const char*>(data), length);
     Log::Info(fmt::format("Message received: {}", msg));
 }
+
+void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Window* window) {
+    // Forward the event to your game's keyboard handler
+    Game::instance().gameKeyboard(key, modifier, action, window);
+}
+
 
 int main(int argc, char** argv) {
     
@@ -342,7 +356,9 @@ int main(int argc, char** argv) {
     callbacks.postSyncPreDraw = postSyncPreDraw;
     callbacks.draw = draw;
     callbacks.cleanup = cleanup;
-    callbacks.keyboard = keyboard;
+    //callbacks.keyboard = keyboard;
+    callbacks.keyboard = globalKeyboardHandler;
+    
 
     try {
         Engine::create(cluster, callbacks, config);
