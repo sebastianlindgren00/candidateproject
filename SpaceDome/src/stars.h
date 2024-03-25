@@ -27,12 +27,12 @@ public:
     //defaul constructor
 	Star(int id){
         int random = rand() % 100;  
-        int yRand = rand() % 200;
-        int zRand = rand() % 200;
+        int yRand = rand() % 400;
+        int zRand = rand() % 600;
         sId = id;
 
         sOrientation = (float)random/10;
-        sPosition = glm::vec3(0.0, (1 - (float)yRand/100),(1 - (float)zRand/100));
+        sPosition = glm::vec3(0.0, (2 - (float)yRand/100),(3 - (float)zRand/100));
     }
 
 	//constructor
@@ -63,6 +63,6 @@ private:
 int sId;
 glm::vec3 sPosition;
 float sOrientation;
-glm::vec3 sColor = {1.0f, 0.3f, 0.3f};	
+glm::vec3 sColor = {0.5f, 0.5f, 0.0f};	
 //GLint sColLoc = -1;
 };

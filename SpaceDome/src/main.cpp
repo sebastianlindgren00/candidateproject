@@ -34,6 +34,7 @@ using namespace sgct;
 
 std::unique_ptr<AssimpLoader> modelsAssimp;
 std::unique_ptr<AssimpLoader> bulletsAssimp;
+std::unique_ptr<AssimpLoader> starsAssimp;
 std::vector<std::unique_ptr<AssimpLoader>> objectsAssimp;
 GLuint shaderProgram;
 
@@ -133,10 +134,11 @@ void initOGL(GLFWwindow*) {
     std::string filePath2 = "/Users/viktorsvensson/Desktop/MT/År 3/Termin 2/TNM094 - Kandidat/BachelorRep/candidateproject/SpaceDome/src/models/" + allModelNames[4] + ".fbx";
     std::string filePath3 = "/Users/viktorsvensson/Desktop/MT/År 3/Termin 2/TNM094 - Kandidat/BachelorRep/candidateproject/SpaceDome/src/models/" + allModelNames[5] + ".fbx";
     std::string filePath4 = "/Users/viktorsvensson/Desktop/MT/År 3/Termin 2/TNM094 - Kandidat/BachelorRep/candidateproject/SpaceDome/src/models/" + allModelNames[7] + ".fbx";
-
+    std::string filePath5 = "/Users/viktorsvensson/Desktop/MT/År 3/Termin 2/TNM094 - Kandidat/BachelorRep/candidateproject/SpaceDome/src/models/" + allModelNames[8] + ".fbx";
 
     modelsAssimp = std::make_unique<AssimpLoader>(filePath1);
     bulletsAssimp = std::make_unique<AssimpLoader>(filePath4);
+    starsAssimp = std::make_unique<AssimpLoader>(filePath5);
     objectsAssimp.push_back(std::make_unique<AssimpLoader>(filePath2));
     objectsAssimp.push_back(std::make_unique<AssimpLoader>(filePath3));
     std::cout << "after assimpLoader \n";
@@ -245,7 +247,7 @@ void draw(const RenderData& data) {
 
     if(game.hasStars()) {
         for (const auto& stars : game.getStars()){
-            stars->draw(modelsAssimp, shaderProgram);
+            stars->draw(starsAssimp, shaderProgram);
         }
     }
 
@@ -293,31 +295,6 @@ void keyboard(Key key, Modifier modifier, Action action, int, Window*) {
         Log::Info("Released space key");
         wsHandler->disconnect();
     }
-
-/*
-    if (!game.hasPlayers()) return;
-
-    // Assuming we control the first player for simplicity
-    //auto& player = game.getPlayers()[0];
-    //player->setTurnSpeed(0.0f);
-
-    const float turnSpeed = 0.1f; // Adjust as needed
-    unsigned int id = 1;
-    // Reset turn speed to 0 each frame to stop turning when keys are released
-    
-    game.setChargeActive(id, false);
-    if (action == Action::Press || action == Action::Repeat) {
-        if (key == Key::Right) {
-            game.updateTurnSpeed(id, -turnSpeed);
-        } else if (key == Key::Left) {
-            game.updateTurnSpeed(id, turnSpeed);
-        }else if(key == Key::LeftShift){
-            game.setChargeActive(id, true);
-        }else if(key == Key::S){
-            game.shotBullet(id);
-        }
-    }
-    */
 }
 
 void connectionEstablished() {

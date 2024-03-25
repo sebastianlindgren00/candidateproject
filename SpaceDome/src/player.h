@@ -53,11 +53,11 @@ public:
 
 	void addStarHolding() { mStarsHolding += 1; }
 
-	bool hasStars(){ return mStars > 0; }
+	bool hasStars(){ return mStarsHolding > 0; }
 
-	void nullStars() {mStars = 0;}
+	void nullStars() {mStarsHolding = 0;}
 
-	int getStars() { return mStars; }
+	int getStars() { return mStarsHolding; }
 
 	void addHandedInStars(int addStars) { mStars += addStars; };
 

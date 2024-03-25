@@ -63,25 +63,22 @@ void Game::pickUpStars(int id){
 }
 
 void Game::handInStars(int id){
+    glm::vec3 spawn = glm::vec3(0.0f, 0.0f, -2.0f);
+    if(mPlayers[id]->getTeam() == 2){
+        spawn = glm::vec3(0.0f, 0.0f, 2.0f);
+    }
+    float distance = glm::distance(spawn, mPlayers[id]->getPosition());
 
-    for (const auto& star : mStars) {
-        if (mPlayers[id]->hasStars()) {
-            glm::vec3 spawn = glm::vec3(0.0f, 0.0f, -2.0f);
-            if(mPlayers[id]->getTeam() == 2){
-                spawn = glm::vec3(0.0f, 0.0f, 2.0f);
-            }
-            float distance = glm::distance(spawn, mPlayers[id]->getPosition());
+    if (mPlayers[id]->hasStars() && distance <= handInRadius) {
+        int stars = mPlayers[id]->getStars();
+        mPlayers[id]->addHandedInStars(mPlayers[id]->getStars());
+        mPlayers[id]->nullStars();
 
-            if (distance <= handInRadius) {
-                mPlayers[id]->addHandedInStars(mPlayers[id]->getStars());
-                mPlayers[id]->nullStars();
-                if(mPlayers[id]->getTeam() == 1){
-                    redTeamStars++;
-                }else {
-                    greenTeamStars++;
-                }
-            }
-        }
+    if(mPlayers[id]->getTeam() == 1){
+        redTeamStars += stars;
+    }else {
+        greenTeamStars += stars;
+         }
     }
 }
 
@@ -144,7 +141,15 @@ void Game::update(){
         return bullet->getLifeTime() >= 150;
     }), mBullets.end());
 
+
+    //pick up stars
     pickUpStars(1);
+
+    //hand in stars
+    handInStars(1);
+
+    std::cout << "Red has: " << redTeamStars << " stars\n";
+    std::cout << "Green had: " << greenTeamStars << " stars\n";
 
     //update the stars
     for (auto& star : mStars)
