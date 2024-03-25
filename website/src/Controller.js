@@ -51,8 +51,12 @@ function Controller() {
                 baseColor={baseColor}
                 stickColor={stickColor}
                 throttle={200}
-                move={move}
-                stop={stop}
+                move={(e) => {
+                    handleMove({ x: e.x, y: e.y})
+                  }}
+                  stop={() => {
+                    handleMove({ x: 0, y: 0 })
+                  }}
                 start={start}
             />
         </div>
