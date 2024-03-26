@@ -36,7 +36,7 @@ public:
     }
 
 	//constructor
-	Star(glm::vec3 position, int id){
+	Star(glm::vec3 position, int id) {
         sPosition = position;
         int random = rand() % 100;  
         sOrientation = (float)random/10;

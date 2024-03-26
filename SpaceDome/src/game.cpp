@@ -111,6 +111,10 @@ void Game::update(){
         // Turn right
         updateTurnSpeed(1, -0.01f);
     }
+    if(keyStates[sgct::Key::L]) {
+        // Turn right
+        updateTurnSpeed(0, -0.01f);
+    }
     if(keyStates[sgct::Key::Left]) {
         // Turn left
         updateTurnSpeed(1, 0.01f);
@@ -122,6 +126,10 @@ void Game::update(){
     if(keyStates[sgct::Key::S]) {
         // Shoot
         shotBullet(1);
+    }
+    if(keyStates[sgct::Key::K]) {
+        // Shoot
+        shotBullet(0);
     }
 
     if(starDelayCounter < starDelay){
@@ -143,22 +151,40 @@ void Game::update(){
 
 
     //pick up stars
+    pickUpStars(0);
     pickUpStars(1);
 
+
     //hand in stars
+    handInStars(0);
     handInStars(1);
 
     std::cout << "Red has: " << redTeamStars << " stars\n";
     std::cout << "Green had: " << greenTeamStars << " stars\n";
+    std::cout << "numer of stars in the game: " << mStars.size() << "\n";
 
     //update the stars
     for (auto& star : mStars)
 		star->update();
 
     //update the players
-    for (auto& player : mPlayers)
+    for (auto& player : mPlayers) {
+        if(player->getDropStars()){
+            std::cout << "a player died\n";
+            glm::vec3 dropPosition = player->getPosition();
+            glm::vec3 newpos;
+            player->setPosition(glm::vec3(-10.0, 0.0, 0.0));
+            for(int j = 0; j < player->getStars(); j ++){
+                int random = rand() % 10;
+                newpos = dropPosition + glm::vec3(0.0, 0.05-(float)random/10, 0.05-(float)random/10);
+                mStars.push_back(std::make_unique<Star>(newpos,maxStarsID));
+                maxStarsID++;
+            }
+            player->nullStars();
+            player->setDropStars();
+        }
 		player->update(deltaTime, mBullets);
-
+}
     //update the bullets
     for (auto& bullet : mBullets)
         bullet->update(deltaTime);

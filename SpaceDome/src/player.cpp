@@ -28,7 +28,7 @@ void Player::update(float deltaTime,const std::vector<std::unique_ptr<Bullet>>& 
 
     //check if alive, if not, how long untill spawning? spawning at spawn points
     if (!mIsAlive) {
-        respawnTimer++;
+            respawnTimer++;
         if(respawnTimer == 500){
             mIsAlive = true;
             respawnTimer = 0;
@@ -50,7 +50,7 @@ void Player::update(float deltaTime,const std::vector<std::unique_ptr<Bullet>>& 
 
             if (distance <= hitRadius) {
                 mIsAlive = false;
-                mStarsHolding = 0;
+                dropStars = true; 
                 return;
             }
         }
@@ -74,12 +74,15 @@ void Player::update(float deltaTime,const std::vector<std::unique_ptr<Bullet>>& 
     if(delayForRefill < wait){
         delayForRefill++;
     }
-        //keep track of superCharge and see if its charging
+
+        //keep track of superCharge and see if its charging and stars
         //std::cout << "charge: " << superCharge << "\n";
         //std::cout << "delay: " << delayForRefill << "\n";
+        //std::cout << "team: " << mTeam << "\n";
+        //std::cout << "Holding stars: " << mStarsHolding << "\n";
+        //std::cout << "Stars Handed in: " << mStars << "\n";
 
-    std::cout << "Holding stars: " << mStarsHolding << "\n";
-    std::cout << "Stars Handed in: " << mStars << "\n";
+
     setOrientation(mTurnSpeed);
     setPosition(glm::vec3(0.0f, cos(getOrientation()) * mSpeed, sin(getOrientation()) * mSpeed));
     setTurnSpeed(0);

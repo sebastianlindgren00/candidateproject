@@ -86,8 +86,14 @@ public:
 
     void restoreTimer() {bulletTimer = 0;}
 
+	bool getDropStars() {return dropStars;}
+
+	void setDropStars() {dropStars = false;}
+	
+
 private:
 	//Player information/data
+	bool dropStars = false;
 	int bulletTimer = 10;
 	float mTurnSpeed = 0.0f;
 	int   mStars    = 0;
