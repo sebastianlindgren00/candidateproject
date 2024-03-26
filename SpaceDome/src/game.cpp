@@ -159,9 +159,9 @@ void Game::update(){
     handInStars(0);
     handInStars(1);
 
-    std::cout << "Red has: " << redTeamStars << " stars\n";
-    std::cout << "Green had: " << greenTeamStars << " stars\n";
-    std::cout << "numer of stars in the game: " << mStars.size() << "\n";
+    //std::cout << "Red has: " << redTeamStars << " stars\n";
+    //std::cout << "Green had: " << greenTeamStars << " stars\n";
+    //std::cout << "numer of stars in the game: " << mStars.size() << "\n";
 
     //update the stars
     for (auto& star : mStars)
@@ -170,7 +170,7 @@ void Game::update(){
     //update the players
     for (auto& player : mPlayers) {
         if(player->getDropStars()){
-            std::cout << "a player died\n";
+            //std::cout << "a player died\n";
             glm::vec3 dropPosition = player->getPosition();
             glm::vec3 newpos;
             player->setPosition(glm::vec3(-10.0, 0.0, 0.0));
