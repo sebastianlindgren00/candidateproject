@@ -48,7 +48,7 @@ public:
 
     int getLifeTime(){ return lifeTime; }
 
-    void update(float deltaTime);
+    void update();
 
     void draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram) const;
 

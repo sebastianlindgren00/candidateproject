@@ -23,7 +23,7 @@ Player::~Player()
 	//sgct::Log::Info("Player with name=\"%s\" removed", mName.c_str());
 }
 
-void Player::update(float deltaTime,const std::vector<std::unique_ptr<Bullet>>& mBullets)
+void Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets)
 {
 
     //check if alive, if not, how long untill spawning? spawning at spawn points

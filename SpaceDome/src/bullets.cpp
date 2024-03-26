@@ -6,7 +6,7 @@ Bullet::~Bullet()
 	//sgct::Log::Info("Player with name=\"%s\" removed", mName.c_str());
 }
 
-void Bullet::update(float deltaTime)
+void Bullet::update()
 {
     //dont have to check life here, its checked in game::update?
    

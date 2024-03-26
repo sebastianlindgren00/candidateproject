@@ -35,6 +35,7 @@ using namespace sgct;
 std::unique_ptr<AssimpLoader> modelsAssimp;
 std::unique_ptr<AssimpLoader> bulletsAssimp;
 std::unique_ptr<AssimpLoader> starsAssimp;
+std::unique_ptr<AssimpLoader> skyboxAssimp;
 std::vector<std::unique_ptr<AssimpLoader>> objectsAssimp;
 GLuint shaderProgram;
 
@@ -138,6 +139,7 @@ void initOGL(GLFWwindow*) {
     std::string filePath3 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[5] + ".fbx";
     std::string filePath4 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[7] + ".fbx";
     std::string filePath5 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[8] + ".fbx";
+    std::string filePath6 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[6] + ".fbx";
 
     
 
@@ -145,6 +147,7 @@ void initOGL(GLFWwindow*) {
     modelsAssimp = std::make_unique<AssimpLoader>(filePath1);
     bulletsAssimp = std::make_unique<AssimpLoader>(filePath4);
     starsAssimp = std::make_unique<AssimpLoader>(filePath5);
+    skyboxAssimp = std::make_unique<AssimpLoader>(filePath6);
     objectsAssimp.push_back(std::make_unique<AssimpLoader>(filePath2));
     objectsAssimp.push_back(std::make_unique<AssimpLoader>(filePath3));
     std::cout << "after assimpLoader \n";
@@ -257,6 +260,8 @@ void draw(const RenderData& data) {
         }
     }
 
+
+
     for(size_t i = 0; i < objectsAssimp.size(); i++ ){
 
         glm::vec3 objectColor = glm::vec3(0.4f, 1.f, 0.2f);
@@ -281,6 +286,12 @@ void draw(const RenderData& data) {
             std::cerr << "OpenGL error after linking shader program: " << err << std::endl;
         }
     } 
+
+    Utility::setupShaderForDrawing(shaderProgram, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), 0, 10);
+    auto& meshesSkyBox = skyboxAssimp->getMeshes();
+    for (unsigned int p = 0; p < meshesSkyBox.size(); p++) {
+            meshesSkyBox[p].Draw(); // Draw each mesh
+        }
 }
 
 void cleanup() {

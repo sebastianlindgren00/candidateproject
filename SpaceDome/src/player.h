@@ -35,7 +35,7 @@ public:
 	void setTurnSpeed(float turnSpeed) { mTurnSpeed = turnSpeed; };
 
 	//Update position
-	void update(float deltaTime,const std::vector<std::unique_ptr<Bullet>>& mBullets);
+	void update(const std::vector<std::unique_ptr<Bullet>>& mBullets);
 
 	//Draw the player
 	void draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram) const;

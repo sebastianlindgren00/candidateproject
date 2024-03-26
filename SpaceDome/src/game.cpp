@@ -183,9 +183,9 @@ void Game::update(){
             player->nullStars();
             player->setDropStars();
         }
-		player->update(deltaTime, mBullets);
+		player->update(mBullets);
 }
     //update the bullets
     for (auto& bullet : mBullets)
-        bullet->update(deltaTime);
+        bullet->update();
 }

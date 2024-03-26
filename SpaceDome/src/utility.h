@@ -24,8 +24,8 @@ public:
 
 	static unsigned int textureFromFile(const char* path, const std::string& directory/*bool gamma = false*/);
 	static std::tuple<unsigned int, float> getTurnSpeed(std::istringstream& input);
+	static void setupShaderForDrawingTexture(const GLuint shaderProgram, const glm::vec3& position, const glm::vec3& color, float orientation, float scale, GLuint textureID);
 	static void setupShaderForDrawing(const GLuint shaderProgram, const glm::vec3& position, const glm::vec3& color, float orientation, float scale);
-
 private:
 	
 };
