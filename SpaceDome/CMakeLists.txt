@@ -7,7 +7,13 @@ cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 #
 project("SpaceDome")
 
-#
+#-----------FOR MAC APPLE SILICON------------------------------------------------------
+set(CMAKE_OSX_ARCHITECTURES "arm64" CACHE STRING "Build architectures for Mac OS X" FORCE)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-macro-redefined")
+
+set(CMAKE_PREFIX_PATH "/opt/homebrew")
+#--------------END OF MAC--------------------------------------------------------------
+
 # Add the libraries that this application depends on,
 #  1. SGCT (https://github.com/sgct/sgct) for window handling and cluster support
 #  2. libwebsockets (https://libwebsockets.org) for support for WebSockets
@@ -20,6 +26,13 @@ set_property(TARGET dist PROPERTY FOLDER "Dependencies")
 set_property(TARGET websockets PROPERTY FOLDER "Dependencies")
 set_property(TARGET websockets_shared PROPERTY FOLDER "Dependencies")
 
+# Testing out WebSocket++ library (didn't work yet)
+
+# find_package(websocketpp REQUIRED)
+# target_link_libraries(your_project_name PRIVATE WebSocketpp::websocketpp)
+# add_subdirectory(ext/websocketpp)
+# set_property(TARGET websocketpp PROPERTY FOLDER "Dependencies")
+
 add_subdirectory(ext/sgct)
 set_property(TARGET sgct PROPERTY FOLDER "Dependencies")
 
@@ -29,7 +42,13 @@ set_property(TARGET assimp PROPERTY CXX_STANDARD 17)
 set_property(TARGET assimp PROPERTY CXX_STANDARD_REQUIRED ON)
 
 find_package(glm REQUIRED)
+#MAC
+find_package(PNG REQUIRED)
 
+# Debug messages
+message(STATUS "PNG include dir: ${PNG_INCLUDE_DIR}") # Fixed variable name
+message(STATUS "PNG libraries: ${PNG_LIBRARIES}") # Correct variable name
+#ENDMAC
 
 #
 # Adding the source files here that are compiled for this project
@@ -69,9 +88,16 @@ target_include_directories(${PROJECT_NAME} PRIVATE
   ext/libwebsockets/include
   ext/assimp/include
   ${LIBWEBSOCKETS_INCLUDE_DIRS}
+  #MAC
+  ${PNG_INCLUDE_DIR} # Use the variable set by find_package
+  #ENDMAC
 )
-target_link_libraries(${PROJECT_NAME} PRIVATE sgct websockets glm::glm assimp)
 
+#target_link_libraries(${PROJECT_NAME} PRIVATE sgct websockets glm::glm assimp)
+
+#----------MAC
+target_link_libraries(${PROJECT_NAME} PRIVATE sgct websockets glm::glm assimp ${PNG_LIBRARIES})
+#-----------END MAC
 
 #
 # Setting some compile settings for the project

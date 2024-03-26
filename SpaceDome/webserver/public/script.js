@@ -1,4 +1,4 @@
-const serverAddress = 'ws://127.0.0.1/';
+const serverAddress = 'wss://omni.itn.liu.se/ws/';
 var socket;
 
 function log(msg) {

@@ -145,7 +145,7 @@ NetworkManager::NetworkManager(NetworkMode nm,
         ZoneScopedN("getaddrinfo");
         //TODO: micah - why does getaddrinfo fail for 'macbookpro.local'
         #ifdef __APPLE__
-            int result = getaddrinfo("localhost", "http", &hints, &info);
+            int result = getaddrinfo("localhost", "http", &hints, &info); 
         #else
             int result = getaddrinfo(Buffer.data(), "http", &hints, &info);
         #endif // __APPLE__
@@ -180,7 +180,7 @@ NetworkManager::NetworkManager(NetworkMode nm,
 
     // add the loop-back
     _localAddresses.emplace_back("127.0.0.1");
-    _localAddresses.emplace_back("localhost");
+    _localAddresses.emplace_back("localhost"); 
 }
 
 NetworkManager::~NetworkManager() {

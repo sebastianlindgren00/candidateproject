@@ -14,7 +14,7 @@ const WebSocketServer = require('websocket').server;
 //
 // 
 const port = 80;
-const gameAddress = '::ffff:127.0.0.1';
+const gameAddress = 'wss://omni.itn.liu.se/ws/';
 
 app.use(express.static(__dirname + '/public'));
 

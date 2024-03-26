@@ -147,9 +147,9 @@ void Game::update(){
 
     //hand in stars
     handInStars(1);
-
-    std::cout << "Red has: " << redTeamStars << " stars\n";
-    std::cout << "Green had: " << greenTeamStars << " stars\n";
+    // Commented out 26/03 for testing
+    //std::cout << "Red has: " << redTeamStars << " stars\n";
+    //std::cout << "Green had: " << greenTeamStars << " stars\n";
 
     //update the stars
     for (auto& star : mStars)

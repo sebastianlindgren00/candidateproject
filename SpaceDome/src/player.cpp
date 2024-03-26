@@ -78,8 +78,10 @@ void Player::update(float deltaTime,const std::vector<std::unique_ptr<Bullet>>& 
         //std::cout << "charge: " << superCharge << "\n";
         //std::cout << "delay: " << delayForRefill << "\n";
 
-    std::cout << "Holding stars: " << mStarsHolding << "\n";
-    std::cout << "Stars Handed in: " << mStars << "\n";
+    // commented out 26/03 for testing
+    //std::cout << "Holding stars: " << mStarsHolding << "\n";
+    //std::cout << "Stars Handed in: " << mStars << "\n";
+
     setOrientation(mTurnSpeed);
     setPosition(glm::vec3(0.0f, cos(getOrientation()) * mSpeed, sin(getOrientation()) * mSpeed));
     setTurnSpeed(0);

@@ -21,6 +21,8 @@
 #include <cmath>
 #include <GLFW/glfw3.h>
 #include "game.h"
+#include "/Users/sebastianlindgren/Documents/GitHub/candidateproject/SpaceDome/ext/rapidjson-master/include/rapidjson/document.h" // need to fix this path
+
 
 namespace {
     std::unique_ptr<WebSocketHandler> wsHandler;
@@ -130,11 +132,11 @@ void initOGL(GLFWwindow*) {
 
     //Get the model via Assimp
     std::cout << "before file path \n";
-    std::string filePath1 = "/Users/viktorsvensson/Desktop/MT/År 3/Termin 2/TNM094 - Kandidat/BachelorRep/candidateproject/SpaceDome/src/models/" + allModelNames[2] + ".fbx";
-    std::string filePath2 = "/Users/viktorsvensson/Desktop/MT/År 3/Termin 2/TNM094 - Kandidat/BachelorRep/candidateproject/SpaceDome/src/models/" + allModelNames[4] + ".fbx";
-    std::string filePath3 = "/Users/viktorsvensson/Desktop/MT/År 3/Termin 2/TNM094 - Kandidat/BachelorRep/candidateproject/SpaceDome/src/models/" + allModelNames[5] + ".fbx";
-    std::string filePath4 = "/Users/viktorsvensson/Desktop/MT/År 3/Termin 2/TNM094 - Kandidat/BachelorRep/candidateproject/SpaceDome/src/models/" + allModelNames[7] + ".fbx";
-    std::string filePath5 = "/Users/viktorsvensson/Desktop/MT/År 3/Termin 2/TNM094 - Kandidat/BachelorRep/candidateproject/SpaceDome/src/models/" + allModelNames[8] + ".fbx";
+    std::string filePath1 = "/Users/sebastianlindgren/Documents/GitHub/candidateproject/SpaceDome/src/models/" + allModelNames[2] + ".fbx";
+    std::string filePath2 = "/Users/sebastianlindgren/Documents/GitHub/candidateproject/SpaceDome/src/models/" + allModelNames[4] + ".fbx";
+    std::string filePath3 = "/Users/sebastianlindgren/Documents/GitHub/candidateproject/SpaceDome/src/models/" + allModelNames[5] + ".fbx";
+    std::string filePath4 = "/Users/sebastianlindgren/Documents/GitHub/candidateproject/SpaceDome/src/models/" + allModelNames[7] + ".fbx";
+    std::string filePath5 = "/Users/sebastianlindgren/Documents/GitHub/candidateproject/SpaceDome/src/models/" + allModelNames[8] + ".fbx";
 
     modelsAssimp = std::make_unique<AssimpLoader>(filePath1);
     bulletsAssimp = std::make_unique<AssimpLoader>(filePath4);
@@ -346,16 +348,18 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
-    if (Engine::instance().isMaster()) {
+    // Won't work if this is commented out
+    if (Engine::instance().isMaster()) 
+    {
         wsHandler = std::make_unique<WebSocketHandler>(
-            "localhost",
-            81,
-            connectionEstablished,
-            connectionClosed,
-            messageReceived
+            "wss://omni.itn.liu.se/ws/", // was localhost
+            81, // 443 represents the port for https and 81 for http
+            connectionEstablished, // callbacks
+            connectionClosed, // callbacks
+            messageReceived // callbacks
         );
-        constexpr const int MessageSize = 1024;
-        wsHandler->connect("example-protocol", MessageSize);
+         constexpr const int MessageSize = 1024;
+         wsHandler->connect("wss", MessageSize);
     }
 
     Engine::instance().exec();
