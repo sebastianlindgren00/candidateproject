@@ -130,7 +130,7 @@ void initOGL(GLFWwindow*) {
 
     //Get the model via Assimp
     
-    //std::string baseDirectory = "../..models/";
+    //std::string baseDirectory = "../../models/";
 
     std::cout << "before file path \n";
     std::string filePath1 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[2] + ".fbx";

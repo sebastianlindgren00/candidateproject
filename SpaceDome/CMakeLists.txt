@@ -58,6 +58,8 @@ add_executable(${PROJECT_NAME}
   src/bullets.cpp
   src/stars.cpp
   src/stars.h
+  src/skybox.cpp
+  src/skybox.h
 )
 #---------- MAC
 #include_directories(/opt/homebrew/Cellar/libpng/1.6.43/include)
