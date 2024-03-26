@@ -8,6 +8,7 @@ function Controller() {
     const [searchparams] = useSearchParams() // Used to search in the URL
     const [scrOrientation, setScreenOrientation] = useState(window.screen.orientation)
 
+
     const baseColor = 'radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(70,70,70,1) 69%, rgba(101,101,101,1) 100%)'
     const stickColor = 'radial-gradient(circle, rgba(16,187,0,1) 0%, rgba(31,147,0,1) 71%, rgba(3,62,0,1) 100%)'
     
@@ -30,10 +31,12 @@ function Controller() {
             document.getElementById('orientationDisclaimer').style.display = 'none'
             document.getElementById('jStick').style.display = 'flex'
             document.getElementById('fireButton').style.display = 'flex'
+            document.getElementById('controlPanel').style.display = 'flex'
         }else{
             document.getElementById('orientationDisclaimer').style.display = 'flex'
             document.getElementById('jStick').style.display = 'none'
             document.getElementById('fireButton').style.display = 'none'
+            document.getElementById('controlPanel').style.display = 'none'
         }
     })
 
@@ -82,19 +85,17 @@ function Controller() {
 
     return(
         <div className="Controller">
-            {/* Developer tools*/}
-            <div className="devBox">
-                <p style={{color:'white'}}>UserID: {searchparams.get('userID')}</p>
-                <p style={{color:'white'}}>UserName: {searchparams.get('userName')}</p>
-                <p style={{color:'white'}}>Screen orientation: {scrOrientation.type}</p> {/*Does not update, needs to be fixed*/}
-            </div>
-            {/**/}
-            <div className="controllsContainer">
+            {/* Developer tools
+                <div className="devBox">
+                    <p style={{color:'white'}}>UserID: {searchparams.get('userID')}</p>
+                    <p style={{color:'white'}}>UserName: {searchparams.get('userName')}</p>
+                    <p style={{color:'white'}}>Screen orientation: {scrOrientation.type}</p> {/*Does not update, needs to be fixed*/}
+            {/*</div>*/}
+            <div  id="controlPanel"> {/*Position must be fixed*/}
                 {joystickController(handleMove, handleStart, handleStop)}
-                <h1 id='orientationDisclaimer'>Rotera mobilen för att spela</h1>
                 <span id='fireButton' onClick={handleShoot}>FIRE</span>
             </div>
-
+            <h1 id='orientationDisclaimer'>Rotera mobilen för att spela</h1>
         </div>
     );
 }
