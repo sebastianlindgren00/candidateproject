@@ -17,11 +17,10 @@ void Game::addBullet(int team, float speed, glm::vec3 position,float orientation
     mBullets.push_back(std::make_unique<Bullet>(team, speed, position, orientation));
 }
 void Game::shotBullet(int id){
-    if(mPlayers[id]->getBulletTimer() == 10){
+    if(mPlayers[id]->getBulletTimer() == 75){
         addBullet(mPlayers[id]->getTeam(),mPlayers[id]->getSpeed(),mPlayers[id]->getPosition(),mPlayers[id]->getOrientation());
         mPlayers[id]->restoreTimer();
-    }else 
-    mPlayers[id]->increaseTimer();
+    }
 }
 
 void Game::removePlayer(int id) {
@@ -111,7 +110,7 @@ void Game::update(){
         // Turn right
         updateTurnSpeed(1, -0.01f);
     }
-    if(keyStates[sgct::Key::L]) {
+    if(keyStates[sgct::Key::S]) {
         // Turn right
         updateTurnSpeed(0, -0.01f);
     }
@@ -119,17 +118,25 @@ void Game::update(){
         // Turn left
         updateTurnSpeed(1, 0.01f);
     }
+    if(keyStates[sgct::Key::A]) {
+        // Turn left
+        updateTurnSpeed(0, 0.01f);
+    }
     if(keyStates[sgct::Key::LeftShift]) {
         // Charge
         setChargeActive(1, true);
     }
-    if(keyStates[sgct::Key::S]) {
+    if(keyStates[sgct::Key::L]) {
         // Shoot
+        if(mPlayers[1]->isAlive()){
         shotBullet(1);
+        }
     }
-    if(keyStates[sgct::Key::K]) {
+    if(keyStates[sgct::Key::D]) {
         // Shoot
+        if(mPlayers[0]->isAlive()){
         shotBullet(0);
+        }
     }
 
     if(starDelayCounter < starDelay){

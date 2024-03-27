@@ -375,5 +375,18 @@ int main(int argc, char** argv) {
     Engine::instance().exec();
 
     Engine::destroy();
+
+
+    std::cout << "\n\n\nRed Team had: " << Game::instance().getRedStars() << " Stars. \n";
+    std::cout << "Green Team had: " << Game::instance().getGreenStars() << " Stars. \n\n";
+    if(Game::instance().getRedStars() < Game::instance().getGreenStars()){
+        std::cout << "Team Green Won! \n\n\n";
+    }else if(Game::instance().getRedStars() > Game::instance().getGreenStars()){
+        std::cout << "Team Red Won! \n\n\n";
+    }else{
+        std::cout << "The Game ended in a draw! \n\n\n";
+    }
+
+    
     return EXIT_SUCCESS;
 }

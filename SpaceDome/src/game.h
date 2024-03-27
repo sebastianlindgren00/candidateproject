@@ -86,6 +86,9 @@ void pickUpStars(int id);
 
 void gameKeyboard(sgct::Key key, sgct::Modifier modifier, sgct::Action action, sgct::Window*);
 
+int getRedStars() {return redTeamStars;}
+
+int getGreenStars() { return greenTeamStars;}
 private:
 
 //Constructor

@@ -90,11 +90,13 @@ public:
 
 	void setDropStars() {dropStars = false;}
 	
+	bool isAlive() {return mIsAlive;}
+
+	int getShotAvailable() {return shotAvailable;}
 
 private:
 	//Player information/data
 	bool dropStars = false;
-	int bulletTimer = 10;
 	float mTurnSpeed = 0.0f;
 	int   mStars    = 0;
     int mStarsHolding = 0;
@@ -113,5 +115,7 @@ private:
 	// frans; Trying something with colors
 	glm::vec3 mPlayerColor;	
     GLint mColLoc = -1;
-	float hitRadius = 0.4f;
+	float hitRadius = 0.2f;
+	int shotAvailable = 75;
+	int bulletTimer = 0;
 };

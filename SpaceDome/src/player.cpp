@@ -26,6 +26,9 @@ Player::~Player()
 void Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets)
 {
 
+    if(bulletTimer < shotAvailable){
+        bulletTimer++;
+    }
     //check if alive, if not, how long untill spawning? spawning at spawn points
     if (!mIsAlive) {
             respawnTimer++;
