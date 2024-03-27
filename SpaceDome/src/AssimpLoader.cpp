@@ -97,6 +97,7 @@ Mesh AssimpLoader::processMesh(aiMesh *mesh, const aiScene *scene){
     return Mesh(vertices, indices, textures);
 } 
 
+
 std::vector<Texture> AssimpLoader::loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName)
 {
     std::vector<Texture> textures;
@@ -106,6 +107,10 @@ std::vector<Texture> AssimpLoader::loadMaterialTextures(aiMaterial *mat, aiTextu
         mat->GetTexture(type, i, &str);
         Texture texture;
         texture.mId = Utility::textureFromFile(str.C_Str(), mDirectory);
+
+        std::string full_path = mDirectory + "/" + str.C_Str();
+        std::cout << "Loading texture from path: " << full_path << std::endl;
+
         texture.mType = typeName;
         texture.mPath = mDirectory + "/" + str.C_Str();
         textures.push_back(texture);

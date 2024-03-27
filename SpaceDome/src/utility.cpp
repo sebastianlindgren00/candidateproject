@@ -39,10 +39,15 @@ void Utility::setupShaderForDrawing(const GLuint shaderProgram, const glm::vec3&
     glUniform3fv(glGetUniformLocation(shaderProgram, "objectColor"), 1, glm::value_ptr(objectColor));
 }
 
+std::string normalizePath(const std::string& path) {
+    std::string normalizedPath = path;
+    std::replace(normalizedPath.begin(), normalizedPath.end(), '\\', '/');
+    return normalizedPath;
+}
 
 unsigned int Utility::textureFromFile(const char* path, const std::string& directory/* bool gamma*/)
 {
-	std::filesystem::path filename{ directory + '/' + std::string(path) };
+	std::filesystem::path filename{ normalizePath(directory + "/" + std::string(path)) };
 
 	unsigned int textureID;
 	glGenTextures(1, &textureID);
