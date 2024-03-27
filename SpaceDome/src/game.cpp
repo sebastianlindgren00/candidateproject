@@ -52,7 +52,7 @@ void Game::pickUpStars(int id){
     for (auto it = mStars.begin(); it != mStars.end(); ) {
         int starId = (*it)->getID();
         float distance = glm::distance((*it)->getPosition(), mPlayers[id]->getPosition());
-        if (distance <= 0.1) {
+        if (distance <= 0.15) {
             mPlayers[id]->addStarHolding();
             it = mStars.erase(it); // Erase star and move iterator to next element
         } else {
