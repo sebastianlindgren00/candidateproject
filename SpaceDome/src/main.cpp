@@ -386,7 +386,7 @@ void draw(const RenderData& data) {
         }
     } 
 
-    Utility::setupShaderForDrawing(shaderProgramTexture, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f), 0, 10);
+    Utility::setupShaderForDrawing(shaderProgramTexture, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f), 0, 6);
     auto& meshesSkyBox = skyboxAssimp->getMeshes();
     for (unsigned int p = 0; p < meshesSkyBox.size(); p++) {
             meshesSkyBox[p].Draw(); // Draw each mesh

@@ -19,7 +19,7 @@ void Utility::setupShaderForDrawing(const GLuint shaderProgram, const glm::vec3&
     modelMatrix = glm::scale(modelMatrix, glm::vec3(scale, scale, scale));
     modelMatrix = glm::rotate(modelMatrix, orientation, glm::vec3(1.0f, 0.0f, 0.0f));
     glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), 800.0f / 500.0f, 0.1f, 100.0f);
-    glm::vec3 viewPos = glm::vec3(5.0f, 0.0f, 3.0f);
+    glm::vec3 viewPos = glm::vec3(5.0f, 0.0f, 0.0f);
     glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 upDirection = glm::vec3(0.0f, 1.0f, 0.0f);
     glm::mat4 viewMatrix = glm::lookAt(viewPos, cameraTarget, upDirection);
