@@ -19,10 +19,12 @@ function Controller() {
             document.getElementById('orientationDisclaimer').style.display = 'none'
             document.getElementById('jStick').style.display = 'flex'
             document.getElementById('fireButton').style.display = 'flex'
+            document.getElementById('controlPanel').style.display = 'flex'
         }else{
             document.getElementById('orientationDisclaimer').style.display = 'flex'
             document.getElementById('jStick').style.display = 'none'
             document.getElementById('fireButton').style.display = 'none'
+            document.getElementById('controlPanel').style.display = 'none'
         }
     })
 
@@ -91,8 +93,11 @@ function Controller() {
                     <p style={{color:'white'}}>UserName: {searchparams.get('userName')}</p>
                     <p style={{color:'white'}}>Screen orientation: {scrOrientation.type}</p> {/*Does not update, needs to be fixed*/}
             {/*</div>*/}
-            <div  id="controlPanel"> {/*Position must be fixed*/}
+            <div className="cPanel"  id="controlPanel">
                 {joystickController(handleMove, handleStart, handleStop)}
+                <div className="sBoard" id="sBoard">
+                    <p>Poäng: </p>
+                </div>
                 <span id='fireButton' onClick={handleShoot}>FIRE</span>
             </div>
             <h1 id='orientationDisclaimer'>Rotera mobilen för att spela</h1>

@@ -4,8 +4,13 @@ Body{
   background-color: #090a0b;
 }
 .Controller {
-    top: 0%;
-    right: 0%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: column;
+  margin:8%;
+  top: 0%;
+  right: 0%;
 }
 .devBox{
   border: 5px;
@@ -15,24 +20,26 @@ Body{
   position: absolute;
 }
 
-#controlPanel{
-    width: 80%;
-    height: 80%;
-    margin-right: auto;
-    margin-left: auto;
+.cPanel{
+    width: 95%;
+    height: 95%;
     display: flex;
     align-items: center;
     text-align: center;
     justify-content: space-between;
     background-color: gray;
-    border: 5px;
-    border-style: solid;
-    border-radius: 10%;
-    border-color: darkslategray;
+}
+.sBoard{
+  color: white;
+  display: flex;
+  height: 90%;
+  width: 30%;
+  background-color: rgb(85, 85, 85);
+  padding: 1%;
 }
 
 #orientationDisclaimer{
-  display: block;
+  display: flex;
   text-align: center;
   color: white;
   margin:5%;
@@ -40,12 +47,12 @@ Body{
 }
 
 #jStick{
-  display: flex;
+  display: block;
   margin:10%
 }
 
 #fireButton{
-  display: flex;
+  display: block;
   margin: 10%;
   height: 100px;
   width: 100px;
