@@ -17,6 +17,14 @@ void Bullet::update()
     
     // Update position based on orientation
     bPosition += glm::vec3(0.0f, cos(bOrientation) * bSpeed, sin(bOrientation) * bSpeed);
+
+        if (bPosition.y > 2.3 || bPosition.y < -2.3){
+        bPosition.y *= -1;
+    } else if (bPosition.z > 3.5 || bPosition.z < -3.5)
+    {
+        bPosition.z *= -1;
+    }
+    
 }
 
 void Bullet::draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram) const
