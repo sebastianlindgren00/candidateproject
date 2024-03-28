@@ -98,7 +98,7 @@ function Controller() {
                 <div className="sBoard" id="sBoard">
                     <p>Poäng: </p>
                 </div>
-                <span id='fireButton' onClick={handleShoot}>FIRE</span>
+                <span id='fireButton' onTouchStart={handleShoot}>FIRE</span>
             </div>
             <h1 id='orientationDisclaimer'>Rotera mobilen för att spela</h1>
         </div>
