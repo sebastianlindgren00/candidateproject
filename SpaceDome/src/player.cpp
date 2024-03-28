@@ -88,6 +88,19 @@ void Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets)
 
     setOrientation(mTurnSpeed);
     setPosition(glm::vec3(0.0f, cos(getOrientation()) * mSpeed, sin(getOrientation()) * mSpeed));
+
+    //checka så skeppet inte åker out of bounds
+    //ser lite skumt ut delvis pga perspektivet eftersom matrixen är anpassad för domen
+    //därför svårt att veta om värdena är korrekta
+    //dock lätt fix vid testning i domen
+    if (mPosition.y > 2.3 || mPosition.y < -2.3){
+        mPosition.y *= -1;
+    } else if (mPosition.z > 3.5 || mPosition.z < -3.5)
+    {
+        mPosition.z *= -1;
+    }
+    
+
     setTurnSpeed(0);
 }
 
