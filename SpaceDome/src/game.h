@@ -38,28 +38,17 @@ static Game& instance() {
     return instance;
 }
 
-bool hasPlayers() const {
-    return !mPlayers.empty();
-}
-bool hasBullets() const {
-    return !mBullets.empty();
-}
+bool hasPlayers() const { return !mPlayers.empty(); }
 
-bool hasStars() const {
-    return !mStars.empty();
-}
+bool hasBullets() const { return !mBullets.empty(); }
 
-const std::vector<std::unique_ptr<Player>>& getPlayers() const {
-    return mPlayers;
-}
+bool hasStars() const { return !mStars.empty(); }
 
-const std::vector<std::unique_ptr<Bullet>>& getBullets() const {
-    return mBullets;
-}
+const std::vector<std::unique_ptr<Player>>& getPlayers() const { return mPlayers; }
 
-const std::vector<std::unique_ptr<Star>>& getStars() const {
-    return mStars;
-}
+const std::vector<std::unique_ptr<Bullet>>& getBullets() const { return mBullets; }
+
+const std::vector<std::unique_ptr<Star>>& getStars() const { return mStars; }
 
 //Copying forbidden
 Game(Game const&) = delete;
@@ -89,6 +78,14 @@ void gameKeyboard(sgct::Key key, sgct::Modifier modifier, sgct::Action action, s
 int getRedStars() {return redTeamStars;}
 
 int getGreenStars() { return greenTeamStars;}
+
+bool isGameActive() { return mGameActive; }
+
+void resetGameTime() { mTotalTime = 0; }
+
+int getEndTime() {return (int)mMaxTime - mTotalTime/1000;}
+int getRestartTime() {return (int)mResetGame - mTotalTime/1000;}
+
 private:
 
 //Constructor
@@ -98,12 +95,13 @@ std::vector<std::unique_ptr<Player>> mPlayers;
 std::vector<std::unique_ptr<Bullet>> mBullets;
 std::vector<std::unique_ptr<Star>> mStars;
 
-//bool mGameActive = true;
+bool mGameActive = true;
 std::unordered_map<sgct::Key, bool> keyStates;
 float mLastFrameTime;
 float mTotalTime = 0;
-//float mMaxTime = 60; //seconds
+float mMaxTime = 60; //seconds
 //float mLastTime = 0;
+float mResetGame = 30;
 
 int starDelayCounter = 0;
 int starDelay = (rand() % 100) + 1;

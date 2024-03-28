@@ -1,5 +1,16 @@
 #include "utility.h"
 
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
+struct Character {
+    GLuint     TextureID;  // Texture ID
+    glm::ivec2 Size;       // Size of glyph
+    glm::ivec2 Bearing;    // Offset from baseline to left/top of glyph
+    GLuint     Advance;    // Offset to advance to next glyph
+};
+
+std::map<GLchar, Character> Characters;
 
 std::tuple<unsigned int, float> Utility::getTurnSpeed(std::istringstream& input)
 {
@@ -39,6 +50,7 @@ void Utility::setupShaderForDrawing(const GLuint shaderProgram, const glm::vec3&
     glUniform3fv(glGetUniformLocation(shaderProgram, "objectColor"), 1, glm::value_ptr(objectColor));
 }
 
+//fixing paths for both mac and PC
 std::string normalizePath(const std::string& path) {
     std::string normalizedPath = path;
     std::replace(normalizedPath.begin(), normalizedPath.end(), '\\', '/');
@@ -82,4 +94,196 @@ unsigned int Utility::textureFromFile(const char* path, const std::string& direc
 	}
 
 	return textureID;
+}
+
+void Utility::LoadFontAtlas(const std::string& fontPath) {
+    FT_Library ft;
+    if (FT_Init_FreeType(&ft)) {
+        std::cerr << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
+        return;
+    }
+
+    FT_Face face;
+    if (FT_New_Face(ft, fontPath.c_str(), 0, &face)) {
+        std::cerr << "ERROR::FREETYPE: Failed to load font" << std::endl;
+        return;
+    }
+
+    FT_Set_Pixel_Sizes(face, 0, 48); // Set size to load glyphs as
+
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // Disable byte-alignment restriction
+
+    // Load first 128 characters of ASCII set
+    for (unsigned char c = 0; c < 128; c++) {
+        // Load character glyph
+        if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
+            std::cerr << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
+            continue;
+        }
+
+        // Generate texture
+        GLuint texture;
+        glGenTextures(1, &texture);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glTexImage2D(
+            GL_TEXTURE_2D,
+            0,
+            GL_RED,
+            face->glyph->bitmap.width,
+            face->glyph->bitmap.rows,
+            0,
+            GL_RED,
+            GL_UNSIGNED_BYTE,
+            face->glyph->bitmap.buffer
+        );
+        // Set texture options
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        // Store character for later use
+        Character character = {
+            texture,
+            glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
+            glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
+            static_cast<GLuint>(face->glyph->advance.x)
+        };
+        Characters.insert(std::pair<char, Character>(c, character));
+    }
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    // Cleanup FreeType once you're finished
+    FT_Done_Face(face);
+    FT_Done_FreeType(ft);
+}
+
+const glm::vec3 Utility::worldPositions[3] = {
+    glm::vec3(-2, 1, 0),
+    glm::vec3(-2, 0, 0),
+    glm::vec3(-2, -1, 0)
+};
+glm::vec2 Utility::screenPositions[3];
+
+void Utility::CalculateScreenPositions(){
+    	glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), 800.0f / 500.0f, 0.1f, 100.0f);
+    	glm::vec3 viewPos = glm::vec3(5.0f, 0.0f, 0.0f);
+    	glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+    	glm::vec3 upDirection = glm::vec3(0.0f, 1.0f, 0.0f);
+    	glm::mat4 viewMatrix = glm::lookAt(viewPos, cameraTarget, upDirection);
+
+    	for (int i = 0; i < 3; ++i) {
+        	glm::vec4 clipSpacePos = projectionMatrix * viewMatrix * glm::vec4(worldPositions[i], 1.0);
+        	glm::vec3 ndcSpacePos = glm::vec3(clipSpacePos) / clipSpacePos.w;
+        	screenPositions[i].x = (ndcSpacePos.x + 1.0f) / 2.0f * 800;
+        	screenPositions[i].y = (1.0f - ndcSpacePos.y) / 2.0f * 500;
+    	}
+}
+
+void Utility::RenderText(GLuint shaderProgram, std::string text, int row, float scale, glm::vec3 color) {
+    // Calculate the width of the text
+    float textWidth = 0;
+    for (auto c : text) {
+        Character ch = Characters[c];
+        textWidth += (ch.Advance >> 6) * scale; // Bitshift by 6 to get value in pixels
+    }
+
+	if (row < 0 || row >= 3) {
+        std::cerr << "Invalid row specified. Must be 0, 1, or 2." << std::endl;
+        return;
+    }
+
+    // CalculateScreenPositions must have been called beforehand to populate screenPositions
+    float x = Utility::screenPositions[row].x  - (textWidth / 2); 
+	float y = Utility::screenPositions[row].y;
+
+    // Activate the shader program
+    glUseProgram(shaderProgram);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // Set uniform variables
+    glUniform3f(glGetUniformLocation(shaderProgram, "textColor"), color.x, color.y, color.z);
+    glUniform1i(glGetUniformLocation(shaderProgram, "text"), 0);
+    glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(800), 0.0f, static_cast<float>(500));
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+
+    // Activate texture unit and bind texture
+    glActiveTexture(GL_TEXTURE0);
+    glBindVertexArray(textVAO);
+
+    // Render the text
+    for (auto c : text) {
+        Character ch = Characters[c];
+        GLfloat xpos = x + ch.Bearing.x * scale;
+        GLfloat ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
+        GLfloat w = ch.Size.x * scale;
+        GLfloat h = ch.Size.y * scale;
+
+        // Update VBO for each character
+		GLfloat vertices[6][4] = {
+    		{ xpos,     ypos + h,   0.0, 0.0 }, // Flip y-component here
+    		{ xpos,     ypos,       0.0, 1.0 }, // And here
+    		{ xpos + w, ypos,       1.0, 1.0 },
+
+    		{ xpos,     ypos + h,   0.0, 0.0 },
+    		{ xpos + w, ypos,       1.0, 1.0 },
+    		{ xpos + w, ypos + h,   1.0, 0.0 }   // No change needed for these
+};
+
+
+        glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+        glBindBuffer(GL_ARRAY_BUFFER, textVBO);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+        x += (ch.Advance >> 6) * scale; // Bitshift by 6 to get value in pixels
+    }
+
+    glBindVertexArray(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_BLEND);
+}
+
+
+
+GLuint Utility::compileShader(GLenum type, const char* source) {
+    GLint success;
+    GLchar infoLog[512];
+
+    GLuint shader = glCreateShader(type);
+    glShaderSource(shader, 1, &source, NULL);
+    glCompileShader(shader);
+
+    // Check for compile errors...
+    
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+    glGetShaderInfoLog(shader, 512, NULL, infoLog);
+    std::cerr << "ERROR::SHADER::COMPILATION_FAILED\n" << infoLog << std::endl;
+}
+    return shader;
+}
+
+GLuint Utility::createShaderProgram(const char* vertexSource, const char* fragmentSource) {
+    GLint success;
+    GLchar infoLog[512];
+    
+    GLuint vertexShader = compileShader(GL_VERTEX_SHADER, vertexSource);
+    GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, fragmentSource);
+
+    GLuint program = glCreateProgram();
+    glAttachShader(program, vertexShader);
+    glAttachShader(program, fragmentShader);
+    glLinkProgram(program);
+
+    // Check for linking errors...
+    glGetProgramiv(program, GL_LINK_STATUS, &success);
+if (!success) {
+    glGetProgramInfoLog(program, 512, NULL, infoLog);
+    std::cerr << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+}
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+    return program;
 }

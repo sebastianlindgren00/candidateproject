@@ -21,6 +21,7 @@
 #include <cmath>
 #include <GLFW/glfw3.h>
 #include "game.h"
+#include "shaderManager.h"
 
 namespace {
     std::unique_ptr<WebSocketHandler> wsHandler;
@@ -39,6 +40,8 @@ std::unique_ptr<AssimpLoader> skyboxAssimp;
 std::vector<std::unique_ptr<AssimpLoader>> objectsAssimp;
 GLuint shaderProgram;
 GLuint shaderProgramTexture;
+GLuint shaderProgramText;
+
 
     std::string filePath1 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[2] + ".fbx";
     std::string filePath2 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[4] + ".fbx";
@@ -46,209 +49,26 @@ GLuint shaderProgramTexture;
     std::string filePath4 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[7] + ".fbx";
     std::string filePath5 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[8] + ".fbx";
     std::string filePath6 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[6] + ".fbx";
-
-    
-const char* vertexShaderSource = R"glsl(
-#version 330 core
-layout (location = 0) in vec3 aPos; // Position
-layout (location = 1) in vec3 aNormal; // Normal vector
-
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
-out vec3 Normal; // Pass normal to the fragment shader
-out vec3 FragPos; // Pass fragment position to the fragment shader
-
-void main() {
-    FragPos = vec3(model * vec4(aPos, 1.0)); // Calculate fragment position in world space
-    Normal = mat3(transpose(inverse(model))) * aNormal; // Calculate normal for the fragment
-    gl_Position = projection * view * model * vec4(aPos, 1.0);
-}
-)glsl";
-
-const char* fragmentShaderSource = R"glsl(
-#version 330 core
-out vec4 FragColor;
-
-in vec3 Normal; // Received from vertex shader
-in vec3 FragPos; // Received from vertex shader
-
-uniform vec3 lightPos; // Position of the light source in world space
-uniform vec3 viewPos; // Position of the camera in world space
-uniform vec3 lightColor; // Color of the light
-uniform vec3 objectColor; // Color of the object
-
-void main() {
-    // Ambient light
-    float ambientStrength = 0.1;
-    vec3 ambient = ambientStrength * lightColor;
-
-    // Diffuse light
-    vec3 norm = normalize(Normal);
-    vec3 lightDir = normalize(lightPos - FragPos);
-    float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = diff * lightColor;
-
-    // Combine the two components
-    vec3 result = (ambient + diffuse) * objectColor;
-    FragColor = vec4(result, 1.0);
-}
-
-)glsl";
-
-const char* vertexShaderSourceTexture = R"glsl(
-#version 330 core
-layout (location = 0) in vec3 aPos; // Position
-layout (location = 1) in vec3 aNormal; // Normal vector
-layout (location = 2) in vec2 aTexCoords; // Texture coordinates
-
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
-
-out vec3 Normal; // Pass normal to the fragment shader
-out vec3 FragPos; // Pass fragment position to the fragment shader
-out vec2 TexCoords; // Pass texture coordinates to the fragment shader
-
-void main() {
-    FragPos = vec3(model * vec4(aPos, 1.0)); // Calculate fragment position in world space
-    Normal = mat3(transpose(inverse(model))) * aNormal; // Calculate normal for the fragment
-    TexCoords = aTexCoords; // Pass texture coordinates to the fragment shader
-    gl_Position = projection * view * model * vec4(aPos, 1.0);
-}
-
-)glsl";
-
-const char* fragmentShaderSourceTexture = R"glsl(
-#version 330 core
-out vec4 FragColor;
-
-in vec3 Normal; // Received from vertex shader
-in vec3 FragPos; // Received from vertex shader
-in vec2 TexCoords; // Received from vertex shader
-
-uniform vec3 lightPos; // Position of the light source in world space
-uniform vec3 viewPos; // Position of the camera in world space
-uniform vec3 lightColor; // Color of the light
-uniform sampler2D texture1; // The texture sampler
-
-void main() {
-    // Texture color
-    vec4 texColor = texture(texture1, TexCoords);
-
-    // Ambient light
-    float ambientStrength = 0.1;
-    vec3 ambient = ambientStrength * lightColor;
-
-    // Diffuse light
-    vec3 norm = normalize(Normal);
-    vec3 lightDir = normalize(lightPos - FragPos);
-    float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = diff * lightColor;
-
-    // Combine the two components
-    vec3 result = (ambient + diffuse) * vec3(texColor);
-    FragColor = vec4(result, 1.0);
-}
-
-)glsl";
+    std::string fontPath = std::string(MODELS_DIRECTORY) + "/font/Michroma-Regular.ttf";
 
 void initOGL(GLFWwindow*) {
-    glEnable(GL_DEPTH_TEST);
-    GLint success;
-    GLchar infoLog[1024];
 
-    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    // Set vertex shader source code and compile
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-    // Check for compile errors...
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(vertexShader, 1024, NULL, infoLog);
-        std::cerr << "ERROR::SHADER_COMPILATION_ERROR of type: VERTEX\n" << infoLog << std::endl;
-    }
-
-    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    // Set fragment shader source code and compile
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-    // Check for compile errors...
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(fragmentShader, 1024, NULL, infoLog);
-        std::cerr << "ERROR::SHADER_COMPILATION_ERROR of type: FRAGMENT\n" << infoLog << std::endl;
-    }
-
-    shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-    // Check for linking errors...
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetProgramInfoLog(shaderProgram, 1024, NULL, infoLog);
-        std::cerr << "ERROR::PROGRAM_LINKING_ERROR\n" << infoLog << std::endl;
-    }
-
-    // Delete shaders; they're linked into our program now and no longer necessary
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
-
-    glEnable(GL_DEPTH_TEST);
-    GLint successTexture;
-    GLchar infoLogTexture[1024];
-
-    GLuint vertexShaderTexture = glCreateShader(GL_VERTEX_SHADER);
-    // Set vertex shader source code and compile
-    glShaderSource(vertexShaderTexture, 1, &vertexShaderSourceTexture, NULL);
-    glCompileShader(vertexShaderTexture);
-    // Check for compile errors...
-    glGetShaderiv(vertexShaderTexture, GL_COMPILE_STATUS, &successTexture);
-    if (!successTexture) {
-        glGetShaderInfoLog(vertexShaderTexture, 1024, NULL, infoLogTexture);
-        std::cerr << "ERROR::SHADER_COMPILATION_ERROR of type: VERTEX\n" << infoLogTexture << std::endl;
-    }
-
-    GLuint fragmentShaderTexture = glCreateShader(GL_FRAGMENT_SHADER);
-    // Set fragment shader source code and compile
-    glShaderSource(fragmentShaderTexture, 1, &fragmentShaderSourceTexture, NULL);
-    glCompileShader(fragmentShaderTexture);
-    // Check for compile errors...
-    glGetShaderiv(fragmentShaderTexture, GL_COMPILE_STATUS, &successTexture);
-    if (!successTexture) {
-        glGetShaderInfoLog(fragmentShaderTexture, 1024, NULL, infoLogTexture);
-        std::cerr << "ERROR::SHADER_COMPILATION_ERROR of type: FRAGMENT\n" << infoLogTexture << std::endl;
-    }
-
-    shaderProgramTexture = glCreateProgram();
-    glAttachShader(shaderProgramTexture, vertexShaderTexture);
-    glAttachShader(shaderProgramTexture, fragmentShaderTexture);
-    glLinkProgram(shaderProgramTexture);
-    // Check for linking errors...
-    glGetProgramiv(shaderProgramTexture, GL_LINK_STATUS, &successTexture);
-    if (!successTexture) {
-        glGetProgramInfoLog(shaderProgramTexture, 1024, NULL, infoLogTexture);
-        std::cerr << "ERROR::PROGRAM_LINKING_ERROR\n" << infoLogTexture << std::endl;
-    }
-
-    // Delete shaders; they're linked into our program now and no longer necessary
-    glDeleteShader(vertexShaderTexture);
-    glDeleteShader(fragmentShaderTexture);
-
-
-    //Get the model via Assimp
-
+    //Utility utility;
+    shaderProgram = Utility::createShaderProgram(vertexShaderSource, fragmentShaderSource);
+    shaderProgramTexture = Utility::createShaderProgram(vertexShaderSourceTexture, fragmentShaderSourceTexture);
+    shaderProgramText = Utility::createShaderProgram(vertexShaderSourceText, fragmentShaderSourceText);
     
     //std::string baseDirectory = "../../models/";
     modelsAssimp = std::make_unique<AssimpLoader>(filePath1);
     bulletsAssimp = std::make_unique<AssimpLoader>(filePath4);
     starsAssimp = std::make_unique<AssimpLoader>(filePath5);
-
     skyboxAssimp = std::make_unique<AssimpLoader>(filePath6);
     objectsAssimp.push_back(std::make_unique<AssimpLoader>(filePath2));
     objectsAssimp.push_back(std::make_unique<AssimpLoader>(filePath3));
+
+    //std::cout << "Attempting to load font from: " << fontPath << std::endl;
+    Utility::LoadFontAtlas(fontPath);
+
     std::cout << "after assimpLoader \n";
 }
 
@@ -292,6 +112,9 @@ void postSyncPreDraw() {
     // Apply the (now synchronized) application state before the rendering will start
 }
 
+
+//This is moved to Utility
+/*
 GLuint compileShader(GLenum type, const char* source) {
     GLint success;
     GLchar infoLog[512];
@@ -333,6 +156,8 @@ if (!success) {
 
     return program;
 }
+*/
+
 
 void draw(const RenderData& data) {
 
@@ -341,7 +166,42 @@ void draw(const RenderData& data) {
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
+
+    std::string textRed = "RED TEAM: " + std::to_string(game.getRedStars());
+    std::string textGreen = "GREEN TEAM: " + std::to_string(game.getGreenStars());
+
+    //render Text
+    Utility utilityInstance;
+    //initialize positions for text
+    Utility::CalculateScreenPositions();
+    int timer = game.getEndTime();
+
+    glEnable(GL_DEPTH_TEST);
+    //render Background
+    Utility::setupShaderForDrawing(shaderProgramTexture, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f), 0, 6);
+    auto& meshesSkyBox = skyboxAssimp->getMeshes();
+    for (unsigned int p = 0; p < meshesSkyBox.size(); p++) {
+            meshesSkyBox[p].Draw(); // Draw each mesh
+        }
+    glDisable(GL_DEPTH_TEST);
+     //dont draw players, stars and objects if game is at hold
+    if(!game.isGameActive()){
     
+        timer = game.getRestartTime();
+        std::string textTime = "NEW GAME STARTS IN: " + std::to_string(timer);
+        utilityInstance.RenderText(shaderProgramText, textTime, 2, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
+        utilityInstance.RenderText(shaderProgramText, textRed, 1, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
+        utilityInstance.RenderText(shaderProgramText, textGreen, 0, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
+        return;
+    } 
+
+    std::string textTime = "GAME ENDS IN: " + std::to_string(timer);
+
+    utilityInstance.RenderText(shaderProgramText, textTime, 2, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
+    utilityInstance.RenderText(shaderProgramText, textRed, 1, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
+    utilityInstance.RenderText(shaderProgramText, textGreen, 0, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
+
+    glEnable(GL_DEPTH_TEST);
     if (game.hasPlayers()) { 
         for (const auto& player : game.getPlayers()) {
             player->draw(modelsAssimp, shaderProgram); 
@@ -358,8 +218,6 @@ void draw(const RenderData& data) {
             stars->draw(starsAssimp, shaderProgram);
         }
     }
-
-
 
     for(size_t i = 0; i < objectsAssimp.size(); i++ ){
 
@@ -384,13 +242,9 @@ void draw(const RenderData& data) {
         while ((err = glGetError()) != GL_NO_ERROR) {
             std::cerr << "OpenGL error after linking shader program: " << err << std::endl;
         }
-    } 
-
-    Utility::setupShaderForDrawing(shaderProgramTexture, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f), 0, 6);
-    auto& meshesSkyBox = skyboxAssimp->getMeshes();
-    for (unsigned int p = 0; p < meshesSkyBox.size(); p++) {
-            meshesSkyBox[p].Draw(); // Draw each mesh
-        }
+} 
+    
+      
 }
 
 void cleanup() {
@@ -399,7 +253,7 @@ void cleanup() {
 
 
 }
-
+/*
 void keyboard(Key key, Modifier modifier, Action action, int, Window*) {
     Game& game = Game::instance();
 
@@ -412,7 +266,7 @@ void keyboard(Key key, Modifier modifier, Action action, int, Window*) {
         wsHandler->disconnect();
     }
 }
-
+*/
 void connectionEstablished() {
     Log::Info("Connection established");
 }
@@ -436,6 +290,7 @@ int main(int argc, char** argv) {
     
     Game::instance().addPlayer(1, "Viktor");
     Game::instance().addPlayer(2, "Alex");
+    
 
     std::vector<std::string> arg(argv + 1, argv + argc);
     Configuration config = sgct::parseArguments(arg);

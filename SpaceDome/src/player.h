@@ -77,7 +77,12 @@ public:
 
 	int getTeam(){ return mTeam; }
 
+	void resetAllStars() { mStars = 0; mStarsHolding = 0;}
+
+	void setSpawnTimerFull() { respawnTimer = 500;}
+
     void setOrientation(float angleSpeed) { mOrientation += angleSpeed; }
+
     float getOrientation(){return mOrientation; }
 
 	int getBulletTimer() { return bulletTimer; }

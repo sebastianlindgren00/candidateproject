@@ -31,7 +31,6 @@ void Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets)
     }
     //check if alive, if not, how long untill spawning? spawning at spawn points
     if (!mIsAlive) {
-            respawnTimer++;
         if(respawnTimer == 500){
             mIsAlive = true;
             respawnTimer = 0;
@@ -42,6 +41,7 @@ void Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets)
             }else 
                 mPosition = glm::vec3(0.0f, 0.0f, 2.0f);
             }
+            respawnTimer++;
         return; 
     }
 

@@ -118,6 +118,8 @@ std::vector<Texture> AssimpLoader::loadMaterialTextures(aiMaterial *mat, aiTextu
     return textures;
 }  
 
+//now in utility
+/*
 unsigned int AssimpLoader::TextureFromFile(const char *path, const string &directory, bool gamma)
 {
     string filename = string(path);
@@ -157,4 +159,4 @@ unsigned int AssimpLoader::TextureFromFile(const char *path, const string &direc
 
     return textureID;
 }
-
+*/

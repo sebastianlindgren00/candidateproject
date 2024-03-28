@@ -1,3 +1,5 @@
+/*
+
 #include "SkyBox.h"
 
 void SkyBox::draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram) const {
@@ -26,3 +28,4 @@ void SkyBox::draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuin
         std::cerr << "OpenGL error after linking shader program: " << err << std::endl;
     }
 }
+*/

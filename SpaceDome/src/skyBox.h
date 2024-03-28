@@ -1,3 +1,4 @@
+/*
 #pragma once
 
 #include <glm/glm.hpp>
@@ -21,3 +22,5 @@ private:
     int dId;
     glm::vec3 sPosition;
 };
+
+*/

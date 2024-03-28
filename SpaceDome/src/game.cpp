@@ -50,7 +50,7 @@ void Game::gameKeyboard(sgct::Key key, sgct::Modifier modifier, sgct::Action act
 
 void Game::pickUpStars(int id){
     for (auto it = mStars.begin(); it != mStars.end(); ) {
-        int starId = (*it)->getID();
+        //int starId = (*it)->getID();
         float distance = glm::distance((*it)->getPosition(), mPlayers[id]->getPosition());
         if (distance <= 0.15) {
             mPlayers[id]->addStarHolding();
@@ -104,6 +104,36 @@ void Game::update(){
 
 	float deltaTime = currentFrameTime - mLastFrameTime;
 	this->mTotalTime += deltaTime;
+
+    //std::cout << (int)mTotalTime/1000 << "\n";
+    
+    if(mTotalTime/1000 >= mMaxTime && mGameActive == true){
+        mGameActive = false;
+        mTotalTime = 0;
+        mLastFrameTime = 0;
+
+        for (auto& player : mPlayers) {
+            player->setIsAlive(false);
+        }
+        return;
+    }
+    if (mTotalTime/1000 >= mResetGame && mGameActive == false){
+    mGameActive = true;
+    mTotalTime = 0;
+    mLastFrameTime = 0;
+    redTeamStars = 0;
+    greenTeamStars = 0;
+
+    for (auto& player : mPlayers) {
+        player->resetAllStars();
+        player->setSpawnTimerFull();
+        player->update(mBullets);
+        }
+        return;
+    }
+    if(mGameActive == false){
+        return;
+    } else
 
     setChargeActive(1, false);
     if(keyStates[sgct::Key::Right]) {
@@ -191,7 +221,7 @@ void Game::update(){
             player->setDropStars();
         }
 		player->update(mBullets);
-}
+    }
     //update the bullets
     for (auto& bullet : mBullets)
         bullet->update();
