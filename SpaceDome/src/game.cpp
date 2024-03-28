@@ -61,6 +61,7 @@ void Game::pickUpStars(int id){
     }
 }
 
+
 void Game::handInStars(int id){
     glm::vec3 spawn = glm::vec3(0.0f, 0.0f, -2.0f);
     if(mPlayers[id]->getTeam() == 2){
@@ -103,26 +104,33 @@ void Game::update(){
 	float currentFrameTime = sgct::time();
 
 	float deltaTime = currentFrameTime - mLastFrameTime;
-	this->mTotalTime += deltaTime;
+	this->mTotalTime = deltaTime;
 
-    //std::cout << (int)mTotalTime/1000 << "\n";
+    //std::cout << (int)mTotalTime << "\n";
     
-    if(mTotalTime/1000 >= mMaxTime && mGameActive == true){
+    if(mTotalTime >= mMaxTime && mGameActive == true){
         mGameActive = false;
         mTotalTime = 0;
-        mLastFrameTime = 0;
+        mLastFrameTime = sgct::time();
 
         for (auto& player : mPlayers) {
             player->setIsAlive(false);
         }
         return;
     }
-    if (mTotalTime/1000 >= mResetGame && mGameActive == false){
+    if (mTotalTime >= mResetGame && mGameActive == false){
     mGameActive = true;
     mTotalTime = 0;
-    mLastFrameTime = 0;
+    mLastFrameTime = sgct::time();
     redTeamStars = 0;
     greenTeamStars = 0;
+    maxStarsID = 0;
+    //delete all stars and reset 
+    for (auto it = mStars.begin(); it != mStars.end(); ) {
+        //int starId = (*it)->getID();
+            it = mStars.erase(it); // Erase star and move iterator to next element
+    
+    }
 
     for (auto& player : mPlayers) {
         player->resetAllStars();

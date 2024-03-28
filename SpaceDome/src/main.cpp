@@ -283,6 +283,10 @@ void messageReceived(const void* data, size_t length) {
 void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Window* window) {
     // Forward the event to your game's keyboard handler
     Game::instance().gameKeyboard(key, modifier, action, window);
+
+    if (key == Key::Esc && action == Action::Press) {
+        Engine::instance().terminate();
+    }
 }
 
 

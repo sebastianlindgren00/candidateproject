@@ -83,8 +83,8 @@ bool isGameActive() { return mGameActive; }
 
 void resetGameTime() { mTotalTime = 0; }
 
-int getEndTime() {return (int)mMaxTime - mTotalTime/1000;}
-int getRestartTime() {return (int)mResetGame - mTotalTime/1000;}
+int getEndTime() {return (int)mMaxTime - mTotalTime;}
+int getRestartTime() {return (int)mResetGame - mTotalTime;}
 
 private:
 
@@ -97,11 +97,11 @@ std::vector<std::unique_ptr<Star>> mStars;
 
 bool mGameActive = true;
 std::unordered_map<sgct::Key, bool> keyStates;
-float mLastFrameTime;
+float mLastFrameTime = sgct::time();
 float mTotalTime = 0;
-float mMaxTime = 60; //seconds
+float mMaxTime = 20; //seconds
 //float mLastTime = 0;
-float mResetGame = 30;
+float mResetGame = 10;
 
 int starDelayCounter = 0;
 int starDelay = (rand() % 100) + 1;
