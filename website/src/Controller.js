@@ -3,6 +3,7 @@ import './App'
 import {useState, useEffect} from 'react'
 import { useSearchParams } from 'react-router-dom';
 import { Joystick } from 'react-joystick-component'; // Package source: https://www.npmjs.com/package/react-joystick-component
+import useWebSocket, { ReadyState } from "react-use-websocket"
 
 function Controller() {
     const [searchparams] = useSearchParams() // Used to search in the URL
@@ -11,6 +12,34 @@ function Controller() {
     const baseColor = 'radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(70,70,70,1) 69%, rgba(101,101,101,1) 100%)'
     const stickColor = 'radial-gradient(circle, rgba(16,187,0,1) 0%, rgba(31,147,0,1) 71%, rgba(3,62,0,1) 100%)'
     
+
+
+    const socketUrl = 'wss://omni.itn.liu.se/ws/'; // Omni websocket
+
+    const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(
+        socketUrl,
+        {
+          share: false,
+          shouldReconnect: () => true,
+        },
+      )
+    
+      // Run when the connection state (readyState) changes
+      useEffect(() => {
+        console.log("Connection state changed")
+        if (readyState === ReadyState.OPEN) {
+          sendJsonMessage({
+            token: "bdf3f64d-20fa-4687-bb04-5e86343d90d2"
+          })
+        }
+      }, [readyState])
+
+
+    
+      // Run when a new WebSocket message is received (lastJsonMessage)
+      useEffect(() => {
+        console.log(`Got a new message: ${JSON.stringify(lastJsonMessage)}`)
+      }, [lastJsonMessage])
 
     scrOrientation.addEventListener('change', function() { //When screen orientation is changed
         setScreenOrientation(window.screen.orientation)

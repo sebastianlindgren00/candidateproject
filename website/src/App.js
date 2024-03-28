@@ -3,13 +3,44 @@ import './App.css';
 import { createSearchParams,useNavigate } from "react-router-dom";
 import {useState} from 'react';
 import {useEffect} from 'react';
+import useWebSocket, { ReadyState } from "react-use-websocket"
 
 
 function App() {
 
   const [userID, setUserId] = useState('inital')
   const [userName, setUserName] = useState('inital')
+
   var infoBoxStatus = true; // Is the info box opened, when the page loads in this is incorrect but the var needs to be true for the if statement to work
+
+
+
+  const socketUrl = 'wss://omni.itn.liu.se/ws/'; // Omni websocket
+
+  const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(
+    socketUrl,
+    {
+      share: false,
+      shouldReconnect: () => true,
+    },
+  )
+
+  // Run when the connection state (readyState) changes
+  useEffect(() => {
+    console.log("Connection state changed")
+    if (readyState === ReadyState.OPEN) {
+      sendJsonMessage({
+        token: "bdf3f64d-20fa-4687-bb04-5e86343d90d2"
+      })
+    }
+  }, [readyState])
+
+  
+
+  // Run when a new WebSocket message is received (lastJsonMessage)
+  useEffect(() => {
+    console.log(`Got a new message: ${JSON.stringify(lastJsonMessage)}`)
+  }, [lastJsonMessage])
 
   window.onload=function(){ //TODO: Fix bug that disables the opening and closing of the info box when navigating back to this page
     document.getElementById("InfoButton").addEventListener('click', function(){
