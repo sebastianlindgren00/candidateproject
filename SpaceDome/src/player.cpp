@@ -1,17 +1,16 @@
 #include "player.h"
 
-Player::Player(const int id, const std::string& name, int team){
+Player::Player(const int id, const std::string& name, int team, int colorID, glm::vec3 color){
     mIsAlive = true;
     mName = name;
     mPlayerID = id;
-
+    mColorID = colorID;
+    mPlayerColor = color;
     if(team == 1) {
-        mPlayerColor = {1.f, 0.2f, 0.2f};		// Red
         //mPos = position of red spawn;
         mPosition = glm::vec3(0.0f, 0.0f, -2.0f); // spawn position
         mTeam = 1;
     } else {
-        mPlayerColor = {0.4f, 1.f, 0.2f};		// Green
         //mPos = position of green spawn;
         mPosition = glm::vec3(0.0f, 0.0f, 2.0f); // spawn position
         mTeam = 2;
@@ -22,6 +21,7 @@ Player::~Player()
 {
 	//sgct::Log::Info("Player with name=\"%s\" removed", mName.c_str());
 }
+
 
 void Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets)
 {

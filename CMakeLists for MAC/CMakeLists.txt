@@ -34,6 +34,9 @@ set_property(TARGET assimp PROPERTY FOLDER "Dependencies")
 set_property(TARGET assimp PROPERTY CXX_STANDARD 17)
 set_property(TARGET assimp PROPERTY CXX_STANDARD_REQUIRED ON)
 
+# Models folder path fix!
+set(MODELS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/models")
+
 find_package(glm REQUIRED)
 #MAC
 find_package(PNG REQUIRED)
@@ -50,6 +53,26 @@ add_executable(${PROJECT_NAME}
   src/main.cpp
   src/websockethandler.h
   src/websockethandler.cpp
+  src/AssimpLoader.h 
+  src/AssimpLoader.cpp 
+  src/mesh.cpp
+  src/mesh.h
+  src/utility.h
+  src/utility.cpp
+  src/objectValues.h
+  src/shader.h
+  src/globals.h
+  src/player.cpp
+  src/player.h
+  src/game.h
+  src/game.cpp
+  src/bullets.h
+  src/bullets.cpp
+  src/stars.cpp
+  src/stars.h
+  src/skybox.cpp
+  src/skybox.h
+  src/shaderManager.h
 )
 #---------- MAC
 #include_directories(/opt/homebrew/Cellar/libpng/1.6.43/include)
@@ -74,6 +97,11 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 #----------MAC
 target_link_libraries(${PROJECT_NAME} PRIVATE sgct websockets glm::glm assimp ${PNG_LIBRARIES})
 #-----------END MAC
+
+# Models folder path fix! 
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+    MODELS_DIRECTORY="${MODELS_DIRECTORY}"
+)
 
 #
 # Setting some compile settings for the project

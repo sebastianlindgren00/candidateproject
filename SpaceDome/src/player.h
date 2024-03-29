@@ -23,7 +23,7 @@ public:
 	Player();
 
 	//Constructor
-	Player(const int id, const std::string& name, int team);
+	Player(const int id, const std::string& name, int team, int colorID, glm::vec3 color);
 
 	//Destructor
 	~Player();
@@ -99,8 +99,12 @@ public:
 
 	int getShotAvailable() {return shotAvailable;}
 
+	int getColorID() { return mColorID;}
+
+
 private:
 	//Player information/data
+
 	bool dropStars = false;
 	float mTurnSpeed = 0.0f;
 	int   mStars    = 0;
@@ -117,10 +121,12 @@ private:
     float mOrientation = 0.0f;
 	int respawnTimer = 0;
 	int mTeam = 0;
-	// frans; Trying something with colors
+
+
 	glm::vec3 mPlayerColor;	
     GLint mColLoc = -1;
 	float hitRadius = 0.2f;
 	int shotAvailable = 75;
 	int bulletTimer = 0;
+	int mColorID;
 };

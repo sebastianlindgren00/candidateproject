@@ -12,6 +12,7 @@
 #include <cstddef>
 #include <chrono>
 #include <sgct/sgct.h>
+#include <set>
 
 #include "sgct/shareddata.h"
 #include "sgct/log.h"
@@ -27,6 +28,7 @@
 #include "utility.h"
 #include "bullets.h"
 #include "stars.h"
+#include "backgroundObjects.h"
 
 //Implemented as explicit singleton, handles pretty much everything
 class Game
@@ -35,8 +37,10 @@ public:
 
 static Game& instance() {
         static Game instance;
+
     return instance;
 }
+
 
 bool hasPlayers() const { return !mPlayers.empty(); }
 
@@ -44,11 +48,15 @@ bool hasBullets() const { return !mBullets.empty(); }
 
 bool hasStars() const { return !mStars.empty(); }
 
+bool hasBGObjects () const { return !mBGObjects.empty(); }
+
 const std::vector<std::unique_ptr<Player>>& getPlayers() const { return mPlayers; }
 
 const std::vector<std::unique_ptr<Bullet>>& getBullets() const { return mBullets; }
 
 const std::vector<std::unique_ptr<Star>>& getStars() const { return mStars; }
+
+const std::vector<std::unique_ptr<BackgroundObject>>& getBGObjects() const { return mBGObjects; }
 
 //Copying forbidden
 Game(Game const&) = delete;
@@ -66,34 +74,67 @@ void removePlayer(int id);
 
 void updateTurnSpeed(unsigned int id, float rotAngle);
 
-void setChargeActive(unsigned int id, bool mode){
-    mPlayers[id]->setChargeMode(mode);
-}
+void setChargeActive(unsigned int id, bool mode){ mPlayers[id]->setChargeMode(mode); }
 void update();
 
 void pickUpStars(int id);
 
 void gameKeyboard(sgct::Key key, sgct::Modifier modifier, sgct::Action action, sgct::Window*);
 
-int getRedStars() {return redTeamStars;}
-
-int getGreenStars() { return greenTeamStars;}
+int getStars(int team) {
+    if(team == 1) {
+        return redTeamStars;
+        }else if(team == 2){
+            return greenTeamStars;
+        }
+        else 
+        std::cout << " Invalid team\n";
+        return -1;
+}
+int getWins(int team) {
+    if(team == 1) {
+        return redWins;
+        }else if(team == 2){
+            return greenWins;
+        }
+        else 
+        std::cout << " Invalid team\n";
+        return -1;
+}
 
 bool isGameActive() { return mGameActive; }
 
 void resetGameTime() { mTotalTime = 0; }
 
-int getEndTime() {return (int)mMaxTime - mTotalTime;}
-int getRestartTime() {return (int)mResetGame - mTotalTime;}
+int getEndTime() { return (int)mMaxTime - mTotalTime; }
+
+int getRestartTime() { return (int)mResetGame - mTotalTime; }
+
+static std::vector<glm::vec3> generateColorShadesRed(glm::vec3 baseColor, int count);
+
+static std::vector<glm::vec3> generateColorShadesGreen(glm::vec3 baseColor, int count);
+
+int findNextAvailableColorID(int team);
+
+int getLowestAvailablePlayerID();
 
 private:
-
 //Constructor
-Game()  {}
+Game()  {
+    redShades = generateColorShadesRed(baseRed, 50);
+    greenShades = generateColorShadesGreen(baseGreen, 50);
+}
+
+std::vector<glm::vec3> redShades;
+std::vector<glm::vec3> greenShades;
+
+glm::vec3 baseRed = glm::vec3(1.0f, 0.0f, 0.0f); // Pure red
+glm::vec3 baseGreen = glm::vec3(0.0f, 1.0f, 0.0f); // Pure green
 
 std::vector<std::unique_ptr<Player>> mPlayers;
 std::vector<std::unique_ptr<Bullet>> mBullets;
 std::vector<std::unique_ptr<Star>> mStars;
+std::vector<std::unique_ptr<BackgroundObject>> mBGObjects;
 
 bool mGameActive = true;
 std::unordered_map<sgct::Key, bool> keyStates;
@@ -103,6 +144,7 @@ float mMaxTime = 20; //seconds
 //float mLastTime = 0;
 float mResetGame = 10;
 
+float xPosBgObjects = -1;
 int starDelayCounter = 0;
 int starDelay = (rand() % 100) + 1;
 int amountOfPlayers;
@@ -112,4 +154,9 @@ int redTeamStars = 0;
 int greenTeamStars = 0;
 float handInRadius = 0.4f;
 int maxStarsID = 0;
+int redWins = 0;
+int greenWins = 0;
+
+int redColorID = 0;
+int greenColorID = 0;
 };

@@ -43,7 +43,8 @@ public:
 	static void setupShaderForDrawing(const GLuint shaderProgram, const glm::vec3& position, const glm::vec3& color, float orientation, float scale);
 
 	static GLuint compileShader(GLenum type, const char* source);
-	static GLuint createShaderProgram(const char* vertexSource, const char* fragmentSource) ;
+	static GLuint createShaderProgram(const char* vertexSource, const char* fragmentSource);
+
 
 	static glm::vec2 screenPositions[3];
 
@@ -51,8 +52,10 @@ public:
 
 	static void CalculateScreenPositions();
 
+
+
 private:
-	
+
 	GLuint textVAO, textVBO;
 
 };

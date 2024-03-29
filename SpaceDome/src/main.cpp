@@ -38,10 +38,15 @@ std::unique_ptr<AssimpLoader> bulletsAssimp;
 std::unique_ptr<AssimpLoader> starsAssimp;
 std::unique_ptr<AssimpLoader> skyboxAssimp;
 std::vector<std::unique_ptr<AssimpLoader>> objectsAssimp;
+std::unique_ptr<AssimpLoader> backgroundObjectsAssimp;
 GLuint shaderProgram;
 GLuint shaderProgramTexture;
 GLuint shaderProgramText;
 
+
+    
+
+void initOGL(GLFWwindow*) {
 
     std::string filePath1 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[2] + ".fbx";
     std::string filePath2 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[4] + ".fbx";
@@ -49,9 +54,8 @@ GLuint shaderProgramText;
     std::string filePath4 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[7] + ".fbx";
     std::string filePath5 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[8] + ".fbx";
     std::string filePath6 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[6] + ".fbx";
+    std::string filePath7 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[3] + ".fbx";
     std::string fontPath = std::string(MODELS_DIRECTORY) + "/font/Michroma-Regular.ttf";
-
-void initOGL(GLFWwindow*) {
 
     //Utility utility;
     shaderProgram = Utility::createShaderProgram(vertexShaderSource, fragmentShaderSource);
@@ -63,6 +67,7 @@ void initOGL(GLFWwindow*) {
     bulletsAssimp = std::make_unique<AssimpLoader>(filePath4);
     starsAssimp = std::make_unique<AssimpLoader>(filePath5);
     skyboxAssimp = std::make_unique<AssimpLoader>(filePath6);
+    backgroundObjectsAssimp = std::make_unique<AssimpLoader>(filePath7);
     objectsAssimp.push_back(std::make_unique<AssimpLoader>(filePath2));
     objectsAssimp.push_back(std::make_unique<AssimpLoader>(filePath3));
 
@@ -163,12 +168,13 @@ void draw(const RenderData& data) {
 
     //std::cout << "Draw called\n";
     Game& game = Game::instance();
+
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
 
-    std::string textRed = "RED TEAM: " + std::to_string(game.getRedStars());
-    std::string textGreen = "GREEN TEAM: " + std::to_string(game.getGreenStars());
+    std::string textRed = "RED TEAM: " + std::to_string(game.getStars(1));
+    std::string textGreen = "GREEN TEAM: " + std::to_string(game.getStars(2));
 
     //render Text
     Utility utilityInstance;
@@ -178,11 +184,18 @@ void draw(const RenderData& data) {
 
     glEnable(GL_DEPTH_TEST);
     //render Background
-    Utility::setupShaderForDrawing(shaderProgramTexture, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f), 0, 6);
+    Utility::setupShaderForDrawing(shaderProgramTexture, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f), 0, 10);
     auto& meshesSkyBox = skyboxAssimp->getMeshes();
     for (unsigned int p = 0; p < meshesSkyBox.size(); p++) {
             meshesSkyBox[p].Draw(); // Draw each mesh
         }
+
+    if (game.hasBGObjects()) { 
+        for (const auto& object : game.getBGObjects()) {
+            object->draw(backgroundObjectsAssimp, shaderProgram); 
+        }
+    }
+
     glDisable(GL_DEPTH_TEST);
      //dont draw players, stars and objects if game is at hold
     if(!game.isGameActive()){
@@ -200,6 +213,7 @@ void draw(const RenderData& data) {
     utilityInstance.RenderText(shaderProgramText, textTime, 2, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
     utilityInstance.RenderText(shaderProgramText, textRed, 1, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
     utilityInstance.RenderText(shaderProgramText, textGreen, 0, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
+
 
     glEnable(GL_DEPTH_TEST);
     if (game.hasPlayers()) { 
@@ -287,14 +301,28 @@ void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Windo
     if (key == Key::Esc && action == Action::Press) {
         Engine::instance().terminate();
     }
-}
 
+    if (key == Key::P && action == Action::Press) {
+    if(Game::instance().getPlayers().size() < 100) {
+        int id = Game::instance().getLowestAvailablePlayerID();
+        Game::instance().addPlayer(id, "testPlayer");
+    }
+}
+    
+    if (key == Key::O && action == Action::Press) {
+        auto& players = Game::instance().getPlayers();
+        if(players.size() > 2) {
+            int lastPlayerId = players.back()->getID();
+            Game::instance().removePlayer(lastPlayerId);
+        }
+    }
+    
+}
 
 int main(int argc, char** argv) {
     
-    Game::instance().addPlayer(1, "Viktor");
-    Game::instance().addPlayer(2, "Alex");
-    
+    Game::instance().addPlayer(0, "Viktor");
+    Game::instance().addPlayer(1, "Alex");
 
     std::vector<std::string> arg(argv + 1, argv + argc);
     Configuration config = sgct::parseArguments(arg);
@@ -338,11 +366,11 @@ int main(int argc, char** argv) {
     Engine::destroy();
 
 
-    std::cout << "\n\n\nRed Team had: " << Game::instance().getRedStars() << " Stars. \n";
-    std::cout << "Green Team had: " << Game::instance().getGreenStars() << " Stars. \n\n";
-    if(Game::instance().getRedStars() < Game::instance().getGreenStars()){
+    std::cout << "\n\n\nRed Team had: " << Game::instance().getWins(1) << " Wins. \n";
+    std::cout << "Green Team had: " << Game::instance().getWins(2) << " Wins. \n\n";
+    if(Game::instance().getWins(1) < Game::instance().getWins(2)){
         std::cout << "Team Green Won! \n\n\n";
-    }else if(Game::instance().getRedStars() > Game::instance().getGreenStars()){
+    }else if(Game::instance().getWins(1) > Game::instance().getWins(2)){
         std::cout << "Team Red Won! \n\n\n";
     }else{
         std::cout << "The Game ended in a draw! \n\n\n";

@@ -1,0 +1,41 @@
+#include "backgroundObjects.h"
+
+BackgroundObject::~BackgroundObject()
+{
+	//sgct::Log::Info("Player with name=\"%s\" removed", mName.c_str());
+}
+
+void BackgroundObject::update()
+{
+    // Update position based on orientation
+    bOrientation += bOrientationSpeed;
+    setPosition(glm::vec3(0.0, cos(bDirection) * bSpeed, sin(bDirection) * bSpeed));
+
+    int random = rand() % 10;
+    if (bPosition.y > 4.3 || bPosition.y < -4.3){
+        bPosition.y *= -1;
+        bOrientation = (float)random;
+    } else if (bPosition.z > 6 || bPosition.z < -6)
+    {
+        bPosition.z *= -1;
+        bOrientation = (float)random;
+    }
+    
+}
+
+void BackgroundObject::draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram) const
+{
+
+    Utility::setupShaderForDrawing(shaderProgram, bPosition, bColor, bOrientation, 0.4);
+
+    //draw
+    auto& meshes = assimpLoader->getMeshes(); // Using getMeshes() method to access the meshes
+    for (unsigned int i = 0; i < meshes.size(); i++) {
+        meshes[i].Draw(); // Draw each mesh
+    }
+    //check for errors
+    GLenum err;
+    while ((err = glGetError()) != GL_NO_ERROR) {
+        std::cerr << "OpenGL error after linking shader program: " << err << std::endl;
+    }
+}
