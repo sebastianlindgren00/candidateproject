@@ -28,11 +28,12 @@ public:
 	Bullet();
 
 	//constructor
-	Bullet(int team, float speed, glm::vec3 position,float orientation){
+	Bullet(int team, float speed, glm::vec3 position,float orientation, int id){
         bSpeed = speed*3;
         bTeam = team;
         bPosition = position;
         bOrientation = orientation;
+        bID = id;
     }
 
 	//Destructor
@@ -50,6 +51,8 @@ public:
 
     void update();
 
+    int getID() {return bID;}
+
     void draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram) const;
 
 private:
@@ -58,6 +61,7 @@ private:
 int lifeTime = 0;
 float bSpeed;
 int bTeam;
+int bID;
 glm::vec3 bPosition;
 float bOrientation;
 glm::vec3 bColor = {1.0f, 0.3f, 0.3f};	

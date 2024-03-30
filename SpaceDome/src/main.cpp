@@ -184,7 +184,7 @@ void draw(const RenderData& data) {
 
     glEnable(GL_DEPTH_TEST);
     //render Background
-    Utility::setupShaderForDrawing(shaderProgramTexture, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f), 0, 10);
+    Utility::setupShaderForDrawing(shaderProgramTexture, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f), 0, 12);
     auto& meshesSkyBox = skyboxAssimp->getMeshes();
     for (unsigned int p = 0; p < meshesSkyBox.size(); p++) {
             meshesSkyBox[p].Draw(); // Draw each mesh
@@ -216,11 +216,32 @@ void draw(const RenderData& data) {
 
 
     glEnable(GL_DEPTH_TEST);
-    if (game.hasPlayers()) { 
-        for (const auto& player : game.getPlayers()) {
-            player->draw(modelsAssimp, shaderProgram); 
+    if (game.hasPlayers()) {
+    std::vector<int> bulletsToRemove; // This will store the IDs of bullets to remove
+    auto& bullets = game.getBullets();
+
+    for (const auto& player : game.getPlayers()) {
+        int hitBulletId = player->update(bullets);
+        if (hitBulletId != -1) {
+            bulletsToRemove.push_back(hitBulletId); // Collect bullet IDs to remove
         }
+        player->draw(modelsAssimp, shaderProgram);
     }
+
+    // Now remove the bullets that were marked for removal
+    if (!bulletsToRemove.empty()) {
+        game.getBullets().erase(
+            std::remove_if(
+                game.getBullets().begin(),
+                game.getBullets().end(),
+                [&bulletsToRemove](const std::unique_ptr<Bullet>& bullet) {
+                    return std::find(bulletsToRemove.begin(), bulletsToRemove.end(), bullet->getID()) != bulletsToRemove.end();
+                }),
+            game.getBullets().end()
+        );
+    }
+}
+
     if (game.hasBullets()) { 
         for (const auto& bullet : game.getBullets()) {
             bullet->draw(bulletsAssimp, shaderProgram); 

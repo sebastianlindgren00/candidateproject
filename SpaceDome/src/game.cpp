@@ -63,13 +63,14 @@ std::vector<glm::vec3> Game::generateColorShadesGreen(glm::vec3 baseColor, int c
 }
 
 
-void Game::addBullet(int team, float speed, glm::vec3 position,float orientation){
-    mBullets.push_back(std::make_unique<Bullet>(team, speed, position, orientation));
+void Game::addBullet(int team, float speed, glm::vec3 position,float orientation, int id){
+    mBullets.push_back(std::make_unique<Bullet>(team, speed, position, orientation, id));
 }
 void Game::shotBullet(int id){
     if(mPlayers[id]->getBulletTimer() == 75){
-        addBullet(mPlayers[id]->getTeam(),mPlayers[id]->getSpeed(),mPlayers[id]->getPosition(),mPlayers[id]->getOrientation());
+        addBullet(mPlayers[id]->getTeam(),mPlayers[id]->getSpeed(),mPlayers[id]->getPosition(),mPlayers[id]->getOrientation(), bulletID);
         mPlayers[id]->restoreTimer();
+        bulletID++;
     }
 }
 
@@ -217,12 +218,15 @@ void Game::update(){
         redTeamStars = 0;
         greenTeamStars = 0;
         maxStarsID = 0;
+        bulletID = 0;
 
-        //delete all stars and reset 
+    //delete all stars and reset 
     for (auto it = mStars.begin(); it != mStars.end(); ) {
-        //int starId = (*it)->getID();
-        it = mStars.erase(it); // Erase star and move iterator to next element
-    
+        it = mStars.erase(it); 
+    }
+    //delete all bullets leftovers from last game
+    for(auto it = mBullets.begin(); it != mBullets.end();) {
+        it = mBullets.erase(it);
     }
 
     for (auto& player : mPlayers) {
@@ -314,7 +318,7 @@ void Game::update(){
         pickUpStars(player->getID());
         //hand in stars
         handInStars(player->getID());
-		player->update(mBullets);
+		//player->update(mBullets);
     }
     //update the bullets
     for (auto& bullet : mBullets)

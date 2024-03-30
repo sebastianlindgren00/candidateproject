@@ -6,13 +6,16 @@ Player::Player(const int id, const std::string& name, int team, int colorID, glm
     mPlayerID = id;
     mColorID = colorID;
     mPlayerColor = color;
+    int randx = rand() %50;
+    int randy = rand() %50;
+    mOrientation = 0.25 - (float)randx/100;
     if(team == 1) {
         //mPos = position of red spawn;
-        mPosition = glm::vec3(0.0f, 0.0f, -2.0f); // spawn position
+        mPosition = glm::vec3(0.0f, 0.25f-(float)randx/100, -2.25f+(float)randy/100); // spawn position
         mTeam = 1;
     } else {
         //mPos = position of green spawn;
-        mPosition = glm::vec3(0.0f, 0.0f, 2.0f); // spawn position
+        mPosition = glm::vec3(0.0f, 0.25f-(float)randx/100, 2.25f-(float)randy/100); // spawn position
         mTeam = 2;
     }
 }
@@ -23,7 +26,7 @@ Player::~Player()
 }
 
 
-void Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets)
+int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets)
 {
 
     if(bulletTimer < shotAvailable){
@@ -34,15 +37,18 @@ void Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets)
         if(respawnTimer == 500){
             mIsAlive = true;
             respawnTimer = 0;
-            mOrientation = 0.0f;
+            int randx = rand() %100;
+            int randy = rand() %100;
+            mOrientation = 0.5 - (float)randx/100;
             superCharge = 200;
+            
             if(mTeam == 1){
-                mPosition = glm::vec3(0.0f, 0.0f, -2.0f);
+                mPosition = glm::vec3(0.0f, 0.25f-(float)randx/100, -2.25f+(float)randy/100);
             }else 
-                mPosition = glm::vec3(0.0f, 0.0f, 2.0f);
+                mPosition = glm::vec3(0.0f, 0.25f-(float)randx/100, 2.25f-(float)randy/100);
             }
             respawnTimer++;
-        return; 
+        return -1; 
     }
 
     //check if hit by an enemy team bullet, if so temporary disable
@@ -54,7 +60,8 @@ void Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets)
             if (distance <= hitRadius) {
                 mIsAlive = false;
                 dropStars = true; 
-                return;
+                std::cout << "Player with ID: " << mPlayerID << " Was Eliminated. \n";
+                return bullet->getID();
             }
         }
     }
@@ -102,6 +109,7 @@ void Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets)
     
 
     setTurnSpeed(0);
+    return -1;
 }
 
 void Player::draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram) const

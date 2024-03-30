@@ -52,7 +52,7 @@ bool hasBGObjects () const { return !mBGObjects.empty(); }
 
 const std::vector<std::unique_ptr<Player>>& getPlayers() const { return mPlayers; }
 
-const std::vector<std::unique_ptr<Bullet>>& getBullets() const { return mBullets; }
+std::vector<std::unique_ptr<Bullet>>& getBullets() { return mBullets; }
 
 const std::vector<std::unique_ptr<Star>>& getStars() const { return mStars; }
 
@@ -64,7 +64,7 @@ void operator=(Game const&) = delete;
 
 void addPlayer(int id, const std::string& name);
 
-void addBullet(int team, float speed, glm::vec3 position,float orientation);
+void addBullet(int team, float speed, glm::vec3 position,float orientation, int id);
 
 void shotBullet(int id);
 
@@ -144,7 +144,7 @@ float mMaxTime = 20; //seconds
 //float mLastTime = 0;
 float mResetGame = 10;
 
-float xPosBgObjects = -1;
+float xPosBgObjects = -2;
 int starDelayCounter = 0;
 int starDelay = (rand() % 100) + 1;
 int amountOfPlayers;
@@ -156,6 +156,8 @@ float handInRadius = 0.4f;
 int maxStarsID = 0;
 int redWins = 0;
 int greenWins = 0;
+
+int bulletID = 0;
 
 int redColorID = 0;
 int greenColorID = 0;
