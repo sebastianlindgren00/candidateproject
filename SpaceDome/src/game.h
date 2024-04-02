@@ -147,7 +147,7 @@ float mResetGame = 10;
 float xPosBgObjects = -2;
 int starDelayCounter = 0;
 int starDelay = (rand() % 100) + 1;
-int amountOfPlayers;
+//int amountOfPlayers;
 int teamRed = 0;
 int teamGreen = 0;
 int redTeamStars = 0;
@@ -159,6 +159,8 @@ int greenWins = 0;
 
 int bulletID = 0;
 
-int redColorID = 0;
-int greenColorID = 0;
+int counterForBGObjects = 0;
+
+//int redColorID = 0;
+//int greenColorID = 0;
 };

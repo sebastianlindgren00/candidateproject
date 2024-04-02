@@ -85,7 +85,7 @@ void Game::removePlayer(int id) {
     });
 
     if (it != mPlayers.end()) {
-        int team = (*it)->getTeam();
+        //int team = (*it)->getTeam();
         if ((*it)->getTeam() == 1) {
             if(id )
             teamRed--;
@@ -180,7 +180,12 @@ void Game::update(){
 
     if(mBGObjects.size() < 7) {
         mBGObjects.push_back(std::make_unique<BackgroundObject>(xPosBgObjects));
+        if(counterForBGObjects == 1)
+        {
         xPosBgObjects += -0.5;
+        counterForBGObjects = 0;
+        }else 
+        counterForBGObjects++;
     }
 
     //may be wrong not sure yet
@@ -192,7 +197,7 @@ void Game::update(){
 
     //std::cout << (int)mTotalTime << "\n";
     for(auto& bgObject : mBGObjects)
-        bgObject->update();
+        bgObject->update(mBGObjects);
     
     // Max antal stjärnor?  greenTeamStars == 150 || redTeamStars == 150 || 
     if(mTotalTime >= mMaxTime && mGameActive == true){

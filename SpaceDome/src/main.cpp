@@ -165,6 +165,7 @@ if (!success) {
 
 
 void draw(const RenderData& data) {
+    (void)data;
 
     //std::cout << "Draw called\n";
     Game& game = Game::instance();

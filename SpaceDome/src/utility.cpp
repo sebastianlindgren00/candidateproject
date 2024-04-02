@@ -159,9 +159,9 @@ void Utility::LoadFontAtlas(const std::string& fontPath) {
 }
 
 const glm::vec3 Utility::worldPositions[3] = {
-    glm::vec3(-2, 1, 0),
+    glm::vec3(-2, 0.5, 0),
     glm::vec3(-2, 0, 0),
-    glm::vec3(-2, -1, 0)
+    glm::vec3(-2, -0.5, 0)
 };
 glm::vec2 Utility::screenPositions[3];
 

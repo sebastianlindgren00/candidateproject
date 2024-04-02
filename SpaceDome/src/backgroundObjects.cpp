@@ -5,8 +5,29 @@ BackgroundObject::~BackgroundObject()
 	//sgct::Log::Info("Player with name=\"%s\" removed", mName.c_str());
 }
 
-void BackgroundObject::update()
+void BackgroundObject::update(std::vector<std::unique_ptr<BackgroundObject>>& mBGObjects)
 {
+    for (const auto& object : mBGObjects) {
+        if (this != object.get() && this->bPosition.x == object->bPosition.x) {
+            glm::vec3 objectPos = object->getPosition();
+            float distance = glm::distance(objectPos, bPosition);
+            if (distance <= 0.9 + bPosition.x/40) {
+                float speed1 = bSpeed;
+                float speed2 = object->getSpeed();
+
+                float direction1 = bDirection;
+                float direction2 = object->getOrientation();
+
+                bDirection = direction2;
+                object->setOrientation(direction1);
+
+                bSpeed = speed2;
+                object->setSpeed(speed1);
+            }
+        }
+    }
+    
+    
     // Update position based on orientation
     bOrientation += bOrientationSpeed;
     setPosition(glm::vec3(0.0, cos(bDirection) * bSpeed, sin(bDirection) * bSpeed));

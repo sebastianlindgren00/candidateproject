@@ -48,11 +48,22 @@ public:
 
     void setPosition(const glm::vec3& positionChange) { bPosition += positionChange; }
 
-    void update();
+    glm::vec3 getPosition() {return bPosition;}
+
+    void setOrientation(float newOrientation) { bDirection = newOrientation;}
+
+    float getOrientation() { return bDirection;}
+
+    void setSpeed(float newSpeed) { bSpeed = newSpeed;}
+
+    float getSpeed() {return bSpeed;}
+
+    void update(std::vector<std::unique_ptr<BackgroundObject>>& mBGObjects);
 
     void draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram) const;
 
 private:
+float size = 0.4;
 float bOrientationSpeed;
 float xPos;
 float bSpeed = 0.001f;
