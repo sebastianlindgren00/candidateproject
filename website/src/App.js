@@ -10,6 +10,7 @@ function App() {
 
   const [userID, setUserId] = useState('inital')
   const [userName, setUserName] = useState('inital')
+  const [srvAuth, setSrvAuth] = useState('not authorized')
 
   var infoBoxStatus = true; // Is the info box opened, when the page loads in this is incorrect but the var needs to be true for the if statement to work
 
@@ -40,6 +41,9 @@ function App() {
   // Run when a new WebSocket message is received (lastJsonMessage)
   useEffect(() => {
     console.log(`Got a new message: ${JSON.stringify(lastJsonMessage)}`)
+    if(JSON.stringify(lastJsonMessage).includes('Authorized')){
+          setSrvAuth('authorized')
+    }
   }, [lastJsonMessage])
 
   window.onload=function(){ //TODO: Fix bug that disables the opening and closing of the info box when navigating back to this page
@@ -77,8 +81,15 @@ function App() {
  
   useEffect(() => { // Is called every render cycle, because of this an if statement is used before the user is navigated to the controller page
     console.log('State updated: \n', userID,' : ', userName);
+    console.log('Client is ',srvAuth);
 
-    if(userID != 'inital' && userName != 'inital' && userName !=''){ // The ID and Name must be separate from the inital values, and the username cannot be blank
+    if(userID != 'inital' && userName != 'inital' && userName !='' && srvAuth == 'authorized'){ // The ID and Name must be separate from the inital values, and the username cannot be blank
+
+      sendJsonMessage({
+        userID: userID,
+        userName: userName
+      })
+    /*
       navigate({
           pathname: '/controller', 
           search: createSearchParams({ // Creates and extension to the URL which is used by Controller.js to read ID and Name
@@ -86,6 +97,7 @@ function App() {
             userName:userName
           }).toString()
       })
+      */
     }
   }, [userID, userName])
 
