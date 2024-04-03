@@ -1,6 +1,6 @@
 #include "game.h"
 
-void Game::addPlayer(int id, const std::string& name) {
+void Game::addPlayer(const std::string& name) {
     int team = teamRed <= teamGreen ? 1 : 2;
     if (team == 1) {
         teamRed++;
@@ -8,6 +8,10 @@ void Game::addPlayer(int id, const std::string& name) {
         teamGreen++;
     }
 
+    //get a unique and lowest possible ID
+    int id = getLowestAvailablePlayerID();
+
+    //get a unique color
     int colorID = findNextAvailableColorID(team);
     glm::vec3 color = (team == 1) ? redShades[colorID] : greenShades[colorID];
 
@@ -15,6 +19,7 @@ void Game::addPlayer(int id, const std::string& name) {
     std::cout << "Player: " << name << " joined with ID: " << id << " and color ID: " << colorID << std::endl;
 }
 
+//allowing new players to get the lowest available ID
 int Game::getLowestAvailablePlayerID() {
     std::set<int> usedIDs;
 
@@ -25,7 +30,7 @@ int Game::getLowestAvailablePlayerID() {
 
     // Find the lowest unused ID
     int id = 0;
-    for (; id < usedIDs.size(); ++id) {
+    for (; id < (int)usedIDs.size(); ++id) {
         if (usedIDs.find(id) == usedIDs.end()) {
             break; // Found an unused ID
         }
@@ -34,7 +39,10 @@ int Game::getLowestAvailablePlayerID() {
     return id; // Return the lowest unused ID
 }
 
-std::vector<glm::vec3> Game::generateColorShadesRed(glm::vec3 baseColor, int count) {
+
+//function to generate unique colors that players can have
+//based on a base color, red == 1 or green == 2, and amount of shades (count)
+std::vector<glm::vec3> Game::generateColorShades(glm::vec3 baseColor, int count, int team) {
     std::vector<glm::vec3> shades;
     for (int i = 0; i < count; ++i) {
         float randx = static_cast<float>(rand() % 100) / 300.0f; // Range from 0.0 to 0.5
@@ -42,30 +50,39 @@ std::vector<glm::vec3> Game::generateColorShadesRed(glm::vec3 baseColor, int cou
 
         float factor = static_cast<float>(i) / (count - 1);
         glm::vec3 shade = baseColor * (0.5f + 0.5f * factor); // Vibrant color
+        if(team == 1){
         shade += glm::vec3(0.0, randx, randy);
+        } else{ //assuming the correct input of teams, 1 or 2 is sent in
+        shade += glm::vec3(randx, 0.0, randy);
+        }
         shades.push_back(shade);
     }
     return shades;
 }
 
-std::vector<glm::vec3> Game::generateColorShadesGreen(glm::vec3 baseColor, int count) {
-    std::vector<glm::vec3> shades;
-    for (int i = 0; i < count; ++i) {
-        float randx = static_cast<float>(rand() % 100) / 200.0f; // Range from 0.0 to 0.5
-        float randy = static_cast<float>(rand() % 100) / 200.0f; // Same here
+//function to apply a unique color to a player joining the game
+//50 different colors/Team
+int Game::findNextAvailableColorID(int team) {
+    std::vector<bool> usedIDs(50, false);
 
-        float factor = static_cast<float>(i) / (count - 1);
-        glm::vec3 shade = baseColor * (0.5f + 0.5f * factor); // Vibrant color
-        shade += glm::vec3(randx, 0.0, randy);
-        shades.push_back(shade);
+    for (const auto& player : mPlayers) {
+        if (player->getTeam() == team) {
+            int colorID = player->getColorID();
+            if (colorID < (int)usedIDs.size()) {
+                usedIDs[colorID] = true;
+            }
+        }
     }
-    return shades;
+
+    int colorID = std::distance(usedIDs.begin(), std::find(usedIDs.begin(), usedIDs.end(), false));
+    return colorID;
 }
 
 
 void Game::addBullet(int team, float speed, glm::vec3 position,float orientation, int id){
     mBullets.push_back(std::make_unique<Bullet>(team, speed, position, orientation, id));
 }
+
 void Game::shotBullet(int id){
     if(mPlayers[id]->getBulletTimer() == 75){
         addBullet(mPlayers[id]->getTeam(),mPlayers[id]->getSpeed(),mPlayers[id]->getPosition(),mPlayers[id]->getOrientation(), bulletID);
@@ -103,23 +120,9 @@ void Game::removePlayer(int id) {
     }
 }
 
-int Game::findNextAvailableColorID(int team) {
-    std::vector<bool> usedIDs(50, false); // Assuming 50 is the number of shades
-
-    for (const auto& player : mPlayers) {
-        if (player->getTeam() == team) {
-            int colorID = player->getColorID();
-            if (colorID < usedIDs.size()) {
-                usedIDs[colorID] = true;
-            }
-        }
-    }
-
-    int colorID = std::distance(usedIDs.begin(), std::find(usedIDs.begin(), usedIDs.end(), false));
-    return colorID;
-}
-
+//managing inputs from keyboard, will change when website is connected
 void Game::gameKeyboard(sgct::Key key, sgct::Modifier modifier, sgct::Action action, sgct::Window*) {
+    (void)modifier;
     if(action == sgct::Action::Press) {
         keyStates[key] = true;
     } else if(action == sgct::Action::Release) {
@@ -127,6 +130,8 @@ void Game::gameKeyboard(sgct::Key key, sgct::Modifier modifier, sgct::Action act
     }
 }
 
+//is a player over a star?
+//pick it up
 void Game::pickUpStars(int id){
     for (auto it = mStars.begin(); it != mStars.end(); ) {
         //int starId = (*it)->getID();
@@ -140,7 +145,8 @@ void Game::pickUpStars(int id){
     }
 }
 
-
+//is a player at spawn and holding stars?
+//hand them in to the teams total stars
 void Game::handInStars(int id){
     glm::vec3 spawn = glm::vec3(0.0f, 0.0f, -2.0f);
     if(mPlayers[id]->getTeam() == 2){
@@ -180,9 +186,9 @@ void Game::update(){
 
     if(mBGObjects.size() < 7) {
         mBGObjects.push_back(std::make_unique<BackgroundObject>(xPosBgObjects));
-        if(counterForBGObjects == 1)
+        if(counterForBGObjects == 3)
         {
-        xPosBgObjects += -0.5;
+        xPosBgObjects += -1;
         counterForBGObjects = 0;
         }else 
         counterForBGObjects++;
@@ -281,12 +287,15 @@ void Game::update(){
     if(starDelayCounter < starDelay){
         starDelayCounter++;
     }
-    if(mStars.size() < 25 && starDelayCounter >= starDelay){
+
+    int totalStars = 25 + teamRed + teamGreen;
+    if((int)mStars.size() < totalStars && starDelayCounter >= starDelay){
         starDelay = (rand() % 100) + 1;
         starDelayCounter = 0;
         mStars.push_back(std::make_unique<Star>(maxStarsID));
         maxStarsID++;
     }
+    std::cout << "Amount of stars in gama: " << mStars.size() << "\n";
 
     //remove bullets that have expired
     mBullets.erase(std::remove_if(mBullets.begin(), mBullets.end(),

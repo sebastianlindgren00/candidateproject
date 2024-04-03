@@ -24,8 +24,10 @@ class BackgroundObject
 {
 
 public:
-    //defaul constructor
+    //Constructor
 	BackgroundObject(float x){
+
+        //spawn at random locations with random velocitys and orientations
         int random = rand() % 100;  
         int yRand = rand() % 400;
         int zRand = rand() % 600;
@@ -36,13 +38,10 @@ public:
         bDirection = bOrientation;
         bPosition = glm::vec3(xPos, (2 - (float)yRand/100),(3 - (float)zRand/100));
     }
-
-	//constructor
-
 	//Destructor
 	~BackgroundObject();
 
-	//Players should be unique
+	//Objects should be unique
 	BackgroundObject(const BackgroundObject&) = default;
 	BackgroundObject& operator=(const BackgroundObject&) = delete;
 
@@ -64,6 +63,7 @@ public:
 
 private:
 float size = 0.4;
+int axis = rand() % 3;
 float bOrientationSpeed;
 float xPos;
 float bSpeed = 0.001f;

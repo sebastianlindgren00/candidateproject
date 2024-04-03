@@ -12,6 +12,9 @@
 #include "utility.h"
 #include "shader.h"
 
+//found info at
+// https://learnopengl.com/Model-Loading/Model
+
 class AssimpLoader 
 {
 

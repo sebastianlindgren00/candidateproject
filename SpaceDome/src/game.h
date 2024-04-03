@@ -62,7 +62,7 @@ const std::vector<std::unique_ptr<BackgroundObject>>& getBGObjects() const { ret
 Game(Game const&) = delete;
 void operator=(Game const&) = delete;
 
-void addPlayer(int id, const std::string& name);
+void addPlayer(const std::string& name);
 
 void addBullet(int team, float speed, glm::vec3 position,float orientation, int id);
 
@@ -110,19 +110,21 @@ int getEndTime() { return (int)mMaxTime - mTotalTime; }
 
 int getRestartTime() { return (int)mResetGame - mTotalTime; }
 
-static std::vector<glm::vec3> generateColorShadesRed(glm::vec3 baseColor, int count);
-
-static std::vector<glm::vec3> generateColorShadesGreen(glm::vec3 baseColor, int count);
+static std::vector<glm::vec3> generateColorShades(glm::vec3 baseColor, int count, int team);
 
 int findNextAvailableColorID(int team);
 
 int getLowestAvailablePlayerID();
 
+float getSpawnRot() {return spawnRotation;}
+
+void addSpawnRot() {spawnRotation += 0.001;}
+
 private:
 //Constructor
 Game()  {
-    redShades = generateColorShadesRed(baseRed, 50);
-    greenShades = generateColorShadesGreen(baseGreen, 50);
+    redShades = generateColorShades(baseRed, 50, 1);
+    greenShades = generateColorShades(baseGreen, 50, 2);
 }
 
 std::vector<glm::vec3> redShades;
@@ -140,7 +142,7 @@ bool mGameActive = true;
 std::unordered_map<sgct::Key, bool> keyStates;
 float mLastFrameTime = sgct::time();
 float mTotalTime = 0;
-float mMaxTime = 20; //seconds
+float mMaxTime = 30; //seconds
 //float mLastTime = 0;
 float mResetGame = 10;
 
@@ -156,6 +158,8 @@ float handInRadius = 0.4f;
 int maxStarsID = 0;
 int redWins = 0;
 int greenWins = 0;
+
+float spawnRotation = 0;
 
 int bulletID = 0;
 

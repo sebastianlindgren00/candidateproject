@@ -118,7 +118,7 @@ void Player::draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuin
 		return;
 
     //setup shaderProgram
-    Utility::setupShaderForDrawing(shaderProgram, mPosition, mPlayerColor, mOrientation, 0.2);
+    Utility::setupShaderForDrawing(shaderProgram, mPosition, mPlayerColor, mOrientation, 0.2, 0);
     
     //draw
     auto& meshes = assimpLoader->getMeshes();

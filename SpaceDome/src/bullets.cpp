@@ -25,7 +25,7 @@ void Bullet::draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuin
         return;
     }
 
-    Utility::setupShaderForDrawing(shaderProgram, bPosition, bColor, bOrientation, 0.05);
+    Utility::setupShaderForDrawing(shaderProgram, bPosition, bColor, bOrientation, 0.05, 0);
 
     //draw
     auto& meshes = assimpLoader->getMeshes(); // Using getMeshes() method to access the meshes

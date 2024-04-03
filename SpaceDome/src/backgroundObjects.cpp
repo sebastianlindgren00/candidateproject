@@ -11,7 +11,7 @@ void BackgroundObject::update(std::vector<std::unique_ptr<BackgroundObject>>& mB
         if (this != object.get() && this->bPosition.x == object->bPosition.x) {
             glm::vec3 objectPos = object->getPosition();
             float distance = glm::distance(objectPos, bPosition);
-            if (distance <= 0.9 + bPosition.x/40) {
+            if (distance <= 0.9 + bPosition.x/20) {
                 float speed1 = bSpeed;
                 float speed2 = object->getSpeed();
 
@@ -46,8 +46,7 @@ void BackgroundObject::update(std::vector<std::unique_ptr<BackgroundObject>>& mB
 
 void BackgroundObject::draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram) const
 {
-
-    Utility::setupShaderForDrawing(shaderProgram, bPosition, bColor, bOrientation, 0.4);
+    Utility::setupShaderForDrawing(shaderProgram, bPosition, bColor, bOrientation, size, axis);
 
     //draw
     auto& meshes = assimpLoader->getMeshes(); // Using getMeshes() method to access the meshes

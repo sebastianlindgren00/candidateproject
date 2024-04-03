@@ -16,7 +16,6 @@
 
 #include "utility.h"
 #include "AssimpLoader.h"
-#include "objectValues.h"
 #include "globals.h"
 
 class Utility
@@ -36,20 +35,22 @@ public:
     glBindVertexArray(0);
 	}
 
+	//load fonts
 	static void LoadFontAtlas(const std::string& fontPath);
+	//rendering text
 	void RenderText(GLuint shaderProgram, std::string text, int row, float scale, glm::vec3 color);
+	
+	//getting textures
 	static unsigned int textureFromFile(const char* path, const std::string& directory/*bool gamma = false*/);
-	static std::tuple<unsigned int, float> getTurnSpeed(std::istringstream& input);
-	static void setupShaderForDrawing(const GLuint shaderProgram, const glm::vec3& position, const glm::vec3& color, float orientation, float scale);
-
+	
+	//setting up shaders before drawing
+	static void setupShaderForDrawing(const GLuint shaderProgram, const glm::vec3& position, const glm::vec3& color, float orientation, float scale, int rotAxis);
 	static GLuint compileShader(GLenum type, const char* source);
 	static GLuint createShaderProgram(const char* vertexSource, const char* fragmentSource);
 
-
-	static glm::vec2 screenPositions[3];
-
-	static const glm::vec3 worldPositions[3];
-
+	//calculate positions for texts
+	static glm::vec2 screenPositions[8];
+	static const glm::vec3 worldPositions[8];
 	static void CalculateScreenPositions();
 
 
@@ -57,5 +58,6 @@ public:
 private:
 
 	GLuint textVAO, textVBO;
+	
 
 };

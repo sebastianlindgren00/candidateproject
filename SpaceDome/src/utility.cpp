@@ -3,6 +3,8 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
+
+//declaring a text character
 struct Character {
     GLuint     TextureID;  // Texture ID
     glm::ivec2 Size;       // Size of glyph
@@ -12,23 +14,19 @@ struct Character {
 
 std::map<GLchar, Character> Characters;
 
-std::tuple<unsigned int, float> Utility::getTurnSpeed(std::istringstream& input)
-{
-	unsigned int id;
-	float rotation;
-
-	input >> id;
-	input >> rotation;
-
-	return std::make_tuple(id, rotation);
-}
-void Utility::setupShaderForDrawing(const GLuint shaderProgram, const glm::vec3& position, const glm::vec3& color, float orientation, float scale) {
+void Utility::setupShaderForDrawing(const GLuint shaderProgram, const glm::vec3& position, const glm::vec3& color, float orientation, float scale, int rotAxis) {
     glUseProgram(shaderProgram);
 
     // Create transformation matrices
     glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), position);
     modelMatrix = glm::scale(modelMatrix, glm::vec3(scale, scale, scale));
+    if(rotAxis == 0){
     modelMatrix = glm::rotate(modelMatrix, orientation, glm::vec3(1.0f, 0.0f, 0.0f));
+    } else if(rotAxis == 1){
+        modelMatrix = glm::rotate(modelMatrix, orientation, glm::vec3(0.0f, 1.0f, 0.0f));
+    } else {
+        modelMatrix = glm::rotate(modelMatrix, orientation, glm::vec3(1.0f, 1.0f, 0.0f));
+    }
     glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), 800.0f / 500.0f, 0.1f, 100.0f);
     glm::vec3 viewPos = glm::vec3(5.0f, 0.0f, 0.0f);
     glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -158,12 +156,18 @@ void Utility::LoadFontAtlas(const std::string& fontPath) {
     FT_Done_FreeType(ft);
 }
 
-const glm::vec3 Utility::worldPositions[3] = {
-    glm::vec3(-2, 0.5, 0),
-    glm::vec3(-2, 0, 0),
-    glm::vec3(-2, -0.5, 0)
+const glm::vec3 Utility::worldPositions[8] = {
+    glm::vec3(-2, 2.5, 0),
+    glm::vec3(-2, 2, 0),
+    glm::vec3(-2, 1.5, 0),
+    glm::vec3(-2, 1, 0),
+    glm::vec3(-2, -0, 0),
+    glm::vec3(-2, -0.5, 0),
+    glm::vec3(-2, -1, 0),
+    glm::vec3(-2, -2, 0)
 };
-glm::vec2 Utility::screenPositions[3];
+
+glm::vec2 Utility::screenPositions[8];
 
 void Utility::CalculateScreenPositions(){
     	glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), 800.0f / 500.0f, 0.1f, 100.0f);
@@ -172,7 +176,7 @@ void Utility::CalculateScreenPositions(){
     	glm::vec3 upDirection = glm::vec3(0.0f, 1.0f, 0.0f);
     	glm::mat4 viewMatrix = glm::lookAt(viewPos, cameraTarget, upDirection);
 
-    	for (int i = 0; i < 3; ++i) {
+    	for (int i = 0; i < 8; ++i) {
         	glm::vec4 clipSpacePos = projectionMatrix * viewMatrix * glm::vec4(worldPositions[i], 1.0);
         	glm::vec3 ndcSpacePos = glm::vec3(clipSpacePos) / clipSpacePos.w;
         	screenPositions[i].x = (ndcSpacePos.x + 1.0f) / 2.0f * 800;
@@ -188,7 +192,7 @@ void Utility::RenderText(GLuint shaderProgram, std::string text, int row, float 
         textWidth += (ch.Advance >> 6) * scale; // Bitshift by 6 to get value in pixels
     }
 
-	if (row < 0 || row >= 3) {
+	if (row < 0 || row >= 8) {
         std::cerr << "Invalid row specified. Must be 0, 1, or 2." << std::endl;
         return;
     }

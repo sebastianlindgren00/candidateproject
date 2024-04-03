@@ -14,7 +14,7 @@ void Star::update()
 void Star::draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram) const
 {
 
-    Utility::setupShaderForDrawing(shaderProgram, sPosition, sColor, sOrientation, 0.1);
+    Utility::setupShaderForDrawing(shaderProgram, sPosition, sColor, sOrientation, 0.1, 1);
 
     //draw
     auto& meshes = assimpLoader->getMeshes(); // Using getMeshes() method to access the meshes

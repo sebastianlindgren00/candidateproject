@@ -47,7 +47,6 @@ add_executable(${PROJECT_NAME}
   src/mesh.h
   src/utility.h
   src/utility.cpp
-  src/objectValues.h
   src/shader.h
   src/globals.h
   src/player.cpp
@@ -58,9 +57,9 @@ add_executable(${PROJECT_NAME}
   src/bullets.cpp
   src/stars.cpp
   src/stars.h
-  src/skybox.cpp
-  src/skybox.h
-  src/tests.cpp
+  src/shaderManager.h
+  src/backgroundObjects.cpp
+  src/backgroundObjects.h
 )
 #---------- MAC
 #include_directories(/opt/homebrew/Cellar/libpng/1.6.43/include)
