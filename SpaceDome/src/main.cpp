@@ -309,7 +309,8 @@ void connectionClosed() {
 
 void messageReceived(const void* data, size_t length) {
     std::string_view msg = std::string_view(reinterpret_cast<const char*>(data), length);
-    Log::Info(fmt::format("Message received: {}", msg));
+    //Log::Info(fmt::format("Message received: {}", msg));
+    std::string message = msg.data();
 }
 
 void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Window* window) {
