@@ -156,7 +156,7 @@ void Utility::LoadFontAtlas(const std::string& fontPath) {
     FT_Done_FreeType(ft);
 }
 
-const glm::vec3 Utility::worldPositions[8] = {
+const glm::vec3 Utility::worldPositions[10] = {
     glm::vec3(-2, 2.5, 0),
     glm::vec3(-2, 2, 0),
     glm::vec3(-2, 1.5, 0),
@@ -176,7 +176,7 @@ void Utility::CalculateScreenPositions(std::vector<glm::vec3> playerpos){
     	glm::vec3 upDirection = glm::vec3(0.0f, 1.0f, 0.0f);
     	glm::mat4 viewMatrix = glm::lookAt(viewPos, cameraTarget, upDirection);
         
-    	for (int i = 0; i < 10; ++i) {
+    	for (int i = 0; i < playerpos.size(); ++i) {
         	glm::vec4 clipSpacePos = projectionMatrix * viewMatrix * glm::vec4(playerpos[i], 1.0);
         	glm::vec3 ndcSpacePos = glm::vec3(clipSpacePos) / clipSpacePos.w;
         	screenPositions[i].x = (ndcSpacePos.x + 1.0f) / 2.0f * 800;
@@ -192,7 +192,7 @@ void Utility::RenderText(GLuint shaderProgram, std::string text, int row, float 
         textWidth += (ch.Advance >> 6) * scale; // Bitshift by 6 to get value in pixels
     }
 
-	if (row < 0 || row >= 8) {
+	if (row < 0 || row >= 10) {
         std::cerr << "Invalid row specified. Must be 0, 1, or 2." << std::endl;
         return;
     }

@@ -197,7 +197,8 @@ void draw(const RenderData& data) {
 
     for (int i = 0; i < playerposinit.size(); i++)
     {   //put playerpositions in the vector
-        playerpos.push_back(playerposinit[i]->getPosition());
+        playerpos.push_back((playerposinit[i]->getPosition()) * glm::vec3(1,-1,1) - glm::vec3(0,-0.5f,0));
+     
     }
     
     //initialize positions for text
@@ -246,7 +247,7 @@ void draw(const RenderData& data) {
     utilityInstance.RenderText(shaderProgramText, textTime, 6, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
     utilityInstance.RenderText(shaderProgramText, textRed, 5, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
     utilityInstance.RenderText(shaderProgramText, textGreen, 4, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
-    utilityInstance.RenderText(shaderProgramText, "Player 1", 8, 5.0f, glm::vec3(0.8f, 0.8f, 0.8f));
+    utilityInstance.RenderText(shaderProgramText, "Player 1", 8, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
     utilityInstance.RenderText(shaderProgramText, "Player 2", 9, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
 
     glEnable(GL_DEPTH_TEST);
