@@ -49,9 +49,9 @@ public:
 	static GLuint createShaderProgram(const char* vertexSource, const char* fragmentSource);
 
 	//calculate positions for texts
-	static glm::vec2 screenPositions[8];
+	static glm::vec2 screenPositions[10];
 	static const glm::vec3 worldPositions[8];
-	static void CalculateScreenPositions();
+	static void CalculateScreenPositions(std::vector<glm::vec3> playerpos);
 
 
 

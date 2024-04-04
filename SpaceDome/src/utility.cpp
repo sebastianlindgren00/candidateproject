@@ -167,17 +167,17 @@ const glm::vec3 Utility::worldPositions[8] = {
     glm::vec3(-2, -2, 0)
 };
 
-glm::vec2 Utility::screenPositions[8];
+glm::vec2 Utility::screenPositions[10];
 
-void Utility::CalculateScreenPositions(){
+void Utility::CalculateScreenPositions(std::vector<glm::vec3> playerpos){
     	glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), 800.0f / 500.0f, 0.1f, 100.0f);
     	glm::vec3 viewPos = glm::vec3(5.0f, 0.0f, 0.0f);
     	glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
     	glm::vec3 upDirection = glm::vec3(0.0f, 1.0f, 0.0f);
     	glm::mat4 viewMatrix = glm::lookAt(viewPos, cameraTarget, upDirection);
-
-    	for (int i = 0; i < 8; ++i) {
-        	glm::vec4 clipSpacePos = projectionMatrix * viewMatrix * glm::vec4(worldPositions[i], 1.0);
+        
+    	for (int i = 0; i < 10; ++i) {
+        	glm::vec4 clipSpacePos = projectionMatrix * viewMatrix * glm::vec4(playerpos[i], 1.0);
         	glm::vec3 ndcSpacePos = glm::vec3(clipSpacePos) / clipSpacePos.w;
         	screenPositions[i].x = (ndcSpacePos.x + 1.0f) / 2.0f * 800;
         	screenPositions[i].y = (1.0f - ndcSpacePos.y) / 2.0f * 500;
