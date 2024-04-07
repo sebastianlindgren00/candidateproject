@@ -24,13 +24,18 @@ class Bullet
 {
 
 public:
-    //defaul constructor
+    //default constructor
 	Bullet();
 
 	//constructor
 	Bullet(int team, float speed, glm::vec3 position,float orientation, int id){
         bSpeed = speed*3;
         bTeam = team;
+        if(bTeam == 1){
+            bColor = {1.0f, 0.2f, 0.2f};	
+        } else {
+            bColor = {0.4f, 1.f, 0.2f};
+        };
         bPosition = position;
         bOrientation = orientation;
         bID = id;

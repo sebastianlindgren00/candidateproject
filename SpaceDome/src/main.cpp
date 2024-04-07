@@ -168,8 +168,29 @@ void draw(const RenderData& data) {
 
     //render Text
     Utility utilityInstance;
+    //create vector with all players
+    auto& playerposinit = game.getPlayers();
+    //create vector that will be used for knowing playerpositions
+    std::vector<glm::vec3> playerpos;
+
+    //gamla värden för textposition bör nog göras finare
+    playerpos.push_back(glm::vec3(-2, 2.5, 0));
+    playerpos.push_back(glm::vec3(-2, 2, 0));
+    playerpos.push_back(glm::vec3(-2, 1.5, 0));
+    playerpos.push_back(glm::vec3(-2, 1, 0));
+    playerpos.push_back(glm::vec3(-2, -0, 0));
+    playerpos.push_back(glm::vec3(-2, -0.5, 0));
+    playerpos.push_back(glm::vec3(-2, -1, 0));
+    playerpos.push_back(glm::vec3(-2, -2, 0));
+
+    for (int i = 0; i < playerposinit.size(); i++)
+    {   //put playerpositions in the vector
+        playerpos.push_back((playerposinit[i]->getPosition()) * glm::vec3(1,-1,1) - glm::vec3(0,-0.5f,0));
+     
+    }
+    
     //initialize positions for text
-    Utility::CalculateScreenPositions();
+    Utility::CalculateScreenPositions(playerpos);
     int timer = game.getEndTime();
 
     glEnable(GL_DEPTH_TEST);
@@ -223,7 +244,8 @@ void draw(const RenderData& data) {
     utilityInstance.RenderText(shaderProgramText, textTime, 6, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
     utilityInstance.RenderText(shaderProgramText, textRed, 5, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
     utilityInstance.RenderText(shaderProgramText, textGreen, 4, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
-
+    utilityInstance.RenderText(shaderProgramText, "Player 1", 8, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
+    utilityInstance.RenderText(shaderProgramText, "Player 2", 9, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
 
     glEnable(GL_DEPTH_TEST);
     if (game.hasPlayers()) {
