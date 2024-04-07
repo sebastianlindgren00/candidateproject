@@ -103,6 +103,50 @@ void main() {
 
 )glsl";
 
+const char* vertexShaderSourceMaterial = R"glsl(
+#version 330 core
+layout (location = 0) in vec3 aPos; // Position
+layout (location = 1) in vec3 aNormal; // Normal vector
+layout (location = 2) in vec2 aTexCoords; // Texture coordinates
+
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+
+out vec3 Normal; // Pass normal to the fragment shader
+out vec3 FragPos; // Pass fragment position to the fragment shader
+out vec2 TexCoords; // Pass texture coordinates to the fragment shader
+
+void main() {
+    FragPos = vec3(model * vec4(aPos, 1.0)); // Calculate fragment position in world space
+    Normal = mat3(transpose(inverse(model))) * aNormal; // Calculate normal for the fragment
+    TexCoords = aTexCoords; // Pass texture coordinates to the fragment shader
+    gl_Position = projection * view * model * vec4(aPos, 1.0);
+}
+
+)glsl";
+
+const char* fragmentShaderSourceMaterial = R"glsl(
+#version 330 core
+out vec4 FragColor;
+
+in vec3 Normal; 
+in vec3 FragPos; 
+in vec2 TexCoords; 
+
+uniform float ambientStrength;
+uniform vec3 lightColor;
+uniform sampler2D texture1;
+
+void main() {
+    vec3 ambient = ambientStrength * lightColor;
+    vec4 texColor = texture(texture1, TexCoords);
+    vec3 result = ambient * vec3(texColor); // Combine ambient lighting with texture color
+    FragColor = texture(texture1, TexCoords);
+}
+
+)glsl";
+
 const char* vertexShaderSourceText = R"glsl(
 #version 330 core
 layout (location = 0) in vec4 vertex; // {x, y, z, w} -> {xpos, ypos, texCoords}

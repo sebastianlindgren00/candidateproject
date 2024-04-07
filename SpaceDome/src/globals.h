@@ -10,7 +10,7 @@
 
 extern GLuint shaderProgram; // Define it exactly once in the whole project
 
-const std::vector<std::string> allModelNames{ "planet1", "planet2", "SpaceShip", "asteroid1", "SpawnPlanetGreen", "SpawnPlanetRed", "backgroundFirstTest", "bullet", "star"};
+const std::vector<std::string> allModelNames{ "planet1", "planet2", "SpaceShip", "asteroid1", "SpawnPlanetGreenTest", "SpawnPlanetRed", "backgroundFirstTest", "bullet", "star"};
 
 const std::vector<std::string> allShaderNames{ "player", "text", "texture"};
 

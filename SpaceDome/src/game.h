@@ -62,7 +62,7 @@ const std::vector<std::unique_ptr<BackgroundObject>>& getBGObjects() const { ret
 Game(Game const&) = delete;
 void operator=(Game const&) = delete;
 
-void addPlayer(const std::string& name);
+void addPlayer(int id, const std::string& name);
 
 void addBullet(int team, float speed, glm::vec3 position,float orientation, int id);
 
@@ -120,6 +120,7 @@ float getSpawnRot() {return spawnRotation;}
 
 void addSpawnRot() {spawnRotation += 0.001;}
 
+
 private:
 //Constructor
 Game()  {
@@ -142,7 +143,7 @@ bool mGameActive = true;
 std::unordered_map<sgct::Key, bool> keyStates;
 float mLastFrameTime = sgct::time();
 float mTotalTime = 0;
-float mMaxTime = 30; //seconds
+float mMaxTime = 20; //seconds
 //float mLastTime = 0;
 float mResetGame = 10;
 

@@ -84,22 +84,11 @@ int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets)
     if(delayForRefill < wait){
         delayForRefill++;
     }
-
-        //keep track of superCharge and see if its charging and stars
-        //std::cout << "charge: " << superCharge << "\n";
-        //std::cout << "delay: " << delayForRefill << "\n";
-        //std::cout << "team: " << mTeam << "\n";
-        //std::cout << "Holding stars: " << mStarsHolding << "\n";
-        //std::cout << "Stars Handed in: " << mStars << "\n";
-
-
     setOrientation(mTurnSpeed);
     setPosition(glm::vec3(0.0f, cos(getOrientation()) * mSpeed, sin(getOrientation()) * mSpeed));
 
-    //checka så skeppet inte åker out of bounds
-    //ser lite skumt ut delvis pga perspektivet eftersom matrixen är anpassad för domen
-    //därför svårt att veta om värdena är korrekta
-    //dock lätt fix vid testning i domen
+
+    //so players dont go out of bounds
     if (mPosition.y > 2.3 || mPosition.y < -2.3){
         mPosition.y *= -1;
     } else if (mPosition.z > 3.5 || mPosition.z < -3.5)

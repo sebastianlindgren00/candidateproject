@@ -59,6 +59,8 @@ public:
 
 	int getStars() { return mStarsHolding; }
 
+	int getHandedInStars() { return mStars; }
+
 	void addHandedInStars(int addStars) { mStars += addStars; };
 
     void setIsAlive(bool isAlive) { mIsAlive = isAlive; };
@@ -100,6 +102,8 @@ public:
 	int getShotAvailable() {return shotAvailable;}
 
 	int getColorID() { return mColorID;}
+
+	bool canShot(){ return bulletTimer == shotAvailable;}
 
 
 private:

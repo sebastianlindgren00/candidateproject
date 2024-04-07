@@ -57,7 +57,6 @@ public:
 
 private:
 
-
 int lifeTime = 0;
 float bSpeed;
 int bTeam;

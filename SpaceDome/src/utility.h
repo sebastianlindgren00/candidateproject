@@ -13,8 +13,6 @@
 #include <assimp/stb_image.h>
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
-
-#include "utility.h"
 #include "AssimpLoader.h"
 #include "globals.h"
 
@@ -45,6 +43,7 @@ public:
 	
 	//setting up shaders before drawing
 	static void setupShaderForDrawing(const GLuint shaderProgram, const glm::vec3& position, const glm::vec3& color, float orientation, float scale, int rotAxis);
+	static void setupShaderForDrawingMaterial(const GLuint shaderProgram, const glm::vec3& position, float orientation, float scale, int rotAxis);
 	static GLuint compileShader(GLenum type, const char* source);
 	static GLuint createShaderProgram(const char* vertexSource, const char* fragmentSource);
 

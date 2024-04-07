@@ -38,8 +38,10 @@ std::unique_ptr<AssimpLoader> starsAssimp;
 std::unique_ptr<AssimpLoader> skyboxAssimp;
 std::vector<std::unique_ptr<AssimpLoader>> objectsAssimp;
 std::unique_ptr<AssimpLoader> backgroundObjectsAssimp;
+std::vector<std::string> hiscoreList(3);
 GLuint shaderProgram;
 GLuint shaderProgramTexture;
+GLuint shaderProgramMaterial;
 GLuint shaderProgramText;
 
 
@@ -59,6 +61,7 @@ void initOGL(GLFWwindow*) {
     //Utility utility;
     shaderProgram = Utility::createShaderProgram(vertexShaderSource, fragmentShaderSource);
     shaderProgramTexture = Utility::createShaderProgram(vertexShaderSourceTexture, fragmentShaderSourceTexture);
+    shaderProgramMaterial = Utility::createShaderProgram(vertexShaderSourceMaterial, fragmentShaderSourceMaterial);
     shaderProgramText = Utility::createShaderProgram(vertexShaderSourceText, fragmentShaderSourceText);
     
     //std::string baseDirectory = "../../models/";
@@ -116,51 +119,36 @@ void postSyncPreDraw() {
     // Apply the (now synchronized) application state before the rendering will start
 }
 
+std::vector<std::string> getHiscoreList(const std::vector<std::unique_ptr<Player>>& players) {
 
-//This is moved to Utility
-/*
-GLuint compileShader(GLenum type, const char* source) {
-    GLint success;
-    GLchar infoLog[512];
+    int first = 0, second = 0, third = 0;
 
-    GLuint shader = glCreateShader(type);
-    glShaderSource(shader, 1, &source, NULL);
-    glCompileShader(shader);
+    for (const auto& player : players) {
+        int stars = player->getHandedInStars();
+        std::string nameAndStars = player->getName() + " " + std::to_string(stars);
 
-    // Check for compile errors...
-    
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-    glGetShaderInfoLog(shader, 512, NULL, infoLog);
-    std::cerr << "ERROR::SHADER::COMPILATION_FAILED\n" << infoLog << std::endl;
+        if (stars >= first) {
+            hiscoreList[2] = hiscoreList[1];
+            hiscoreList[1] = hiscoreList[0];
+            hiscoreList[0] = nameAndStars;
+            third = second;
+            second = first;
+            first = stars;
+            
+            
+        } else if (stars >= second) {
+            hiscoreList[2] = hiscoreList[1];
+            hiscoreList[1] = nameAndStars;
+            third = second;
+            second = stars;
+        } else if (stars >= third) {
+            hiscoreList[2] = nameAndStars;
+            third = stars;
+        }
+    }
+
+    return hiscoreList;
 }
-    return shader;
-}
-
-GLuint createShaderProgram(const char* vertexSource, const char* fragmentSource) {
-    GLint success;
-    GLchar infoLog[512];
-    
-    GLuint vertexShader = compileShader(GL_VERTEX_SHADER, vertexSource);
-    GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, fragmentSource);
-
-    GLuint program = glCreateProgram();
-    glAttachShader(program, vertexShader);
-    glAttachShader(program, fragmentShader);
-    glLinkProgram(program);
-
-    // Check for linking errors...
-    glGetProgramiv(program, GL_LINK_STATUS, &success);
-if (!success) {
-    glGetProgramInfoLog(program, 512, NULL, infoLog);
-    std::cerr << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-}
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
-    return program;
-}
-*/
 
 
 void draw(const RenderData& data) {
@@ -212,12 +200,21 @@ void draw(const RenderData& data) {
         } else {
             utilityInstance.RenderText(shaderProgramText, "The Game Ended In A Draw!", 6, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
         }
+
+
+        hiscoreList = getHiscoreList(game.getPlayers());
+
         utilityInstance.RenderText(shaderProgramText, textRed, 5, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
         utilityInstance.RenderText(shaderProgramText, textGreen, 4, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
         utilityInstance.RenderText(shaderProgramText, "Player Hiscore:", 3, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
-        utilityInstance.RenderText(shaderProgramText, "Viktor", 2, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
-        utilityInstance.RenderText(shaderProgramText, "Tim", 1, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
-        utilityInstance.RenderText(shaderProgramText, "Bas", 0, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
+        if(game.getPlayers().size() > 0){
+        utilityInstance.RenderText(shaderProgramText, hiscoreList[0], 2, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
+        }
+        if(game.getPlayers().size() > 1){
+        utilityInstance.RenderText(shaderProgramText, hiscoreList[1], 1, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
+        }if(game.getPlayers().size() > 2){
+        utilityInstance.RenderText(shaderProgramText, hiscoreList[2], 0, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
+        }
         return;
     } 
 
@@ -283,6 +280,9 @@ void draw(const RenderData& data) {
         auto& meshes = objectsAssimp[i]->getMeshes(); // Using getMeshes() method to access the meshes
 
         for (unsigned int p = 0; p < meshes.size(); p++) {
+
+            
+
             meshes[p].Draw(); // Draw each mesh
         }
         //check for errors
@@ -338,7 +338,8 @@ void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Windo
 
     if (key == Key::P && action == Action::Press) {
     if(Game::instance().getPlayers().size() < 100) {
-        Game::instance().addPlayer("testPlayer");
+        int id = Game::instance().getLowestAvailablePlayerID();
+        Game::instance().addPlayer(id, "testPlayer");
     }
 }
     
@@ -354,8 +355,8 @@ void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Windo
 
 int main(int argc, char** argv) {
     
-    Game::instance().addPlayer("Viktor");
-    Game::instance().addPlayer("Alex");
+    Game::instance().addPlayer(0,"Viktor");
+    Game::instance().addPlayer(1,"Alex");
 
     std::vector<std::string> arg(argv + 1, argv + argc);
     Configuration config = sgct::parseArguments(arg);

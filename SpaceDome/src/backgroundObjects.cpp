@@ -8,6 +8,7 @@ BackgroundObject::~BackgroundObject()
 void BackgroundObject::update(std::vector<std::unique_ptr<BackgroundObject>>& mBGObjects)
 {
     for (const auto& object : mBGObjects) {
+
         if (this != object.get() && this->bPosition.x == object->bPosition.x) {
             glm::vec3 objectPos = object->getPosition();
             float distance = glm::distance(objectPos, bPosition);
@@ -32,6 +33,8 @@ void BackgroundObject::update(std::vector<std::unique_ptr<BackgroundObject>>& mB
     bOrientation += bOrientationSpeed;
     setPosition(glm::vec3(0.0, cos(bDirection) * bSpeed, sin(bDirection) * bSpeed));
 
+
+    //So background Objects dont go out of bounds
     int random = rand() % 10;
     if (bPosition.y > 4.3 || bPosition.y < -4.3){
         bPosition.y *= -1;

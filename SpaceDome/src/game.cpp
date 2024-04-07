@@ -1,15 +1,12 @@
 #include "game.h"
 
-void Game::addPlayer(const std::string& name) {
+void Game::addPlayer(int id, const std::string& name) {
     int team = teamRed <= teamGreen ? 1 : 2;
     if (team == 1) {
         teamRed++;
     } else {
         teamGreen++;
     }
-
-    //get a unique and lowest possible ID
-    int id = getLowestAvailablePlayerID();
 
     //get a unique color
     int colorID = findNextAvailableColorID(team);
@@ -102,17 +99,12 @@ void Game::removePlayer(int id) {
     });
 
     if (it != mPlayers.end()) {
-        //int team = (*it)->getTeam();
         if ((*it)->getTeam() == 1) {
             if(id )
             teamRed--;
         } else {
             teamGreen--;
         }
-
-        //updateLowestUnusedColorID(team);
-        //std::cout << "Red ColorID:" << redColorID << "\n";
-        //std::cout << "Green ColorID:" << greenColorID << "\n";
         mPlayers.erase(it);
         std::cout << "Player with ID: " << id << " was removed.\n";
     } else {
@@ -295,7 +287,6 @@ void Game::update(){
         mStars.push_back(std::make_unique<Star>(maxStarsID));
         maxStarsID++;
     }
-    std::cout << "Amount of stars in gama: " << mStars.size() << "\n";
 
     //remove bullets that have expired
     mBullets.erase(std::remove_if(mBullets.begin(), mBullets.end(),
