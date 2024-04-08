@@ -50,6 +50,8 @@ bool hasStars() const { return !mStars.empty(); }
 
 bool hasBGObjects () const { return !mBGObjects.empty(); }
 
+void UpdateScreenPositionsForPlayers(std::vector<Player>& players);
+
 const std::vector<std::unique_ptr<Player>>& getPlayers() const { return mPlayers; }
 
 std::vector<std::unique_ptr<Bullet>>& getBullets() { return mBullets; }

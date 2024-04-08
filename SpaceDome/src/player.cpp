@@ -18,12 +18,17 @@ Player::Player(const int id, const std::string& name, int team, int colorID, glm
         mPosition = glm::vec3(0.0f, 0.25f-(float)randx/100, 2.25f-(float)randy/100); // spawn position
         mTeam = 2;
     }
+
+    textPosition = Utility::CalculateScreenPositionsPlayers( mPosition * glm::vec3(1,-1,1) - glm::vec3(0,-0.5f,0));
+
+
 }
 
 Player::~Player()
 {
 	//sgct::Log::Info("Player with name=\"%s\" removed", mName.c_str());
 }
+
 
 
 int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets)
@@ -47,6 +52,7 @@ int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets)
             }else 
                 mPosition = glm::vec3(0.0f, 0.25f-(float)randx/100, 2.25f-(float)randy/100);
             }
+            //textPosition = Utility::CalculateScreenPositionsPlayers( mPosition * glm::vec3(1,-1,1) - glm::vec3(0,-0.5f,0));
             respawnTimer++;
         return -1; 
     }
@@ -86,6 +92,7 @@ int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets)
     }
     setOrientation(mTurnSpeed);
     setPosition(glm::vec3(0.0f, cos(getOrientation()) * mSpeed, sin(getOrientation()) * mSpeed));
+    //textPosition = Utility::CalculateScreenPositionsPlayers( mPosition * glm::vec3(1,-1,1) - glm::vec3(0,-0.5f,0));
 
 
     //so players dont go out of bounds

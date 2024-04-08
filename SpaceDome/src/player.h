@@ -105,6 +105,11 @@ public:
 
 	bool canShot(){ return bulletTimer == shotAvailable;}
 
+	float getTextX() { return textPosition.x; }
+	float getTextY() { return textPosition.y; }
+
+	void setTextPos(glm::vec2 pos) { textPosition = pos; }
+
 
 private:
 	//Player information/data
@@ -125,6 +130,8 @@ private:
     float mOrientation = 0.0f;
 	int respawnTimer = 0;
 	int mTeam = 0;
+
+	glm::vec2 textPosition;
 
 
 	glm::vec3 mPlayerColor;	

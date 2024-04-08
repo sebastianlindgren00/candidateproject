@@ -44,9 +44,6 @@ GLuint shaderProgramTexture;
 GLuint shaderProgramMaterial;
 GLuint shaderProgramText;
 
-
-    
-
 void initOGL(GLFWwindow*) {
 
     std::string filePath1 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[2] + ".fbx";
@@ -134,8 +131,6 @@ std::vector<std::string> getHiscoreList(const std::vector<std::unique_ptr<Player
             third = second;
             second = first;
             first = stars;
-            
-            
         } else if (stars >= second) {
             hiscoreList[2] = hiscoreList[1];
             hiscoreList[1] = nameAndStars;
@@ -146,7 +141,6 @@ std::vector<std::string> getHiscoreList(const std::vector<std::unique_ptr<Player
             third = stars;
         }
     }
-
     return hiscoreList;
 }
 
@@ -158,7 +152,7 @@ void draw(const RenderData& data) {
     Game& game = Game::instance();
 
     game.addSpawnRot();
-
+    
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
@@ -168,29 +162,8 @@ void draw(const RenderData& data) {
 
     //render Text
     Utility utilityInstance;
-    //create vector with all players
-    auto& playerposinit = game.getPlayers();
-    //create vector that will be used for knowing playerpositions
-    std::vector<glm::vec3> playerpos;
-
-    //gamla värden för textposition bör nog göras finare
-    playerpos.push_back(glm::vec3(-2, 2.5, 0));
-    playerpos.push_back(glm::vec3(-2, 2, 0));
-    playerpos.push_back(glm::vec3(-2, 1.5, 0));
-    playerpos.push_back(glm::vec3(-2, 1, 0));
-    playerpos.push_back(glm::vec3(-2, -0, 0));
-    playerpos.push_back(glm::vec3(-2, -0.5, 0));
-    playerpos.push_back(glm::vec3(-2, -1, 0));
-    playerpos.push_back(glm::vec3(-2, -2, 0));
-
-    for (int i = 0; i < playerposinit.size(); i++)
-    {   //put playerpositions in the vector
-        playerpos.push_back((playerposinit[i]->getPosition()) * glm::vec3(1,-1,1) - glm::vec3(0,-0.5f,0));
-     
-    }
-    
-    //initialize positions for text
-    Utility::CalculateScreenPositions(playerpos);
+    Utility::CalculateScreenPositions();
+   
     int timer = game.getEndTime();
 
     glEnable(GL_DEPTH_TEST);
@@ -222,7 +195,6 @@ void draw(const RenderData& data) {
             utilityInstance.RenderText(shaderProgramText, "The Game Ended In A Draw!", 6, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
         }
 
-
         hiscoreList = getHiscoreList(game.getPlayers());
 
         utilityInstance.RenderText(shaderProgramText, textRed, 5, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
@@ -244,8 +216,6 @@ void draw(const RenderData& data) {
     utilityInstance.RenderText(shaderProgramText, textTime, 6, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
     utilityInstance.RenderText(shaderProgramText, textRed, 5, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
     utilityInstance.RenderText(shaderProgramText, textGreen, 4, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
-    utilityInstance.RenderText(shaderProgramText, "Player 1", 8, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
-    utilityInstance.RenderText(shaderProgramText, "Player 2", 9, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
 
     glEnable(GL_DEPTH_TEST);
     if (game.hasPlayers()) {
@@ -313,15 +283,20 @@ void draw(const RenderData& data) {
             std::cerr << "OpenGL error after linking shader program: " << err << std::endl;
         }
 } 
-    
-      
+    //Player names should be above all else
+    glDisable(GL_DEPTH_TEST);
+
+    std::vector<std::tuple<std::string, float, float, float, glm::vec3>> printsPlayers;
+    for(auto& player : game.getPlayers()){
+        if(player->isAlive())
+        printsPlayers.push_back(std::make_tuple(player->getName(), player->getTextX(), player->getTextY(), 0.3f, glm::vec3(0.8f, 0.8f, 0.8f)));
+    }
+    utilityInstance.RenderTextPlayers(shaderProgramText, printsPlayers);
 }
 
 void cleanup() {
     // Cleanup all of your state, particularly the OpenGL state in here.  This function
     // should behave symmetrically to the initOGL function
-
-
 }
 /*
 void keyboard(Key key, Modifier modifier, Action action, int, Window*) {
@@ -371,14 +346,14 @@ void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Windo
             int lastPlayerId = players.back()->getID();
             Game::instance().removePlayer(lastPlayerId);
         }
-    }
-    
+    } 
 }
 
 int main(int argc, char** argv) {
     
     Game::instance().addPlayer(0,"Viktor");
-    Game::instance().addPlayer(1,"Alex");
+    Game::instance().addPlayer(1,"Tim");
+    Game::instance().addPlayer(2,"Bas");
 
     std::vector<std::string> arg(argv + 1, argv + argc);
     Configuration config = sgct::parseArguments(arg);
@@ -393,9 +368,9 @@ int main(int argc, char** argv) {
     callbacks.draw = draw;
     callbacks.cleanup = cleanup;
     //callbacks.keyboard = keyboard;
+    //new Keyboard function
     callbacks.keyboard = globalKeyboardHandler;
     
-
     try {
         Engine::create(cluster, callbacks, config);
     }
@@ -421,7 +396,6 @@ int main(int argc, char** argv) {
 
     Engine::destroy();
 
-
     std::cout << "\n\n\nRed Team had: " << Game::instance().getWins(1) << " Wins. \n";
     std::cout << "Green Team had: " << Game::instance().getWins(2) << " Wins. \n\n";
     if(Game::instance().getWins(1) < Game::instance().getWins(2)){
@@ -431,7 +405,6 @@ int main(int argc, char** argv) {
     }else{
         std::cout << "The Game ended in a draw! \n\n\n";
     }
-
 
     return EXIT_SUCCESS;
 }

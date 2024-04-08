@@ -168,7 +168,6 @@ void Game::updateTurnSpeed(unsigned int id, float rotAngle)
 	mPlayers[id]->setTurnSpeed(rotAngle);
 }
 
-
 void Game::update(){
     //First update?	
     if (mLastFrameTime == -1) {
@@ -196,6 +195,12 @@ void Game::update(){
     //std::cout << (int)mTotalTime << "\n";
     for(auto& bgObject : mBGObjects)
         bgObject->update(mBGObjects);
+
+    for (auto& player : mPlayers) {
+        if (player->isAlive()) {
+            player->setTextPos(Utility::CalculateScreenPositionsPlayers(player->getPosition()* glm::vec3(1,-1,1) - glm::vec3(0,-0.5f,0)));
+        }
+    }
     
     // Max antal stjärnor?  greenTeamStars == 150 || redTeamStars == 150 || 
     if(mTotalTime >= mMaxTime && mGameActive == true){

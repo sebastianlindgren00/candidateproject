@@ -49,7 +49,6 @@ void Utility::setupShaderForDrawingMaterial(const GLuint shaderProgram, const gl
     glUniform3fv(glGetUniformLocation(shaderProgram, "viewPos"), 1, glm::value_ptr(viewPos));
 }
 
-
 void Utility::setupShaderForDrawing(const GLuint shaderProgram, const glm::vec3& position, const glm::vec3& color, float orientation, float scale, int rotAxis) {
     glUseProgram(shaderProgram);
 
@@ -192,7 +191,7 @@ void Utility::LoadFontAtlas(const std::string& fontPath) {
     FT_Done_FreeType(ft);
 }
 
-const glm::vec3 Utility::worldPositions[10] = {
+const glm::vec3 Utility::worldPositions[8] = {
     glm::vec3(-2, 2.5, 0),
     glm::vec3(-2, 2, 0),
     glm::vec3(-2, 1.5, 0),
@@ -203,24 +202,118 @@ const glm::vec3 Utility::worldPositions[10] = {
     glm::vec3(-2, -2, 0)
 };
 
-glm::vec2 Utility::screenPositions[10];
+glm::vec2 Utility::screenPositions[8];
 
-void Utility::CalculateScreenPositions(std::vector<glm::vec3> playerpos){
-    	glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), 800.0f / 500.0f, 0.1f, 100.0f);
-    	glm::vec3 viewPos = glm::vec3(5.0f, 0.0f, 0.0f);
-    	glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-    	glm::vec3 upDirection = glm::vec3(0.0f, 1.0f, 0.0f);
-    	glm::mat4 viewMatrix = glm::lookAt(viewPos, cameraTarget, upDirection);
-        
-    	for (int i = 0; i < playerpos.size(); ++i) {
-        	glm::vec4 clipSpacePos = projectionMatrix * viewMatrix * glm::vec4(playerpos[i], 1.0);
-        	glm::vec3 ndcSpacePos = glm::vec3(clipSpacePos) / clipSpacePos.w;
-        	screenPositions[i].x = (ndcSpacePos.x + 1.0f) / 2.0f * 800;
-        	screenPositions[i].y = (1.0f - ndcSpacePos.y) / 2.0f * 500;
-    	}
+const glm::mat4 Utility::projectionMatrix = glm::perspective(glm::radians(45.0f), 800.0f / 500.0f, 0.1f, 100.0f);
+const glm::vec3 Utility::viewPos = glm::vec3(5.0f, 0.0f, 0.0f);
+const glm::vec3 Utility::cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+const glm::vec3 Utility::upDirection = glm::vec3(0.0f, 1.0f, 0.0f);
+const glm::mat4 Utility::viewMatrix = glm::lookAt(Utility::viewPos, Utility::cameraTarget, Utility::upDirection);
+
+glm::vec2 Utility::CalculateScreenPositionsPlayers(glm::vec3 playerpos) {
+    glm::vec4 clipSpacePos = Utility::projectionMatrix * Utility::viewMatrix * glm::vec4(playerpos, 1.0);
+    glm::vec3 ndcSpacePos = glm::vec3(clipSpacePos) / clipSpacePos.w;
+    return glm::vec2((ndcSpacePos.x + 1.0f) / 2.0f * 800, (1.1f - ndcSpacePos.y) / 2.0f * 500);
+}
+
+void Utility::CalculateScreenPositions() {
+    for(size_t i = 0; i < 8; i++){
+    glm::vec4 clipSpacePos = projectionMatrix * viewMatrix * glm::vec4(worldPositions[i], 1.0);
+    glm::vec3 ndcSpacePos = glm::vec3(clipSpacePos) / clipSpacePos.w;
+    screenPositions[i].x = (ndcSpacePos.x + 1.0f) / 2.0f * 800;
+    screenPositions[i].y = (1.0f - ndcSpacePos.y) / 2.0f * 500;
+     }
+}
+
+void Utility::RenderSingleText(GLuint shaderProgram, const std::string& text, float x, float y, float scale, const glm::vec3& color) {
+    float textWidth = 0;
+    for (auto c : text) {
+        if (Characters.find(c) == Characters.end()) continue; // Character not found
+        Character ch = Characters[c];
+        textWidth += (ch.Advance >> 6) * scale; // Bitshift by 6 to get value in pixels (advance is typically in 1/64 pixels)
+    }
+
+    x -= textWidth / 2; // Center text horizontally
+
+    glUniform3f(glGetUniformLocation(shaderProgram, "textColor"), color.x, color.y, color.z);
+
+    // Iterate over each character
+    for (auto c : text) {
+        if (Characters.find(c) == Characters.end()) continue; // Character not found
+        Character ch = Characters[c];
+
+        float xpos = x + ch.Bearing.x * scale;
+        float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
+        float w = ch.Size.x * scale;
+        float h = ch.Size.y * scale;
+
+        // Update VBO for each character
+        GLfloat vertices[6][4] = {
+            { xpos,     ypos + h,   0.0, 0.0 }, // Top left
+            { xpos,     ypos,       0.0, 1.0 }, // Bottom left
+            { xpos + w, ypos,       1.0, 1.0 }, // Bottom right
+            { xpos,     ypos + h,   0.0, 0.0 }, // Top left
+            { xpos + w, ypos,       1.0, 1.0 }, // Bottom right
+            { xpos + w, ypos + h,   1.0, 0.0 }  // Top right
+        };
+
+        // Render glyph texture over quad
+        glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+        glBindBuffer(GL_ARRAY_BUFFER, textVBO);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // Update content of VBO memory
+
+        // Render quad
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        // Now advance cursors for next glyph
+        x += (ch.Advance >> 6) * scale; // Bitshift by 6 to get value in pixels (advance is typically in 1/64 pixels)
+    }
 }
 
 void Utility::RenderText(GLuint shaderProgram, std::string text, int row, float scale, glm::vec3 color) {
+    // CalculateScreenPositions must have been called beforehand to populate screenPositions
+    float x = Utility::screenPositions[row].x; 
+	float y = Utility::screenPositions[row].y;
+
+    // Prepare text rendering once
+    glUseProgram(shaderProgram);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glActiveTexture(GL_TEXTURE0);
+    glBindVertexArray(textVAO);
+    glUniform1i(glGetUniformLocation(shaderProgram, "text"), 0);
+    glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(800), 0.0f, static_cast<float>(500));
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+
+    RenderSingleText(shaderProgram, text, x, y, scale, color); // Optimized function for rendering a single text element
+    
+    glBindVertexArray(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_BLEND);
+}
+
+void Utility::RenderTextPlayers(GLuint shaderProgram, const std::vector<std::tuple<std::string, float, float, float, glm::vec3>>& texts) {
+    // Prepare text rendering once
+    glUseProgram(shaderProgram);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glActiveTexture(GL_TEXTURE0);
+    glBindVertexArray(textVAO);
+    glUniform1i(glGetUniformLocation(shaderProgram, "text"), 0);
+    glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(800), 0.0f, static_cast<float>(500));
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+
+    for (const auto& [text, x, y, scale, color] : texts) {
+        RenderSingleText(shaderProgram, text, x, y, scale, color); // Optimized function for rendering a single text element
+    }
+
+    glBindVertexArray(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_BLEND);
+}
+
+/*
+void Utility::RenderTextPlayers(GLuint shaderProgram, std::string text, float x, float y, float scale, glm::vec3 color) {
     // Calculate the width of the text
     float textWidth = 0;
     for (auto c : text) {
@@ -228,14 +321,9 @@ void Utility::RenderText(GLuint shaderProgram, std::string text, int row, float 
         textWidth += (ch.Advance >> 6) * scale; // Bitshift by 6 to get value in pixels
     }
 
-	if (row < 0 || row >= 10) {
-        std::cerr << "Invalid row specified. Must be 0, 1, or 2." << std::endl;
-        return;
-    }
-
     // CalculateScreenPositions must have been called beforehand to populate screenPositions
-    float x = Utility::screenPositions[row].x  - (textWidth / 2); 
-	float y = Utility::screenPositions[row].y;
+    x -= (textWidth / 2);
+
 
     // Activate the shader program
     glUseProgram(shaderProgram);
@@ -283,8 +371,7 @@ void Utility::RenderText(GLuint shaderProgram, std::string text, int row, float 
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_BLEND);
 }
-
-
+*/
 
 GLuint Utility::compileShader(GLenum type, const char* source) {
     GLint success;

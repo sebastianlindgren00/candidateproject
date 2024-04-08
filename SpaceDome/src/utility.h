@@ -37,6 +37,9 @@ public:
 	static void LoadFontAtlas(const std::string& fontPath);
 	//rendering text
 	void RenderText(GLuint shaderProgram, std::string text, int row, float scale, glm::vec3 color);
+	//void RenderTextPlayers(GLuint shaderProgram, std::string text, float x, float y, float scale, glm::vec3 color);
+	void RenderTextPlayers(GLuint shaderProgram, const std::vector<std::tuple<std::string, float, float, float, glm::vec3>>& texts);
+	void RenderSingleText(GLuint shaderProgram, const std::string& text, float x, float y, float scale, const glm::vec3& color);
 	
 	//getting textures
 	static unsigned int textureFromFile(const char* path, const std::string& directory/*bool gamma = false*/);
@@ -48,13 +51,21 @@ public:
 	static GLuint createShaderProgram(const char* vertexSource, const char* fragmentSource);
 
 	//calculate positions for texts
-	static glm::vec2 screenPositions[10];
-	static const glm::vec3 worldPositions[10];
-	static void CalculateScreenPositions(std::vector<glm::vec3> playerpos);
+	static glm::vec2 screenPositions[8];
+	static const glm::vec3 worldPositions[8];
+	static glm::vec2 CalculateScreenPositionsPlayers(glm::vec3 playerpos);
+	static void CalculateScreenPositions();
 
 
 
 private:
+
+	static const glm::mat4 projectionMatrix;
+    static const glm::vec3 viewPos;
+    static const glm::vec3 cameraTarget;
+    static const glm::vec3 upDirection;
+    static const glm::mat4 viewMatrix;
+	
 
 	GLuint textVAO, textVBO;
 	
