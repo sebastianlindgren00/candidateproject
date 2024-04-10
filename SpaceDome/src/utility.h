@@ -56,8 +56,6 @@ public:
 	static glm::vec2 CalculateScreenPositionsPlayers(glm::vec3 playerpos);
 	static void CalculateScreenPositions();
 
-
-
 private:
 
 	static const glm::mat4 projectionMatrix;
@@ -66,8 +64,5 @@ private:
     static const glm::vec3 upDirection;
     static const glm::mat4 viewMatrix;
 	
-
 	GLuint textVAO, textVBO;
-	
-
 };

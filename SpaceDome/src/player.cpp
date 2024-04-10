@@ -11,11 +11,11 @@ Player::Player(const int id, const std::string& name, int team, int colorID, glm
     mOrientation = 0.25 - (float)randx/100;
     if(team == 1) {
         //mPos = position of red spawn;
-        mPosition = glm::vec3(0.0f, 0.25f-(float)randx/100, -2.25f+(float)randy/100); // spawn position
+        mPosition = glm::vec3(0.0f, 0.25f-(float)randx/100, -(fovScale/21)+(float)randy/100); // spawn position
         mTeam = 1;
     } else {
         //mPos = position of green spawn;
-        mPosition = glm::vec3(0.0f, 0.25f-(float)randx/100, 2.25f-(float)randy/100); // spawn position
+        mPosition = glm::vec3(0.0f, 0.25f-(float)randx/100, (fovScale/21)-(float)randy/100); // spawn position
         mTeam = 2;
     }
 
@@ -48,9 +48,9 @@ int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets)
             superCharge = 200;
             
             if(mTeam == 1){
-                mPosition = glm::vec3(0.0f, 0.25f-(float)randx/100, -2.25f+(float)randy/100);
+                mPosition = glm::vec3(0.0f, 0.25f-(float)randx/100, -(fovScale/21)+(float)randy/100);
             }else 
-                mPosition = glm::vec3(0.0f, 0.25f-(float)randx/100, 2.25f-(float)randy/100);
+                mPosition = glm::vec3(0.0f, 0.25f-(float)randx/100, (fovScale/21)-(float)randy/100);
             }
             //textPosition = Utility::CalculateScreenPositionsPlayers( mPosition * glm::vec3(1,-1,1) - glm::vec3(0,-0.5f,0));
             respawnTimer++;
@@ -96,9 +96,9 @@ int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets)
 
 
     //so players dont go out of bounds
-    if (mPosition.y > 2.3 || mPosition.y < -2.3){
+    if (mPosition.y > boundryX*1.1 || mPosition.y < -boundryX*1.1){
         mPosition.y *= -1;
-    } else if (mPosition.z > 3.5 || mPosition.z < -3.5)
+    } else if (mPosition.z > boundryY*1.2 || mPosition.z < -boundryY*1.2)
     {
         mPosition.z *= -1;
     }
@@ -114,7 +114,7 @@ void Player::draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuin
 		return;
 
     //setup shaderProgram
-    Utility::setupShaderForDrawing(shaderProgram, mPosition, mPlayerColor, mOrientation, 0.2, 0);
+    Utility::setupShaderForDrawing(shaderProgram, mPosition, mPlayerColor, mOrientation, playerScale, 0);
     
     //draw
     auto& meshes = assimpLoader->getMeshes();

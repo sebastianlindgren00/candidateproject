@@ -30,7 +30,7 @@ void Utility::setupShaderForDrawingMaterial(const GLuint shaderProgram, const gl
 
     // Set model, view, projection matrices uniforms
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
-    glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), 800.0f / 500.0f, 0.1f, 100.0f);
+    glm::mat4 projectionMatrix = glm::perspective(glm::radians(fovScale), 800.0f / 500.0f, 0.1f, 100.0f);
     glm::vec3 viewPos = glm::vec3(5.0f, 0.0f, 0.0f);
     glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 upDirection = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -62,7 +62,7 @@ void Utility::setupShaderForDrawing(const GLuint shaderProgram, const glm::vec3&
     } else {
         modelMatrix = glm::rotate(modelMatrix, orientation, glm::vec3(1.0f, 1.0f, 0.0f));
     }
-    glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), 800.0f / 500.0f, 0.1f, 100.0f);
+    glm::mat4 projectionMatrix = glm::perspective(glm::radians(fovScale), 800.0f / 500.0f, 0.1f, 100.0f);
     glm::vec3 viewPos = glm::vec3(5.0f, 0.0f, 0.0f);
     glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 upDirection = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -191,20 +191,19 @@ void Utility::LoadFontAtlas(const std::string& fontPath) {
     FT_Done_FreeType(ft);
 }
 
+//initialise positions and matrixes for rendering text
 const glm::vec3 Utility::worldPositions[8] = {
-    glm::vec3(-2, 2.5, 0),
-    glm::vec3(-2, 2, 0),
-    glm::vec3(-2, 1.5, 0),
-    glm::vec3(-2, 1, 0),
+    glm::vec3(-2, 2.5 *(fovScale/45), 0),
+    glm::vec3(-2, 2 *(fovScale/45), 0),
+    glm::vec3(-2, 1.5 *(fovScale/45), 0),
+    glm::vec3(-2, 1 *(fovScale/45), 0),
     glm::vec3(-2, -0, 0),
-    glm::vec3(-2, -0.5, 0),
-    glm::vec3(-2, -1, 0),
-    glm::vec3(-2, -2, 0)
+    glm::vec3(-2, -0.5 *(fovScale/45), 0),
+    glm::vec3(-2, -1 *(fovScale/45), 0),
+    glm::vec3(-2, -2 *(fovScale/45), 0)
 };
-
 glm::vec2 Utility::screenPositions[8];
-
-const glm::mat4 Utility::projectionMatrix = glm::perspective(glm::radians(45.0f), 800.0f / 500.0f, 0.1f, 100.0f);
+const glm::mat4 Utility::projectionMatrix = glm::perspective(glm::radians(fovScale), 800.0f / 500.0f, 0.1f, 100.0f);
 const glm::vec3 Utility::viewPos = glm::vec3(5.0f, 0.0f, 0.0f);
 const glm::vec3 Utility::cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 const glm::vec3 Utility::upDirection = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -213,7 +212,7 @@ const glm::mat4 Utility::viewMatrix = glm::lookAt(Utility::viewPos, Utility::cam
 glm::vec2 Utility::CalculateScreenPositionsPlayers(glm::vec3 playerpos) {
     glm::vec4 clipSpacePos = Utility::projectionMatrix * Utility::viewMatrix * glm::vec4(playerpos, 1.0);
     glm::vec3 ndcSpacePos = glm::vec3(clipSpacePos) / clipSpacePos.w;
-    return glm::vec2((ndcSpacePos.x + 1.0f) / 2.0f * 800, (1.1f - ndcSpacePos.y) / 2.0f * 500);
+    return glm::vec2((ndcSpacePos.x + 1.0f) / 2.0f * 800, (1.2f-(fovScale/500) - ndcSpacePos.y) / 2.0f * 500);
 }
 
 void Utility::CalculateScreenPositions() {
@@ -230,7 +229,7 @@ void Utility::RenderSingleText(GLuint shaderProgram, const std::string& text, fl
     for (auto c : text) {
         if (Characters.find(c) == Characters.end()) continue; // Character not found
         Character ch = Characters[c];
-        textWidth += (ch.Advance >> 6) * scale; // Bitshift by 6 to get value in pixels (advance is typically in 1/64 pixels)
+        textWidth += (ch.Advance >> 6) * scale;
     }
 
     x -= textWidth / 2; // Center text horizontally

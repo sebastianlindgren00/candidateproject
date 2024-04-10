@@ -150,9 +150,7 @@ void main() {
 const char* vertexShaderSourceText = R"glsl(
 #version 330 core
 layout (location = 0) in vec4 vertex; // {x, y, z, w} -> {xpos, ypos, texCoords}
-
 out vec2 TexCoords;
-
 uniform mat4 projection;
 
 void main() {
@@ -165,12 +163,47 @@ const char* fragmentShaderSourceText = R"glsl(
 #version 330 core
 in vec2 TexCoords;
 out vec4 FragColor;
-
 uniform sampler2D text;
 uniform vec3 textColor;
 
 void main() {    
-    vec4 sampled = vec4(1.0, 1.0, 1.0, texture(text, TexCoords).r);
-    FragColor = vec4(textColor, 1.0) * sampled;
+    FragColor = vec4(textColor, texture(text, TexCoords).r);
+}
+)glsl";
+
+const char* vertexShaderSourceFisheye = R"glsl(
+#version 330 core
+layout(location = 0) in vec2 aPos;
+layout(location = 1) in vec2 aTexCoord;
+
+out vec2 TexCoord;
+
+void main() {
+    TexCoord = aTexCoord;
+    gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0);
+}
+)glsl";
+
+const char* fragmentShaderSourceFisheye = R"glsl(
+#version 330 core
+out vec4 FragColor;
+
+in vec2 TexCoord;
+
+uniform sampler2D screenTexture;
+
+void main() {
+    vec2 uv = TexCoord * 2.0 - 1.0; // Map texture coordinates from [0,1] to [-1,1]
+    float radius = length(uv);
+    if (radius > 1.0) discard; // Discard fragment outside the circle
+
+    // Fisheye effect
+    float z = sqrt(1.0 - radius * radius);
+    vec2 uvDistorted = uv * (1.0 / z);
+    
+    // Optionally you can re-normalize to [0,1] if needed
+    // uvDistorted = uvDistorted * 0.5 + 0.5;
+
+    FragColor = texture(screenTexture, uvDistorted);
 }
 )glsl";

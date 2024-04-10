@@ -175,7 +175,7 @@ void Game::update(){
 	return;
 	}
 
-    if(mBGObjects.size() < 7) {
+    if(mBGObjects.size() < (int)fovScale/5) {
         mBGObjects.push_back(std::make_unique<BackgroundObject>(xPosBgObjects));
         if(counterForBGObjects == 3)
         {
@@ -192,7 +192,6 @@ void Game::update(){
 	float deltaTime = currentFrameTime - mLastFrameTime;
 	this->mTotalTime = deltaTime;
 
-    //std::cout << (int)mTotalTime << "\n";
     for(auto& bgObject : mBGObjects)
         bgObject->update(mBGObjects);
 
@@ -285,9 +284,9 @@ void Game::update(){
         starDelayCounter++;
     }
 
-    int totalStars = 25 + teamRed + teamGreen;
+    int totalStars = (int)(25 + 1.5*(teamRed + teamGreen))*(fovScale/(fovScale*0.9));
     if((int)mStars.size() < totalStars && starDelayCounter >= starDelay){
-        starDelay = (rand() % 100) + 1;
+        starDelay = (rand() % 50) + 1;
         starDelayCounter = 0;
         mStars.push_back(std::make_unique<Star>(maxStarsID));
         maxStarsID++;

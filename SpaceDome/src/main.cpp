@@ -43,6 +43,56 @@ GLuint shaderProgram;
 GLuint shaderProgramTexture;
 GLuint shaderProgramMaterial;
 GLuint shaderProgramText;
+GLuint shaderProgramFisheye;
+
+GLuint framebuffer = 0;
+GLuint textureColorbuffer = 0;
+
+
+//For Fisheye:
+
+GLuint quadVAO = 0;
+GLuint quadVBO = 0;
+
+void initFullScreenQuad() {
+    float quadVertices[] = {
+        // Positions   // TexCoords
+        -1.0f,  1.0f,  0.0f, 1.0f,
+        -1.0f, -1.0f,  0.0f, 0.0f,
+         1.0f, -1.0f,  1.0f, 0.0f,
+
+        -1.0f,  1.0f,  0.0f, 1.0f,
+         1.0f, -1.0f,  1.0f, 0.0f,
+         1.0f,  1.0f,  1.0f, 1.0f
+    };
+
+    // Setup screen VAO
+    glGenVertexArrays(1, &quadVAO);
+    glGenBuffers(1, &quadVBO);
+    glBindVertexArray(quadVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+
+    // Position attribute
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    // Texture coordinate attribute
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    // Unbind the VAO first (not the VBO or EBO), then unbind the VBO
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void renderFullScreenQuad() {
+    glBindVertexArray(quadVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(0);
+}
+
+
+//--------------------------------
 
 void initOGL(GLFWwindow*) {
 
@@ -60,7 +110,31 @@ void initOGL(GLFWwindow*) {
     shaderProgramTexture = Utility::createShaderProgram(vertexShaderSourceTexture, fragmentShaderSourceTexture);
     shaderProgramMaterial = Utility::createShaderProgram(vertexShaderSourceMaterial, fragmentShaderSourceMaterial);
     shaderProgramText = Utility::createShaderProgram(vertexShaderSourceText, fragmentShaderSourceText);
-    
+ /*
+    initFullScreenQuad();
+     // Framebuffer configuration
+    glGenFramebuffers(1, &framebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+
+    // Create a color attachment texture
+    glGenTextures(1, &textureColorbuffer);
+    glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL); // Use your desired dimensions
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    // Attach it to currently bound framebuffer object
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
+    // Load shaders and get a shader program for fisheye effect
+    shaderProgramFisheye = Utility::createShaderProgram(vertexShaderSourceFisheye, fragmentShaderSourceFisheye);
+*/
     //std::string baseDirectory = "../../models/";
     modelsAssimp = std::make_unique<AssimpLoader>(filePath1);
     bulletsAssimp = std::make_unique<AssimpLoader>(filePath4);
@@ -74,6 +148,7 @@ void initOGL(GLFWwindow*) {
     Utility::LoadFontAtlas(fontPath);
 
     std::cout << "after assimpLoader \n";
+
 }
 
 void preSync() {
@@ -144,7 +219,6 @@ std::vector<std::string> getHiscoreList(const std::vector<std::unique_ptr<Player
     return hiscoreList;
 }
 
-
 void draw(const RenderData& data) {
     (void)data;
 
@@ -152,10 +226,20 @@ void draw(const RenderData& data) {
     Game& game = Game::instance();
 
     game.addSpawnRot();
+
+    //fisheye
+    // Bind framebuffer for offscreen rendering
+    //glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+    //glViewport(0, 0, 800, 600); // Match the framebuffer size
+    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //glEnable(GL_DEPTH_TEST);
+
+    //annars
     
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
+    
 
     std::string textRed = "RED TEAM: " + std::to_string(game.getStars(1));
     std::string textGreen = "GREEN TEAM: " + std::to_string(game.getStars(2));
@@ -186,36 +270,36 @@ void draw(const RenderData& data) {
     
         timer = game.getRestartTime();
         std::string textTime = "NEW GAME STARTS IN: " + std::to_string(timer);
-        utilityInstance.RenderText(shaderProgramText, textTime, 7, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
+        utilityInstance.RenderText(shaderProgramText, textTime, 7, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f));
         if(game.getStars(1) > game.getStars(2)){
-            utilityInstance.RenderText(shaderProgramText, "Red Team Won!", 6, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
+            utilityInstance.RenderText(shaderProgramText, "Red Team Won!", 6, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f));
         } else if(game.getStars(1) < game.getStars(2)){
-            utilityInstance.RenderText(shaderProgramText, "Green Team Won!", 6, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
+            utilityInstance.RenderText(shaderProgramText, "Green Team Won!", 6, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f));
         } else {
-            utilityInstance.RenderText(shaderProgramText, "The Game Ended In A Draw!", 6, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
+            utilityInstance.RenderText(shaderProgramText, "The Game Ended In A Draw!", 6, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f));
         }
 
         hiscoreList = getHiscoreList(game.getPlayers());
 
-        utilityInstance.RenderText(shaderProgramText, textRed, 5, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
-        utilityInstance.RenderText(shaderProgramText, textGreen, 4, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
-        utilityInstance.RenderText(shaderProgramText, "Player Hiscore:", 3, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
+        utilityInstance.RenderText(shaderProgramText, textRed, 5, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f));
+        utilityInstance.RenderText(shaderProgramText, textGreen, 4, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f));
+        utilityInstance.RenderText(shaderProgramText, "Player Hiscore:", 3, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f));
         if(game.getPlayers().size() > 0){
-        utilityInstance.RenderText(shaderProgramText, hiscoreList[0], 2, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
+        utilityInstance.RenderText(shaderProgramText, hiscoreList[0], 2, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f));
         }
         if(game.getPlayers().size() > 1){
-        utilityInstance.RenderText(shaderProgramText, hiscoreList[1], 1, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
+        utilityInstance.RenderText(shaderProgramText, hiscoreList[1], 1, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f));
         }if(game.getPlayers().size() > 2){
-        utilityInstance.RenderText(shaderProgramText, hiscoreList[2], 0, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
+        utilityInstance.RenderText(shaderProgramText, hiscoreList[2], 0, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f));
         }
         return;
     } 
 
     std::string textTime = "GAME ENDS IN: " + std::to_string(timer);
 
-    utilityInstance.RenderText(shaderProgramText, textTime, 6, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
-    utilityInstance.RenderText(shaderProgramText, textRed, 5, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
-    utilityInstance.RenderText(shaderProgramText, textGreen, 4, 0.5f, glm::vec3(0.8f, 0.8f, 0.8f));
+    utilityInstance.RenderText(shaderProgramText, textTime, 6, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f));
+    utilityInstance.RenderText(shaderProgramText, textRed, 5, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f));
+    utilityInstance.RenderText(shaderProgramText, textGreen, 4, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f));
 
     glEnable(GL_DEPTH_TEST);
     if (game.hasPlayers()) {
@@ -259,11 +343,11 @@ void draw(const RenderData& data) {
     for(size_t i = 0; i < objectsAssimp.size(); i++ ){
 
         glm::vec3 objectColor = glm::vec3(0.4f, 1.f, 0.2f);
-        glm::vec3 pos = glm::vec3(-1.0f, 0.0f, 2.0f);
+        glm::vec3 pos = glm::vec3(-1.0f, 0.0f, fovScale/21);
     
         if(i == 0){
             objectColor = glm::vec3(1.f, 0.2f, 0.2f);
-            pos = glm::vec3(-1.0f, 0.0f, -2.0f);
+            pos = glm::vec3(-1.0f, 0.0f, -fovScale/21);
         }
 
         Utility::setupShaderForDrawing(shaderProgram, pos, objectColor, game.getSpawnRot(), 0.4, 1);
@@ -289,14 +373,37 @@ void draw(const RenderData& data) {
     std::vector<std::tuple<std::string, float, float, float, glm::vec3>> printsPlayers;
     for(auto& player : game.getPlayers()){
         if(player->isAlive())
-        printsPlayers.push_back(std::make_tuple(player->getName(), player->getTextX(), player->getTextY(), 0.3f, glm::vec3(0.8f, 0.8f, 0.8f)));
+        printsPlayers.push_back(std::make_tuple(player->getName(), player->getTextX(), player->getTextY(), 0.3f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f)));
     }
     utilityInstance.RenderTextPlayers(shaderProgramText, printsPlayers);
+
+    /*
+    //For fisheye
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0, 0, 800, 600); // Replace with actual window size
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glUseProgram(shaderProgramFisheye);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+    glUniform1i(glGetUniformLocation(shaderProgramFisheye, "screenTexture"), 0);
+
+    renderFullScreenQuad();
+
+    // Clean up
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glUseProgram(0);
+    */
 }
 
 void cleanup() {
     // Cleanup all of your state, particularly the OpenGL state in here.  This function
     // should behave symmetrically to the initOGL function
+    glDeleteFramebuffers(1, &framebuffer);
+    glDeleteTextures(1, &textureColorbuffer);
+    glDeleteVertexArrays(1, &quadVAO);
+    glDeleteBuffers(1, &quadVBO);
+
 }
 /*
 void keyboard(Key key, Modifier modifier, Action action, int, Window*) {
@@ -336,7 +443,7 @@ void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Windo
     if (key == Key::P && action == Action::Press) {
     if(Game::instance().getPlayers().size() < 100) {
         int id = Game::instance().getLowestAvailablePlayerID();
-        Game::instance().addPlayer(id, "testPlayer");
+        Game::instance().addPlayer(id, "o");
     }
 }
     
@@ -351,8 +458,8 @@ void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Windo
 
 int main(int argc, char** argv) {
     
-    Game::instance().addPlayer(0,"Viktor");
-    Game::instance().addPlayer(1,"Tim");
+    Game::instance().addPlayer(0,"Tim");
+    Game::instance().addPlayer(1,"Viktor");
     Game::instance().addPlayer(2,"Bas");
 
     std::vector<std::string> arg(argv + 1, argv + argc);

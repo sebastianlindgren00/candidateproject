@@ -145,7 +145,7 @@ bool mGameActive = true;
 std::unordered_map<sgct::Key, bool> keyStates;
 float mLastFrameTime = sgct::time();
 float mTotalTime = 0;
-float mMaxTime = 20; //seconds
+float mMaxTime = 60; //seconds
 //float mLastTime = 0;
 float mResetGame = 10;
 
