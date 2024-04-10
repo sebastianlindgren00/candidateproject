@@ -30,7 +30,7 @@ void Utility::setupShaderForDrawingMaterial(const GLuint shaderProgram, const gl
 
     // Set model, view, projection matrices uniforms
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
-    glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), 800.0f / 500.0f, 0.1f, 100.0f);
+    glm::mat4 projectionMatrix = glm::perspective(glm::radians(450.0f), 800.0f / 500.0f, 0.1f, 100.0f);
     glm::vec3 viewPos = glm::vec3(5.0f, 0.0f, 0.0f);
     glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 upDirection = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -62,7 +62,10 @@ void Utility::setupShaderForDrawing(const GLuint shaderProgram, const glm::vec3&
     } else {
         modelMatrix = glm::rotate(modelMatrix, orientation, glm::vec3(1.0f, 1.0f, 0.0f));
     }
-    glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), 800.0f / 500.0f, 0.1f, 100.0f);
+
+    //kind of fisheye effect i guess?? (standard value = 45.0f)
+    float customFOV = 45.0f;
+    glm::mat4 projectionMatrix = glm::perspective(glm::radians(customFOV), 800.0f / 500.0f, 0.1f, 100.0f);
     glm::vec3 viewPos = glm::vec3(5.0f, 0.0f, 0.0f);
     glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 upDirection = glm::vec3(0.0f, 1.0f, 0.0f);
