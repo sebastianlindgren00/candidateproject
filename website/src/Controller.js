@@ -103,17 +103,37 @@ function Controller() {
     // Called by joystick
     const handleMove = (e) => { 
         console.log(e)
+        sendJsonMessage({
+          move: e,
+          userID: searchparams.get('userID'),
+          userName: searchparams.get('userName')
+        })
       };
       const handleStop = (e) => {
         console.log(e);
+        sendJsonMessage({
+          move: e,
+          userID: searchparams.get('userID'),
+          userName: searchparams.get('userName')
+        })
       };
       const handleStart = (e) => {
         console.log(e);
+        sendJsonMessage({
+          move: e,
+          userID: searchparams.get('userID'),
+          userName: searchparams.get('userName')
+        })
       };
 
       //Called by fireButton
       const handleShoot = (e) =>{ //Cannot be called while steering with the joystick, must be fixed
-        console.log(e);
+        console.log(e.type);
+        sendJsonMessage({
+          move: e.type,
+          userID: searchparams.get('userID'),
+          userName: searchparams.get('userName')
+        })
       }
 
 
@@ -127,8 +147,13 @@ function Controller() {
             {/*</div>*/}
             <div className="cPanel"  id="controlPanel">
                 {joystickController(handleMove, handleStart, handleStop)}
-                <div className="sBoard" id="sBoard">
-                    <p>Poäng: </p>
+                <div className="board" id="board">
+                  <div className="boardContent" id="boardContent">
+                      <p style={{marginLeft:"1%"}}>Poäng: </p>
+                  </div>
+                  <div className="boardContent" id="boardContent">
+                      <p style={{marginLeft:"1%"}}>Lag: </p>
+                  </div>
                 </div>
                 <span id='fireButton' onTouchStart={handleShoot}>FIRE</span>
             </div>

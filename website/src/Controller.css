@@ -29,12 +29,22 @@ Body{
     justify-content: space-between;
     background-color: gray;
 }
-.sBoard{
+.board{
+  color: white;
+  display: flex;
+  flex-direction: column;
+  height: 90%;
+  width: 30%;
+  padding: 1%;
+}
+
+.boardContent{
   color: white;
   display: flex;
   height: 90%;
-  width: 30%;
+  width: 90%;
   background-color: rgb(85, 85, 85);
+  margin: 1%;
   padding: 1%;
 }
 

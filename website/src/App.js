@@ -89,7 +89,6 @@ function App() {
         userID: userID,
         userName: userName
       })
-    /*
       navigate({
           pathname: '/controller', 
           search: createSearchParams({ // Creates and extension to the URL which is used by Controller.js to read ID and Name
@@ -97,7 +96,6 @@ function App() {
             userName:userName
           }).toString()
       })
-      */
     }
   }, [userID, userName])
 
