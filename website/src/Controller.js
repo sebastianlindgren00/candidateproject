@@ -102,38 +102,50 @@ function Controller() {
 
     // Called by joystick
     const handleMove = (e) => { 
-        console.log(e)
+        //console.log(e)
         sendJsonMessage({
           move: e,
-          userID: searchparams.get('userID'),
-          userName: searchparams.get('userName')
+          userID: searchparams.get('userID')
         })
+        console.log(JSON.stringify(
+          {move: e,
+           userID: searchparams.get('userID')},
+        ))
       };
       const handleStop = (e) => {
-        console.log(e);
+        //console.log(e);
         sendJsonMessage({
           move: e,
-          userID: searchparams.get('userID'),
-          userName: searchparams.get('userName')
+          userID: searchparams.get('userID')
         })
+        console.log(JSON.stringify(
+          {move: e,
+           userID: searchparams.get('userID')}
+        ))
       };
       const handleStart = (e) => {
-        console.log(e);
+        //console.log(e);
         sendJsonMessage({
           move: e,
-          userID: searchparams.get('userID'),
-          userName: searchparams.get('userName')
+          userID: searchparams.get('userID')
         })
+        console.log(JSON.stringify(
+          {move: e,
+           userID: searchparams.get('userID')}
+        ))
       };
 
       //Called by fireButton
       const handleShoot = (e) =>{ //Cannot be called while steering with the joystick, must be fixed
-        console.log(e.type);
+        //console.log(e.type);
         sendJsonMessage({
           move: e.type,
-          userID: searchparams.get('userID'),
-          userName: searchparams.get('userName')
+          userID: searchparams.get('userID')
         })
+        console.log(JSON.stringify(
+          {move: e.type,
+           userID: searchparams.get('userID')}
+        ))
       }
 
 
