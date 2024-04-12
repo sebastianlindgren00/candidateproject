@@ -22,9 +22,6 @@
 #include <GLFW/glfw3.h>
 #include "game.h"
 #include "libwebsockets.h"
-// #include <websocketpp/client.hpp>
-// #include "config/asio_client.hpp"
-
 
 namespace {
     std::unique_ptr<WebSocketHandler> wsHandler;
@@ -304,6 +301,7 @@ void connectionEstablished() {
 }
 
 void connectionClosed() {
+    Log::Info("Why is it closing");
     Log::Info("Connection closed");
 }
 
@@ -312,68 +310,6 @@ void messageReceived(const void* data, size_t length) {
     //Log::Info(fmt::format("Message received: {}", msg));
     std::string message = msg.data();
 }
-
-// New code, inspired by Philip's code in javascript file for the website.
-void websocketCallback(struct lws* wsi, enum lws_callback_reasons reason, void* user, void* in, size_t len) {
-    switch (reason) {
-        case LWS_CALLBACK_CLIENT_CONNECTION_ERROR:
-            Log::Error("WebSocket connection error");
-            break;
-        case LWS_CALLBACK_CLIENT_ESTABLISHED:
-            connectionEstablished();
-            break;
-        case LWS_CALLBACK_CLIENT_CLOSED:
-            connectionClosed();
-            break;
-        case LWS_CALLBACK_CLIENT_RECEIVE:
-            messageReceived(in, len);
-            break;
-        default:
-            break;
-    }
-}
-// New code, inspired by Philip's code in javascript file for the website.
-void initWebsockets() {
-    struct lws_context_creation_info info;
-    memset(&info, 0, sizeof(info));
-    info.port = CONTEXT_PORT_NO_LISTEN;
-    info.protocols = NULL;
-    info.extensions = NULL;
-    info.gid = -1;
-    info.uid = -1;
-    info.options = 0;
-
-    struct lws_context* context = lws_create_context(&info);
-
-    if (!context) {
-        Log::Error("WebSocket context creation failed");
-        return;
-    }
-
-    struct lws_client_connect_info connect_info;
-    memset(&connect_info, 0, sizeof(connect_info));
-    connect_info.context = context;
-    connect_info.address = "omni.itn.liu.se";
-    connect_info.port = 443;
-    connect_info.path = "/ws/";
-    connect_info.host = connect_info.address;
-    connect_info.origin = connect_info.address;
-    //connect_info.protocol = "wss";
-    connect_info.ssl_connection = LCCSCF_USE_SSL;
-    connect_info.ietf_version_or_minus_one = -1;
-
-    struct lws* wsi = lws_client_connect_via_info(&connect_info);
-
-    if (!wsi) {
-        Log::Error("WebSocket connection initiation failed");
-        return;
-    }
-
-    lws_callback_on_writable(wsi);
-}
-
-
-
 
 void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Window* window) {
     // Forward the event to your game's keyboard handler
@@ -385,7 +321,6 @@ int main(int argc, char** argv) {
     
     Game::instance().addPlayer(1, "Viktor");
     Game::instance().addPlayer(2, "Alex");
-    initWebsockets();
 
     std::vector<std::string> arg(argv + 1, argv + argc);
     Configuration config = sgct::parseArguments(arg);
@@ -412,19 +347,25 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
-    // // Won't work if this is commented out
-    // if (Engine::instance().isMaster()) 
-    // {
-    //     wsHandler = std::make_unique<WebSocketHandler>(
-    //         "wss://omni.itn.liu.se/ws/", // was localhost
-    //         443, // 443 represents the port for https and 81 for http
-    //         connectionEstablished, // callbacks
-    //         connectionClosed, // callbacks
-    //         messageReceived // callbacks
-    //     );
-    //      constexpr const int MessageSize = 1024;
-    //      wsHandler->connect("wss", MessageSize);
-    // }
+    // Won't work if this is commented out
+    if (Engine::instance().isMaster()) 
+    {
+
+        wsHandler = std::make_unique<WebSocketHandler>(
+            "wss://omni.itn.liu.se/ws/", // Server address
+            443,                // Server port
+            connectionEstablished,
+            connectionClosed,
+            messageReceived
+        );
+
+        constexpr const int MessageSize = 1024;
+        if (wsHandler->connect("wss", MessageSize)) {
+            Log::Info("WebSocket connection initiated!");
+        } else {
+            Log::Error("Failed to initiate WebSocket connection!");
+        }
+    }
 
     Engine::instance().exec();
 
