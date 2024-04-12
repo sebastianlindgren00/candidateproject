@@ -298,9 +298,15 @@ void Game::update(){
         return bullet->getLifeTime() >= 150;
     }), mBullets.end());
 
+
+    //pick up stars
+    pickUpStars(1);
+
+    //hand in stars
+    handInStars(1);
+    // Commented out 26/03 for testing
     //std::cout << "Red has: " << redTeamStars << " stars\n";
     //std::cout << "Green had: " << greenTeamStars << " stars\n";
-    //std::cout << "numer of stars in the game: " << mStars.size() << "\n";
 
     //update the stars
     for (auto& star : mStars)
