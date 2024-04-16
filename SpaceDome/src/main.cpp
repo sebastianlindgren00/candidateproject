@@ -24,8 +24,6 @@
 
 namespace {
     std::unique_ptr<WebSocketHandler> wsHandler;
-
-
     int64_t exampleInt = 0;
     std::string exampleString;
 } // namespace
@@ -50,7 +48,7 @@ GLuint textureColorbuffer = 0;
 
 
 //For Fisheye:
-
+//---------------------------------
 GLuint quadVAO = 0;
 GLuint quadVBO = 0;
 
@@ -91,7 +89,6 @@ void renderFullScreenQuad() {
     glBindVertexArray(0);
 }
 
-
 //--------------------------------
 
 void initOGL(GLFWwindow*) {
@@ -110,6 +107,8 @@ void initOGL(GLFWwindow*) {
     shaderProgramTexture = Utility::createShaderProgram(vertexShaderSourceTexture, fragmentShaderSourceTexture);
     shaderProgramMaterial = Utility::createShaderProgram(vertexShaderSourceMaterial, fragmentShaderSourceMaterial);
     shaderProgramText = Utility::createShaderProgram(vertexShaderSourceText, fragmentShaderSourceText);
+
+    //for fisheye?
  /*
     initFullScreenQuad();
      // Framebuffer configuration
@@ -135,6 +134,8 @@ void initOGL(GLFWwindow*) {
     // Load shaders and get a shader program for fisheye effect
     shaderProgramFisheye = Utility::createShaderProgram(vertexShaderSourceFisheye, fragmentShaderSourceFisheye);
 */
+    
+    
     //std::string baseDirectory = "../../models/";
     modelsAssimp = std::make_unique<AssimpLoader>(filePath1);
     bulletsAssimp = std::make_unique<AssimpLoader>(filePath4);
@@ -307,6 +308,14 @@ void draw(const RenderData& data) {
     auto& bullets = game.getBullets();
 
     for (const auto& player : game.getPlayers()) {
+
+        //if player shold shot a bullet, add a bullet
+        if(player->getShotBullet()){
+                game.addBullet(player->getTeam(),player->getSpeed(),player->getPosition(),player->getOrientation(), game.getBulletID());
+                player->restoreTimer();
+                game.addBulletID();
+            }
+
         int hitBulletId = player->update(bullets);
         if (hitBulletId != -1) {
             bulletsToRemove.push_back(hitBulletId); // Collect bullet IDs to remove

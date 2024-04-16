@@ -16,6 +16,13 @@
 #include "shader.h"
 #include "bullets.h"
 
+struct playerData {
+	int ID;
+    bool useSuperCharge;
+	bool useShot;
+	bool turnSpeed;
+};
+
 class Player
 {
 public:
@@ -39,6 +46,8 @@ public:
 
 	//Draw the player
 	void draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram) const;
+
+	void updatePlayerData(playerData& data);
 
 	//Accessors
 	float getSpeed() const { return mSpeed; };
@@ -110,6 +119,8 @@ public:
 
 	void setTextPos(glm::vec2 pos) { textPosition = pos; }
 
+	bool getShotBullet() { return shotBullet;}
+
 
 private:
 	//Player information/data
@@ -130,6 +141,7 @@ private:
     float mOrientation = 0.0f;
 	int respawnTimer = 0;
 	int mTeam = 0;
+	bool shotBullet = false;
 
 	glm::vec2 textPosition;
 

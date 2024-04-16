@@ -122,6 +122,10 @@ float getSpawnRot() {return spawnRotation;}
 
 void addSpawnRot() {spawnRotation += 0.001;}
 
+int getBulletID() {return bulletID;}
+
+void addBulletID() {bulletID++;}
+
 
 private:
 //Constructor

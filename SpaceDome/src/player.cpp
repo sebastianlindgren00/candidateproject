@@ -21,7 +21,6 @@ Player::Player(const int id, const std::string& name, int team, int colorID, glm
 
     textPosition = Utility::CalculateScreenPositionsPlayers( mPosition * glm::vec3(1,-1,1) - glm::vec3(0,-0.5f,0));
 
-
 }
 
 Player::~Player()
@@ -29,14 +28,30 @@ Player::~Player()
 	//sgct::Log::Info("Player with name=\"%s\" removed", mName.c_str());
 }
 
+void Player::updatePlayerData(playerData& data) {
+    if(data.ID != mPlayerID){
+        std::cout << "Network ID: " << data.ID << "is trying to connect to the wrong player (" << mName << ") with ID: " << mPlayerID << ".\n";
+        return;
+    }
+    chargeActive = false;
+    shotBullet = false;
+    if(data.useShot){
+        if(bulletTimer >= shotAvailable){
+            shotBullet = true;
+        }
+    }
+    
+    if(data.useSuperCharge){
+        chargeActive = true;
+    }
+    mTurnSpeed = data.turnSpeed;
+}
 
-
-int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets)
-{
-
+int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets) {
     if(bulletTimer < shotAvailable){
         bulletTimer++;
     }
+
     //check if alive, if not, how long untill spawning? spawning at spawn points
     if (!mIsAlive) {
         if(respawnTimer == 500){
@@ -94,15 +109,25 @@ int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets)
     setPosition(glm::vec3(0.0f, cos(getOrientation()) * mSpeed, sin(getOrientation()) * mSpeed));
     //textPosition = Utility::CalculateScreenPositionsPlayers( mPosition * glm::vec3(1,-1,1) - glm::vec3(0,-0.5f,0));
 
-
     //so players dont go out of bounds
+
+    //circle game filed
+    float distToOrigo = glm::distance(glm::vec3(0.0,0.0,0.0), mPosition);
+    if(distToOrigo > boundryX) {
+        mPosition.y *= -1;
+        mPosition.z *= -1;
+    }
+
+    
+    //square game field
+/*
     if (mPosition.y > boundryX*1.1 || mPosition.y < -boundryX*1.1){
         mPosition.y *= -1;
     } else if (mPosition.z > boundryY*1.2 || mPosition.z < -boundryY*1.2)
     {
         mPosition.z *= -1;
     }
-    
+    */
 
     setTurnSpeed(0);
     return -1;
