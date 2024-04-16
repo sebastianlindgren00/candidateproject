@@ -44,7 +44,7 @@ void BackgroundObject::update(std::vector<std::unique_ptr<BackgroundObject>>& mB
         bPosition.z *= -1;
         bOrientation = (float)random;
     }
-    
+    */
 }
 
 void BackgroundObject::draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram) const
