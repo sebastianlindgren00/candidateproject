@@ -433,12 +433,14 @@ void connectionEstablished() {
 }
 
 void connectionClosed() {
+    Log::Info("Why is it closing");
     Log::Info("Connection closed");
 }
 
 void messageReceived(const void* data, size_t length) {
     std::string_view msg = std::string_view(reinterpret_cast<const char*>(data), length);
-    Log::Info(fmt::format("Message received: {}", msg));
+    //Log::Info(fmt::format("Message received: {}", msg));
+    std::string message = msg.data();
 }
 
 void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Window* window) {
@@ -496,16 +498,24 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
-    if (Engine::instance().isMaster()) {
+    // Won't work if this is commented out
+    if (Engine::instance().isMaster()) 
+    {
+
         wsHandler = std::make_unique<WebSocketHandler>(
-            "localhost",
-            81,
+            "wss://omni.itn.liu.se/ws/", // Server address
+            443,                // Server port
             connectionEstablished,
             connectionClosed,
             messageReceived
         );
+
         constexpr const int MessageSize = 1024;
-        wsHandler->connect("example-protocol", MessageSize);
+        if (wsHandler->connect("wss", MessageSize)) {
+            Log::Info("WebSocket connection initiated!");
+        } else {
+            Log::Error("Failed to initiate WebSocket connection!");
+        }
     }
 
     Engine::instance().exec();

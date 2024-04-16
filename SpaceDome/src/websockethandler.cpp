@@ -29,7 +29,6 @@
  ****************************************************************************************/
 
 #include "websockethandler.h"
-
 #include <sgct/profiling.h>
 #include "libwebsockets.h"
 #include <algorithm>
@@ -170,8 +169,8 @@ WebSocketHandler::WebSocketHandler(std::string address, int port,
     assert(!address.empty());
 
     // Check whether the port is a valid (>0) number
-    assert(port > 0);
-
+    assert(port > 0); 
+   
     // Check whether the callbacks provided are non-empty
     assert(connectionEstablished);
     assert(msgReceived);
