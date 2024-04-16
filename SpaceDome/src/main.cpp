@@ -175,7 +175,7 @@ std::vector<std::byte> encode() {
     serializeObject(data, exampleInt);
     serializeObject(data, exampleString);
 
-    serializeObject(data, Game::instance().fetchSyncData()); // Add all the objects that need synchronization
+    //serializeObject(data, Game::instance().fetchSyncData()); // Add all the objects that need synchronization
 
     return data;
 }
