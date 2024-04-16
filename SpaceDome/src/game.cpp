@@ -122,6 +122,7 @@ void Game::gameKeyboard(sgct::Key key, sgct::Modifier modifier, sgct::Action act
     }
 }
 
+
 //is a player over a star?
 //pick it up
 void Game::pickUpStars(int id){
@@ -166,6 +167,11 @@ void Game::updateTurnSpeed(unsigned int id, float rotAngle)
 	assert(id < mPlayers.size() && "Player update turn speed desync (id out of bounds mPlayers");
     //update rotation
 	mPlayers[id]->setTurnSpeed(rotAngle);
+}
+
+// Syncing the game state
+void Game::fetchSyncData() {
+    
 }
 
 void Game::update(){

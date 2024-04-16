@@ -152,6 +152,8 @@ void initOGL(GLFWwindow*) {
 void preSync() {
     // Do the application simulation step on the server node in here and make sure that
     // the computed state is serialized and deserialized in the encode/decode calls
+    
+    std::vector<std::byte> data; // Store serialized data
 
     if (Engine::instance().isMaster() && wsHandler->isConnected() &&
         Engine::instance().currentFrameNumber() % 100 == 0)
@@ -164,7 +166,6 @@ void preSync() {
         wsHandler->tick();
     }
     Game::instance().update();
-
 }
 
 std::vector<std::byte> encode() {
@@ -173,6 +174,8 @@ std::vector<std::byte> encode() {
     std::vector<std::byte> data;
     serializeObject(data, exampleInt);
     serializeObject(data, exampleString);
+
+    serializeObject(data, Game::instance().fetchSyncData()); // Add all the objects that need synchronization
 
     return data;
 }

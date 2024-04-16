@@ -16,6 +16,28 @@
 #include "shader.h"
 #include "bullets.h"
 
+// Data from player class that needs to be synced between nodes. Revise later if all data is needed
+struct PlayerData
+{
+	bool mIsAlive;
+	std::string mName;
+	int mPlayerID;
+	int mColorID;
+	glm::vec3 mPlayerColor;
+	float mOrientation;
+	glm::vec3 mPosition;
+	int mTeam;
+	glm::vec2 textPosition;
+	int mStars;
+	int mStarsHolding;
+	int superCharge;
+	int respawnTimer;
+	int bulletTimer;
+	int shotAvailable;
+	int mSpeed;
+	float mTurnSpeed;
+};
+
 class Player
 {
 public:

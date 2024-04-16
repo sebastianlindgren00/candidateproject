@@ -30,6 +30,11 @@
 #include "stars.h"
 #include "backgroundObjects.h"
 
+// Contains all necessary game object data that is used for the sync
+struct syncData {
+    PlayerData playerData;
+};
+
 //Implemented as explicit singleton, handles pretty much everything
 class Game
 {
@@ -121,6 +126,8 @@ int getLowestAvailablePlayerID();
 float getSpawnRot() {return spawnRotation;}
 
 void addSpawnRot() {spawnRotation += 0.001;}
+
+void fetchSyncData();
 
 
 private:
