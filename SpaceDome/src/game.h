@@ -40,6 +40,7 @@ class Game
 {
 public:
 
+// Creates one instance of a Game. There should only be one active instance of Game at a time
 static Game& instance() {
         static Game instance;
 
@@ -54,8 +55,6 @@ bool hasBullets() const { return !mBullets.empty(); }
 bool hasStars() const { return !mStars.empty(); }
 
 bool hasBGObjects () const { return !mBGObjects.empty(); }
-
-void UpdateScreenPositionsForPlayers(std::vector<Player>& players);
 
 const std::vector<std::unique_ptr<Player>>& getPlayers() const { return mPlayers; }
 
