@@ -446,7 +446,7 @@ void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Windo
     if (key == Key::P && action == Action::Press) {
     if(Game::instance().getPlayers().size() < 100) {
         int id = Game::instance().getLowestAvailablePlayerID();
-        Game::instance().addPlayer(id, "o");
+        Game::instance().addPlayer(id, "o"); // TODO: Add a name from user input, should not be "o"
     }
 }
     
