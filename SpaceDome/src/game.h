@@ -31,9 +31,11 @@
 #include "backgroundObjects.h"
 
 // Contains all necessary game object data that is used for the sync
-// struct syncData {
-//     PlayerData playerData;
-// };
+struct syncData {
+    PlayerData playerData;
+    //ObjectData objectData:
+
+};
 
 //Implemented as explicit singleton, handles pretty much everything
 class Game

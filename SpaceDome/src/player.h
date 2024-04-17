@@ -17,21 +17,24 @@
 #include "bullets.h"
 
 // Data from player class that needs to be synced between nodes. Revise later if all data is needed
-// struct PlayerData
-// {
-// 	bool mIsAlive;
-// 	std::string mName;
-// 	int mPlayerID;
-// 	int mColorID;
-// 	float mOrientation;
-// 	glm::vec3 mPosition;
-// 	int mTeam;
-// 	glm::vec2 textPosition;
-// 	int mStars;
-// 	int mStarsHolding;
-// 	int superCharge;
-// 	int shotAvailable;
-// };
+struct PlayerData
+{
+	bool mIsAlive;
+	std::string mName;
+	int mPlayerID;
+	int mColorID;
+	float mOrientation;
+	glm::vec3 mPosition;
+	int mTeam;
+	glm::vec2 textPosition;
+	int mStars;
+	int mStarsHolding;
+	int mSuperCharge;
+	int shotAvailable;
+	float mTurnSpeed;
+	int mBulletTimer;
+	float mSpeed;
+};
 
 class Player
 {
