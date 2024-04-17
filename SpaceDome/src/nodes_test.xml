@@ -1,0 +1,87 @@
+<?xml version="1.0" ?>
+
+<!--dataTransferPort="20501"-->
+
+<Cluster masterAddress="127.0.0.1">
+  <Node address="127.0.0.1" port="20401" >
+    <Window fullScreen="false" >
+      <Pos x="100" y="100" />
+      <Size x="512" y="512" />
+      <Viewport>
+        <Pos x="0.0" y="0.0" />
+        <Size x="1.0" y="1.0" />
+        <FisheyeProjection fov="180" quality="medium">
+          <Background r="0.1" g="0.1" b="0.1" a="1.0" />
+        </FisheyeProjection>
+      </Viewport>
+    </Window>
+  </Node>
+  <Node address="127.0.0.3" port="20403">
+    <Window fullScreen="false" >
+      <Pos x="612" y="100" />
+      <Size x="512" y="512" /> <!-- size and pos cant be the same for 2 nodes?-->
+      <Viewport>
+        <Pos x="0.0" y="0.0" />
+        <Size x="1.0" y="1.0" />
+        <FisheyeProjection fov="180" quality="medium">
+          <Background r="0.1" g="0.1" b="0.1" a="1.0" />
+        </FisheyeProjection>
+      </Viewport>
+    </Window>
+  </Node>
+  <Node address="127.0.0.3" port="20403">
+    <Window fullScreen="false" >
+      <Pos x="1124" y="100" />
+      <Size x="512" y="512" /> <!-- size and pos cant be the same for multiple nodes?-->
+      <Viewport>
+        <Pos x="0.0" y="0.0" />
+        <Size x="1.0" y="1.0" />
+        <FisheyeProjection fov="180" quality="medium">
+          <Background r="0.1" g="0.1" b="0.1" a="1.0" />
+        </FisheyeProjection>
+      </Viewport>
+    </Window>
+  </Node>
+  <Node address="127.0.0.4" port="20404">
+    <Window fullScreen="false" >
+      <Pos x="612" y="100" />
+      <Size x="512" y="512" /> <!-- size and pos cant be the same for 2 nodes?-->
+      <Viewport>
+        <Pos x="0.0" y="0.0" />
+        <Size x="1.0" y="1.0" />
+        <FisheyeProjection fov="180" quality="medium">
+          <Background r="0.1" g="0.1" b="0.1" a="1.0" />
+        </FisheyeProjection>
+      </Viewport>
+    </Window>
+  </Node>
+  <Node address="127.0.0.5" port="20405">
+    <Window fullScreen="false" >
+      <Pos x="612" y="100" />
+      <Size x="512" y="512" /> <!-- size and pos cant be the same for 2 nodes?-->
+      <Viewport>
+        <Pos x="0.0" y="0.0" />
+        <Size x="1.0" y="1.0" />
+        <FisheyeProjection fov="180" quality="medium">
+          <Background r="0.1" g="0.1" b="0.1" a="1.0" />
+        </FisheyeProjection>
+      </Viewport>
+    </Window>
+  </Node>
+  <Node address="127.0.0.6" port="20406">
+    <Window fullScreen="false" >
+      <Pos x="612" y="100" />
+      <Size x="512" y="512" /> <!-- size and pos cant be the same for 2 nodes?-->
+      <Viewport>
+        <Pos x="0.0" y="0.0" />
+        <Size x="1.0" y="1.0" />
+        <FisheyeProjection fov="180" quality="medium">
+          <Background r="0.1" g="0.1" b="0.1" a="1.0" />
+        </FisheyeProjection>
+      </Viewport>
+    </Window>
+  </Node>
+  <User eyeSeparation="0.06">
+    <Pos x="0.0" y="0.0" z="0.0" />
+  </User>
+</Cluster>
