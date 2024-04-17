@@ -155,17 +155,29 @@ void preSync() {
     
     std::vector<std::byte> data; // Store serialized data
 
+    //we check if sgct is run on master machine 
     if (Engine::instance().isMaster() && wsHandler->isConnected() &&
-        Engine::instance().currentFrameNumber() % 100 == 0)
-    {
-        wsHandler->queueMessage("ping");
-    }
+        Engine::instance().currentFrameNumber() % 100 == 0){
 
-    if (Engine::instance().isMaster()) {
-        // This doesn't have to happen every frame, but why not?
+            //if game instance is active 
+            if(Game::instance().isGameActive()){
+                //send time through ws handler to
+
+               std::string timeLeft = std::to_string(Game::instance().getEndTime());
+                wsHandler->queueMessage("Time left: " + timeLeft);
+            }
+
+            if(!Game::instance().isGameActive()){
+                std::string restartTime = to_string(Game::instance().getRestartTime());
+                wsHandler->queueMessage("New round starts in" + restartTime);
+            }
+        
         wsHandler->tick();
     }
-    Game::instance().update();
+
+    if(Engine::instance().isMaster()){
+        Game::instance().update();
+    }
 }
 
 std::vector<std::byte> encode() {
@@ -174,6 +186,8 @@ std::vector<std::byte> encode() {
     std::vector<std::byte> data;
     serializeObject(data, exampleInt);
     serializeObject(data, exampleString);
+
+    
 
     //serializeObject(data, Game::instance().fetchSyncData()); // Add all the objects that need synchronization
 
