@@ -23,7 +23,6 @@ struct PlayerData
 	std::string mName;
 	int mPlayerID;
 	int mColorID;
-	glm::vec3 mPlayerColor;
 	float mOrientation;
 	glm::vec3 mPosition;
 	int mTeam;
@@ -31,11 +30,7 @@ struct PlayerData
 	int mStars;
 	int mStarsHolding;
 	int superCharge;
-	int respawnTimer;
-	int bulletTimer;
 	int shotAvailable;
-	int mSpeed;
-	float mTurnSpeed;
 };
 
 class Player
@@ -66,10 +61,8 @@ public:
 	float getSpeed() const { return mSpeed; };
 	float getTurnSpeed() const { return mTurnSpeed; }
     int getID() const { return mPlayerID; }
-	//const int getStars() const { return mStars; };
-    //const int getHoldingStars() {return mStarsHolding; }
 	const std::string& getName() const { return mName; };
-    //const bool isAlive() const { return mIsAlive; };
+    const bool isAlive() const { return mIsAlive; };
     
     glm::vec3 getColours() const { return mPlayerColor; };
 
