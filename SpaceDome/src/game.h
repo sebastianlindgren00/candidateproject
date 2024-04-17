@@ -31,9 +31,9 @@
 #include "backgroundObjects.h"
 
 // Contains all necessary game object data that is used for the sync
-struct syncData {
-    PlayerData playerData;
-};
+// struct syncData {
+//     PlayerData playerData;
+// };
 
 //Implemented as explicit singleton, handles pretty much everything
 class Game
@@ -125,7 +125,7 @@ float getSpawnRot() {return spawnRotation;}
 
 void addSpawnRot() {spawnRotation += 0.001;}
 
-std::vector<syncData> fetchSyncData();
+// std::vector<syncData> fetchSyncData();
 
 void update();
 private:

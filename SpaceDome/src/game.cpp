@@ -2,15 +2,15 @@
 
 // Sync
 
-std::vector<syncData> Game::fetchSyncData() {
-    std::vector<syncData> tmp;
-    for (const auto& player : mPlayers) {
-        syncData data;
-        data.playerData.mIsAlive = player->isAlive();
-        tmp.push_back(data);
-    }
-    return tmp;
-}
+// std::vector<syncData> Game::fetchSyncData() {
+//     std::vector<syncData> tmp;
+//     for (const auto& player : mPlayers) {
+//         syncData data;
+//         data.playerData.mIsAlive = player->isAlive();
+//         tmp.push_back(data);
+//     }
+//     return tmp;
+// }
 
 
 void Game::addPlayer(int id, const std::string& name) {

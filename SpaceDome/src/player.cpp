@@ -33,10 +33,11 @@ Player::~Player()
 
 int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets)
 {
-
+    // TODO: Move to Bullet class instead
     if(bulletTimer < shotAvailable){
         bulletTimer++;
     }
+
     //check if alive, if not, how long untill spawning? spawning at spawn points
     if (!mIsAlive) {
         if(respawnTimer == 500){
@@ -52,7 +53,6 @@ int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets)
             }else 
                 mPosition = glm::vec3(0.0f, 0.25f-(float)randx/100, (fovScale/21)-(float)randy/100);
             }
-            //textPosition = Utility::CalculateScreenPositionsPlayers( mPosition * glm::vec3(1,-1,1) - glm::vec3(0,-0.5f,0));
             respawnTimer++;
         return -1; 
     }
