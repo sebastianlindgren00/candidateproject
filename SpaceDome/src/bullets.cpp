@@ -11,10 +11,7 @@ void Bullet::update()
     //dont have to check life here, its checked in game::update?
    
     lifeTime++;
-    if(lifeTime >= 300){
-        return;
-    }
-    
+    std::cout << "Lifetime: " << lifeTime << "\n";
     // Update position based on orientation
     bPosition += glm::vec3(0.0f, cos(bOrientation) * bSpeed, sin(bOrientation) * bSpeed);
 
@@ -29,10 +26,6 @@ void Bullet::update()
 
 void Bullet::draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram) const
 {
-	if(lifeTime == 100){
-        return;
-    }
-
     Utility::setupShaderForDrawing(shaderProgram, bPosition, bColor, bOrientation, 0.05, 0);
 
     //draw

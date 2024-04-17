@@ -19,14 +19,13 @@
 #include "mesh.h"
 #include "utility.h"
 
-//Implemented as explicit singleton, handles pretty much everything
+//Implemented as explicit singleton, handles pretty much everything 
 class BackgroundObject
 {
 
 public:
     //Constructor
 	BackgroundObject(float x){
-
         //spawn at random locations with random velocitys and orientations
         int random = rand() % 100;  
         int yRand = rand() % 400;
@@ -42,8 +41,8 @@ public:
 	~BackgroundObject();
 
 	//Objects should be unique
-	BackgroundObject(const BackgroundObject&) = default;
-	BackgroundObject& operator=(const BackgroundObject&) = delete;
+	BackgroundObject(const BackgroundObject&) = default; // Copy constructor
+	BackgroundObject& operator=(const BackgroundObject&) = delete; // Copy assignment operator, delete to prevent assignment from one object to another
 
     void setPosition(const glm::vec3& positionChange) { bPosition += positionChange; }
 

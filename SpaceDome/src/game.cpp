@@ -1,5 +1,33 @@
 #include "game.h"
 
+// Sync
+
+std::vector<syncData> Game::fetchSyncData() {
+    std::vector<syncData> tmp;
+    for (const auto& player : mPlayers) {
+        syncData data;
+        data.playerData.mIsAlive = player->isAlive();
+        data.playerData.mName = player->getName();
+        data.playerData.mPlayerID = player->getID();
+        data.playerData.mColorID = player->getColorID();
+        data.playerData.mPlayerColor = player->getColours();
+        data.playerData.mOrientation = player->getOrientation();
+        data.playerData.mPosition = player->getPosition();
+        data.playerData.mTeam = player->getTeam();
+        //data.playerData.textPosition = player->setTextPos();
+        data.playerData.mStars = player->getStars();
+        data.playerData.mStarsHolding = player->getStars();
+        data.playerData.superCharge = player->getSuperCharge();
+        data.playerData.bulletTimer = player->getBulletTimer();
+        data.playerData.shotAvailable = player->getShotAvailable();
+        data.playerData.mSpeed = player->getSpeed();
+        data.playerData.mTurnSpeed = player->getTurnSpeed();
+        tmp.push_back(data);
+    }
+    return tmp;
+}
+
+
 void Game::addPlayer(int id, const std::string& name) {
     int team = teamRed <= teamGreen ? 1 : 2;
     if (team == 1) {
@@ -169,10 +197,6 @@ void Game::updateTurnSpeed(unsigned int id, float rotAngle)
 	mPlayers[id]->setTurnSpeed(rotAngle);
 }
 
-// Syncing the game state
-void Game::fetchSyncData() {
-    
-}
 
 void Game::update(){
     //First update?	
