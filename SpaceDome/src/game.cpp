@@ -322,7 +322,7 @@ void Game::update(){
         maxStarsID++;
     }
 
-    //remove bullets that have expired
+    //remove bullets that have expired - Move to Bullets class instead?
     mBullets.erase(std::remove_if(mBullets.begin(), mBullets.end(),
     [](const std::unique_ptr<Bullet>& bullet) -> bool {
         return bullet->getLifeTime() >= 150;
