@@ -29,8 +29,11 @@ struct PlayerData
 	glm::vec2 textPosition;
 	int mStars;
 	int mStarsHolding;
-	int superCharge;
+	int mSuperCharge;
 	int shotAvailable;
+	float mTurnSpeed;
+	int mBulletTimer;
+	float mSpeed;
 };
 
 class Player

@@ -6,7 +6,19 @@ std::vector<syncData> Game::fetchSyncData() {
     std::vector<syncData> tmp;
     for (const auto& player : mPlayers) {
         syncData data;
+        data.playerData.mPlayerID = player->getID();
+        data.playerData.mPosition = player->getPosition();
+        data.playerData.mOrientation = player->getOrientation();
+        data.playerData.mColorID = player->getColorID();
+        data.playerData.mTeam = player->getTeam();
+        data.playerData.mStars = player->getStars();
+        data.playerData.mStarsHolding = player->getHandedInStars();
         data.playerData.mIsAlive = player->isAlive();
+        //data.playerData.textPos = player->getTextPos();
+        data.playerData.mTurnSpeed = player->getTurnSpeed();
+        data.playerData.mSpeed = player->getSpeed();
+        data.playerData.mBulletTimer = player->getBulletTimer();
+        data.playerData.mSuperCharge = player->getSuperCharge();
         tmp.push_back(data);
     }
     return tmp;

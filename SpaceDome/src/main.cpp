@@ -46,6 +46,8 @@ GLuint shaderProgramFisheye;
 GLuint framebuffer = 0;
 GLuint textureColorbuffer = 0;
 
+std::vector<syncData> states; 
+
 
 //For Fisheye:
 
@@ -181,18 +183,23 @@ void preSync() {
 }
 
 std::vector<std::byte> encode() {
-    // These are just two examples;  remove them and replace them with the logic of your
-    // application that you need to synchronize
     std::vector<std::byte> data;
+
+    // Serialize exampleInt
     serializeObject(data, exampleInt);
+
+    // Serialize exampleString
     serializeObject(data, exampleString);
 
-    
+    // Serialize sync data
 
-    //serializeObject(data, Game::instance().fetchSyncData()); // Add all the objects that need synchronization
+    for (const auto& syncData : Game::instance().fetchSyncData()) {
+        serializeObject(data, syncData);
+    }
 
     return data;
 }
+
 
 void decode(const std::vector<std::byte>& data) {
     // These are just two examples;  remove them and replace them with the logic of your
@@ -200,10 +207,14 @@ void decode(const std::vector<std::byte>& data) {
     unsigned pos = 0;
     deserializeObject(data, pos, exampleInt);
     deserializeObject(data, pos, exampleString);
+    deserializeObject(data, pos, states);
 }
 
 void postSyncPreDraw() {
     // Apply the (now synchronized) application state before the rendering will start
+
+
+
 }
 
 std::vector<std::string> getHiscoreList(const std::vector<std::unique_ptr<Player>>& players) {
