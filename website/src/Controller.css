@@ -46,6 +46,7 @@ Body{
   background-color: rgb(85, 85, 85);
   margin: 1%;
   padding: 1%;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
 }
 
 #orientationDisclaimer{
@@ -58,7 +59,7 @@ Body{
 
 #jStick{
   display: block;
-  margin:10%
+  margin:10%;
 }
 
 #fireButton{
@@ -68,10 +69,36 @@ Body{
   width: 100px;
   background: rgb(241,21,21);
   background: radial-gradient(circle, rgba(241,21,21,1) 0%, rgba(91,16,16,1) 90%, rgba(0,0,0,1) 100%);
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
   border-radius: 50%;
 
   color:white;
   align-items: center;
   text-align: center;
   justify-content: center;
+}
+
+#boostButton{
+  display: block;
+  margin: 10%;
+  height: 100px;
+  width: 100px;
+  background: rgb(238, 184, 7);
+  background: radial-gradient(circle, rgb(238, 184, 7) 0%, rgb(125, 96, 2) 90%, rgba(0,0,0,1) 100%);
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
+  border-radius: 50%;
+
+  color:white;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+}
+
+.buttons{
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-end;
+  justify-content: space-evenly;
+  align-items: baseline;
+  flex-direction: row-reverse;
 }

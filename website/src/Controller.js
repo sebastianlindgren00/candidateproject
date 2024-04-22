@@ -8,6 +8,7 @@ import useWebSocket, { ReadyState } from "react-use-websocket"
 function Controller() {
     const [searchparams] = useSearchParams() // Used to search in the URL
     const [scrOrientation, setScreenOrientation] = useState(window.screen.orientation)
+    const [boostState, setBoostState] = useState(100);
     const [srvAuth, setSrvAuth] = useState('not authorized')
 
     const baseColor = 'radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(70,70,70,1) 69%, rgba(101,101,101,1) 100%)'
@@ -43,6 +44,9 @@ function Controller() {
         if(JSON.stringify(lastJsonMessage).includes('Authorized')){
           setSrvAuth('authorized')
         }
+        if(JSON.stringify(lastJsonMessage).includes('Booost')){
+          setBoostState(parseInt(lastJsonMessage.Boost))
+        }
       }, [lastJsonMessage])
 
     scrOrientation.addEventListener('change', function() { //When screen orientation is changed
@@ -51,11 +55,13 @@ function Controller() {
             document.getElementById('orientationDisclaimer').style.display = 'none'
             document.getElementById('jStick').style.display = 'flex'
             document.getElementById('fireButton').style.display = 'flex'
+            document.getElementById('boostButton').style.display = 'flex'
             document.getElementById('controlPanel').style.display = 'flex'
         }else{
             document.getElementById('orientationDisclaimer').style.display = 'flex'
             document.getElementById('jStick').style.display = 'none'
             document.getElementById('fireButton').style.display = 'none'
+            document.getElementById('boostButton').style.display = 'none'
             document.getElementById('controlPanel').style.display = 'none'
         }
     })
@@ -65,11 +71,13 @@ function Controller() {
             document.getElementById('orientationDisclaimer').style.display = 'none'
             document.getElementById('jStick').style.display = 'flex'
             document.getElementById('fireButton').style.display = 'flex'
+            document.getElementById('boostButton').style.display = 'flex'
             document.getElementById('controlPanel').style.display = 'flex'
         }else{
             document.getElementById('orientationDisclaimer').style.display = 'flex'
             document.getElementById('jStick').style.display = 'none'
             document.getElementById('fireButton').style.display = 'none'
+            document.getElementById('boostButton').style.display = 'none'
             document.getElementById('controlPanel').style.display = 'none'
         }
     })
@@ -84,7 +92,7 @@ function Controller() {
         return(
         <div id = 'jStick'>
             <Joystick
-                size={100}
+                size={120}
                 baseColor={baseColor}
                 stickColor={stickColor}
                 throttle={200}
@@ -139,13 +147,30 @@ function Controller() {
       const handleShoot = (e) =>{ //Cannot be called while steering with the joystick, must be fixed
         //console.log(e.type);
         sendJsonMessage({
-          move: e.type,
+          action: "fire",
           userID: searchparams.get('userID')
         })
         console.log(JSON.stringify(
-          {move: e.type,
+          {action: "fire",
            userID: searchparams.get('userID')}
         ))
+      }
+
+      //Called by boostButton
+      const handleBoost = (e) =>{ //Cannot be called while steering with the joystick, must be fixed
+        //console.log(e.type);
+        if(boostState >=50){
+          setBoostState(boostState-50)
+          console.log(boostState)
+          sendJsonMessage({
+            action: "boost",
+            userID: searchparams.get('userID')
+          })
+          console.log(JSON.stringify(
+            {action: "boost",
+             userID: searchparams.get('userID')}
+          ))
+        }
       }
 
 
@@ -160,6 +185,14 @@ function Controller() {
             <div className="cPanel"  id="controlPanel">
                 {joystickController(handleMove, handleStart, handleStop)}
                 <div className="board" id="board">
+                <p style={{marginBottom:"-0.5%"}}>Boost</p>
+                  <div style={{marginBottom:"5%"}} className="boardContent" id="boardContent">
+                      <div style={{height:"1.5em", width:"100%", display:"flex", alignItems: "center",justifyContent:"flexStart"}}>
+                        <div style={{height:"90%", width:(boostState-1)+"%",backgroundColor:"red",display:"flex",
+                                          boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)"}}>
+                        </div>
+                      </div>
+                  </div>
                   <div className="boardContent" id="boardContent">
                       <p style={{marginLeft:"1%"}}>Poäng: </p>
                   </div>
@@ -167,7 +200,10 @@ function Controller() {
                       <p style={{marginLeft:"1%"}}>Lag: </p>
                   </div>
                 </div>
-                <span id='fireButton' onTouchStart={handleShoot}>FIRE</span>
+                <div className="buttons">
+                    <span id='fireButton' onTouchStart={handleShoot}>FIRE</span>
+                    <span id='boostButton' onTouchStart={handleBoost}>BOOST</span>
+                </div>
             </div>
             <h1 id='orientationDisclaimer'>Rotera mobilen för att spela</h1>
         </div>
