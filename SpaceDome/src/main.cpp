@@ -499,8 +499,7 @@ int main(int argc, char** argv) {
     }
 
     // Won't work if this is commented out
-    if (Engine::instance().isMaster()) 
-    {
+    if (Engine::instance().isMaster()) {
 
         wsHandler = std::make_unique<WebSocketHandler>(
             "wss://omni.itn.liu.se/ws/", // Server address

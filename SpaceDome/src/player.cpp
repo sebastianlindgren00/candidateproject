@@ -92,25 +92,23 @@ int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets) {
 
     if(superCharge <= 0){
         chargeActive = false;
-        wait = 300;
+        delay = 300;
     }
-    if(superCharge < 300 && chargeActive == false && delayForRefill == wait){
+    if(superCharge < 300 && chargeActive == false && delayForRefill == delay){
         fillSuperCharge();
         delayForRefill = 0;
-        wait = (301-superCharge)/10;
+        delay = (301-superCharge)/10;
     } else if(chargeActive == true){
         mSpeed = 0.02;
         useSuperCharge();
     }
-    if(delayForRefill < wait){
+    if(delayForRefill < delay){
         delayForRefill++;
     }
+
     setOrientation(mTurnSpeed);
     setPosition(glm::vec3(0.0f, cos(getOrientation()) * mSpeed, sin(getOrientation()) * mSpeed));
-    //textPosition = Utility::CalculateScreenPositionsPlayers( mPosition * glm::vec3(1,-1,1) - glm::vec3(0,-0.5f,0));
-
-    //so players dont go out of bounds
-
+    
     //circle game filed
     float distToOrigo = glm::distance(glm::vec3(0.0,0.0,0.0), mPosition);
     if(distToOrigo > boundryX) {
@@ -118,7 +116,6 @@ int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets) {
         mPosition.z *= -1;
     }
 
-    
     //square game field
 /*
     if (mPosition.y > boundryX*1.1 || mPosition.y < -boundryX*1.1){
@@ -133,8 +130,7 @@ int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets) {
     return -1;
 }
 
-void Player::draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram) const
-{
+void Player::draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram) const {
 	if (!mIsAlive)
 		return;
 

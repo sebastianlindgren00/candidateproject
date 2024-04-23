@@ -34,6 +34,13 @@ void BackgroundObject::update(std::vector<std::unique_ptr<BackgroundObject>>& mB
     setPosition(glm::vec3(0.0, cos(bDirection) * bSpeed, sin(bDirection) * bSpeed));
 
 
+    float distToOrigo = glm::distance(glm::vec3(0.0,0.0,0.0), bPosition);
+    if(distToOrigo > boundryX*4) {
+        bPosition.y *= -1;
+        bPosition.z *= -1;
+    }
+
+/*
     //So background Objects dont go out of bounds
     int random = rand() % 10;
     if (bPosition.y > boundryX*2 || bPosition.y < -boundryX*2){
@@ -47,8 +54,7 @@ void BackgroundObject::update(std::vector<std::unique_ptr<BackgroundObject>>& mB
     */
 }
 
-void BackgroundObject::draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram) const
-{
+void BackgroundObject::draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram) const {
     Utility::setupShaderForDrawing(shaderProgram, bPosition, bColor, bOrientation, size, axis);
 
     //draw

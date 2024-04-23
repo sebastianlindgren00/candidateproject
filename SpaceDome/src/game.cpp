@@ -160,15 +160,14 @@ void Game::handInStars(int id){
 }
 
 
-void Game::updateTurnSpeed(unsigned int id, float rotAngle)
-{
+void Game::updateTurnSpeed(unsigned int id, float rotAngle) {
     //is there a player with thid id?
 	assert(id < mPlayers.size() && "Player update turn speed desync (id out of bounds mPlayers");
     //update rotation
 	mPlayers[id]->setTurnSpeed(rotAngle);
 }
 
-void Game::update(){
+void Game::update() {
     //First update?	
     if (mLastFrameTime == -1) {
 		mLastFrameTime = sgct::time();
@@ -301,7 +300,6 @@ void Game::update(){
 
     //pick up stars
     pickUpStars(1);
-
     //hand in stars
     handInStars(1);
     // Commented out 26/03 for testing
@@ -310,21 +308,16 @@ void Game::update(){
 
     //update the stars
     for (auto& star : mStars)
-		star->update();
+		star->update(mStars);
 
     //update the players
     for (auto& player : mPlayers) {
         if(player->getDropStars()){
-            //std::cout << "a player died\n";
-            glm::vec3 dropPosition = player->getPosition();
-            glm::vec3 newpos;
-            player->setPosition(glm::vec3(-10.0, 0.0, 0.0));
             for(int j = 0; j < player->getStars(); j ++){
-                int random = rand() % 10;
-                newpos = dropPosition + glm::vec3(0.0, 0.05-(float)random/10, 0.05-(float)random/10);
-                mStars.push_back(std::make_unique<Star>(newpos,maxStarsID));
+                mStars.push_back(std::make_unique<Star>(player->getPosition(),maxStarsID));
                 maxStarsID++;
             }
+            player->setPosition(glm::vec3(-10.0, 0.0, 0.0));
             player->nullStars();
             player->setDropStars();
         }

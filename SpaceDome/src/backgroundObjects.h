@@ -29,14 +29,19 @@ public:
 
         //spawn at random locations with random velocitys and orientations
         int random = rand() % 100;  
-        int yRand = rand() % 400;
-        int zRand = rand() % 600;
+      
         xPos = x;
         bSpeed *= (float)random/10;
         bOrientationSpeed = (float)random/10000;
         bOrientation = (float)random/10;
         bDirection = bOrientation;
-        bPosition = glm::vec3(xPos, (2 - (float)yRand/100),(3 - (float)zRand/100));
+
+
+        double rand_angle = 2 * M_PI * rand() / (double)RAND_MAX; // Random angle
+        double rand_radius = rand() / (double)RAND_MAX + rand() / (double)RAND_MAX; // Random radius
+        double r = (rand_radius > 1) ? 2 - rand_radius : rand_radius;
+        r *= (boundryX*2);
+        bPosition = glm::vec3(xPos, r*sin(rand_angle),r*cos(rand_angle));
     }
 	//Destructor
 	~BackgroundObject();

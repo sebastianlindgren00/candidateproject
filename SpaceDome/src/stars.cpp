@@ -1,15 +1,60 @@
 #include "stars.h"
+#include <random>
+#include <cmath>
 
 Star::~Star()
 {
 	//sgct::Log::Info("Player with name=\"%s\" removed", mName.c_str());
 }
 
-void Star::update()
-{
-    // Update position based on orientation
-    sOrientation += 0.02;
+#include <random>
+#include <cmath> // For sin and cos functions
+
+void Star::update(std::vector<std::unique_ptr<Star>>& stars) {
+    glm::vec3 tempPosition = glm::vec3(0.0, 0.0, 0.0);
+    float deltaTime = 0.016; // Frame time assuming 60 FPS
+
+
+    //got this fro chatGPT, generating random numbers
+    // -----------------------------------------------
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(-0.01, 0.01);
+    std::uniform_real_distribution<> angleDis(0, 2 * M_PI); // Full circle
+    //------------------------------------------------
+
+    for (auto& other_star : stars) {
+        if (this != other_star.get()) {
+            glm::vec3 diff = sPosition - other_star->getPosition();
+            float distance = sqrt(diff.y * diff.y + diff.z * diff.z);
+
+            if (distance == 0) {
+                // Apply a random directional impulse when distance is zero
+                float angle = angleDis(gen);
+                glm::vec3 randomImpulse(0, cos(angle) * 0.01, sin(angle) * 0.01);
+                tempPosition += randomImpulse;
+                continue;
+            }
+
+            if (distance < 0.1) {
+                float forceMagnitude = (0.1 - distance) / 0.2;
+                glm::vec3 diffYz(0, diff.y, diff.z);
+
+                if (glm::length(diffYz) != 0) {
+                    glm::vec3 repulsionForce = glm::normalize(diffYz) * forceMagnitude;
+                    // Add a small random component to the direction of the repulsion force
+                    glm::vec3 randomComponent(0, dis(gen)/10, dis(gen)/10);
+                    repulsionForce += randomComponent; // Adjust strength of randomness
+                    tempPosition += repulsionForce;
+                }
+            }
+        }
+    }
+
+    sPosition += tempPosition * deltaTime;
+    sOrientation += 0.02;  // Adjust as needed
 }
+
 
 void Star::draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram) const
 {

@@ -53,10 +53,7 @@ public:
 	float getSpeed() const { return mSpeed; };
 	float getTurnSpeed() const { return mTurnSpeed; }
     int getID() const { return mPlayerID; }
-	//const int getStars() const { return mStars; };
-    //const int getHoldingStars() {return mStarsHolding; }
 	const std::string& getName() const { return mName; };
-    //const bool isAlive() const { return mIsAlive; };
     
     glm::vec3 getColours() const { return mPlayerColor; };
 
@@ -125,31 +122,40 @@ public:
 private:
 	//Player information/data
 
+	//stars data
 	bool dropStars = false;
-	float mTurnSpeed = 0.0f;
 	int   mStars    = 0;
     int mStarsHolding = 0;
-	float mSpeed     = 0.0001f;
-    int mPlayerID;
-    bool mIsAlive = false;
+
+	//for super Charge
 	int superCharge = 300;
-	std::string mName;
 	bool chargeActive = false;
 	int delayForRefill = 0;
-	int wait = 5;
+	int delay = 5;
+
+	//movement / positioning / player data
+	int mPlayerID;
+	std::string mName;
+	int mTeam = 0;
+
     glm::vec3 mPosition;
     float mOrientation = 0.0f;
-	int respawnTimer = 0;
-	int mTeam = 0;
-	bool shotBullet = false;
-
-	glm::vec2 textPosition;
-
-
+	float mTurnSpeed = 0.0f;
+	float mSpeed     = 0.0001f;
 	glm::vec3 mPlayerColor;	
-    GLint mColLoc = -1;
+	int mColorID;
 	float hitRadius = 0.2f;
+
+	//Alive and respawn timer
+	bool mIsAlive = false;
+	int respawnTimer = 0;
+
+	//info for bullets/shooting
+	bool shotBullet = false;
 	int shotAvailable = 75;
 	int bulletTimer = 0;
-	int mColorID;
+
+	glm::vec2 textPosition;
+	GLint mColLoc = -1;
+	
 };

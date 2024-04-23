@@ -27,15 +27,18 @@ public:
     //defaul constructor
 	Star(int id){
         int random = rand() % 100;  
-        int yRand = rand() % 8*(int)fovScale;
-        int zRand = rand() % 15*(int)fovScale;
         sId = id;
 
+        double rand_angle = 2 * M_PI * rand() / (double)RAND_MAX; // Random angle
+        double rand_radius = rand() / (double)RAND_MAX + rand() / (double)RAND_MAX; // Random radius
+        double r = (rand_radius > 1) ? 2 - rand_radius : rand_radius;
+        r *= (boundryX);
+
         sOrientation = (float)random/10;
-        sPosition = glm::vec3(0.0, (fovScale/20 - (float)yRand/100),(fovScale/13 - (float)zRand/100));
+        sPosition = glm::vec3(0.0, r*sin(rand_angle),r*cos(rand_angle));
     }
 
-	//constructor
+	//constructor for when players drop stars (needs a position)
 	Star(glm::vec3 position, int id) {
         sPosition = position;
         int random = rand() % 100;  
@@ -46,11 +49,11 @@ public:
 	//Destructor
 	~Star();
 
-	//Players should be unique
+	//Stars should be unique
 	Star(const Star&) = default;
 	Star& operator=(const Star&) = delete;
 
-    void update();
+    void update(std::vector<std::unique_ptr<Star>>& stars);
 
     glm::vec3 getPosition(){ return sPosition; }
 
@@ -63,6 +66,6 @@ private:
 int sId;
 glm::vec3 sPosition;
 float sOrientation;
-glm::vec3 sColor = {0.5f, 0.5f, 0.0f};	
-//GLint sColLoc = -1;
+//yellow color
+glm::vec3 sColor = {0.5f, 0.5f, 0.0f};
 };
