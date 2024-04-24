@@ -37,6 +37,9 @@ std::unique_ptr<AssimpLoader> skyboxAssimp;
 std::vector<std::unique_ptr<AssimpLoader>> objectsAssimp;
 std::unique_ptr<AssimpLoader> backgroundObjectsAssimp;
 std::vector<std::string> hiscoreList(3);
+std::vector<std::unique_ptr<AssimpLoader>> playerModelsRed;
+std::vector<std::unique_ptr<AssimpLoader>> playerModelsGreen;
+
 GLuint shaderProgram;
 GLuint shaderProgramTexture;
 GLuint shaderProgramMaterial;
@@ -45,7 +48,6 @@ GLuint shaderProgramFisheye;
 
 GLuint framebuffer = 0;
 GLuint textureColorbuffer = 0;
-
 
 //For Fisheye:
 //---------------------------------
@@ -93,7 +95,6 @@ void renderFullScreenQuad() {
 
 void initOGL(GLFWwindow*) {
 
-    std::string filePath1 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[2] + ".fbx";
     std::string filePath2 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[4] + ".fbx";
     std::string filePath3 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[5] + ".fbx";
     std::string filePath4 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[7] + ".fbx";
@@ -135,9 +136,7 @@ void initOGL(GLFWwindow*) {
     shaderProgramFisheye = Utility::createShaderProgram(vertexShaderSourceFisheye, fragmentShaderSourceFisheye);
 */
     
-    
     //std::string baseDirectory = "../../models/";
-    modelsAssimp = std::make_unique<AssimpLoader>(filePath1);
     bulletsAssimp = std::make_unique<AssimpLoader>(filePath4);
     starsAssimp = std::make_unique<AssimpLoader>(filePath5);
     skyboxAssimp = std::make_unique<AssimpLoader>(filePath6);
@@ -145,11 +144,22 @@ void initOGL(GLFWwindow*) {
     objectsAssimp.push_back(std::make_unique<AssimpLoader>(filePath2));
     objectsAssimp.push_back(std::make_unique<AssimpLoader>(filePath3));
 
+
+    //load all models for team Red and than team Green
+    for( int i = 0; i < 18; i++){
+        std::string path = std::string(MODELS_DIRECTORY) + "/red/" + allShipsRed[i] + ".fbx";
+        playerModelsRed.push_back(std::make_unique<AssimpLoader>(path));
+    }
+
+    for( int i = 0; i < 18; i++){
+        std::string path = std::string(MODELS_DIRECTORY) + "/green/" + allShipsGreen[i] + ".fbx";
+        playerModelsGreen.push_back(std::make_unique<AssimpLoader>(path));
+    }
+
     //std::cout << "Attempting to load font from: " << fontPath << std::endl;
     Utility::LoadFontAtlas(fontPath);
 
     std::cout << "after assimpLoader \n";
-
 }
 
 void preSync() {
@@ -320,7 +330,7 @@ void draw(const RenderData& data) {
         if (hitBulletId != -1) {
             bulletsToRemove.push_back(hitBulletId); // Collect bullet IDs to remove
         }
-        player->draw(modelsAssimp, shaderProgram);
+        player->draw(playerModelsRed, playerModelsGreen, shaderProgramTexture);
     }
 
     // Now remove the bullets that were marked for removal

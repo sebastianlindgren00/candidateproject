@@ -45,7 +45,7 @@ public:
 	int update(const std::vector<std::unique_ptr<Bullet>>& mBullets);
 
 	//Draw the player
-	void draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram) const;
+	void draw(const std::vector<std::unique_ptr<AssimpLoader>>& modelsRed ,const std::vector<std::unique_ptr<AssimpLoader>>& modelsGreen, const GLuint shaderProgram) const;
 
 	void updatePlayerData(playerData& data);
 

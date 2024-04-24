@@ -130,17 +130,24 @@ int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets) {
     return -1;
 }
 
-void Player::draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram) const {
+void Player::draw(const std::vector<std::unique_ptr<AssimpLoader>>& modelsRed ,const std::vector<std::unique_ptr<AssimpLoader>>& modelsGreen, const GLuint shaderProgram) const {
 	if (!mIsAlive)
 		return;
 
     //setup shaderProgram
     Utility::setupShaderForDrawing(shaderProgram, mPosition, mPlayerColor, mOrientation, playerScale, 0);
     
+    
     //draw
-    auto& meshes = assimpLoader->getMeshes();
-    for (unsigned int i = 0; i < meshes.size(); i++) {
-        meshes[i].Draw(); // Draw each mesh
+    if(mTeam == 1){
+        auto& meshes = modelsRed[mColorID]->getMeshes();
+        for (unsigned int i = 0; i < meshes.size(); i++) {
+            meshes[i].Draw(); // Draw each mesh
+    }} else {
+        auto& meshes = modelsGreen[mColorID]->getMeshes();
+        for (unsigned int i = 0; i < meshes.size(); i++) {
+            meshes[i].Draw(); // Draw each mesh
+    }
     }
 
     //check for errors

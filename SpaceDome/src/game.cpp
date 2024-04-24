@@ -7,6 +7,8 @@ void Game::addPlayer(int id, const std::string& name) {
     } else {
         teamGreen++;
     }
+    
+
 
     //get a unique color
     int colorID = findNextAvailableColorID(team);
