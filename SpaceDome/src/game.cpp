@@ -1,6 +1,11 @@
 #include "game.h"
 
 void Game::addPlayer(int id, const std::string& name) {
+if(mPlayers.size() == allShipsGreen.size() + allShipsRed.size()){
+    std::cout << "Cant add this player. The server is full. \n";
+    return;
+}
+
     int team = teamRed <= teamGreen ? 1 : 2;
     if (team == 1) {
         teamRed++;
