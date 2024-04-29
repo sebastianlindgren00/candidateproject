@@ -127,7 +127,7 @@ float getSpawnRot() {return spawnRotation;}
 
 void addSpawnRot() {spawnRotation += 0.001;}
 
-// std::vector<syncData> fetchSyncData();
+std::vector<syncData> fetchSyncData();
 
 void update();
 private:
