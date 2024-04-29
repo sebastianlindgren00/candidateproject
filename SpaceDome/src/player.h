@@ -26,7 +26,6 @@ struct PlayerData
 	float mOrientation;
 	glm::vec3 mPosition;
 	int mTeam;
-	glm::vec2 textPosition;
 	int mStars;
 	int mStarsHolding;
 	int mSuperCharge;

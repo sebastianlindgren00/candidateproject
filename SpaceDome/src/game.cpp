@@ -14,7 +14,6 @@ std::vector<syncData> Game::fetchSyncData() {
         data.playerData.mStars = player->getStars();
         data.playerData.mStarsHolding = player->getHandedInStars();
         data.playerData.mIsAlive = player->isAlive();
-        //data.playerData.textPos = player->getTextPos();
         data.playerData.mTurnSpeed = player->getTurnSpeed();
         data.playerData.mSpeed = player->getSpeed();
         data.playerData.mBulletTimer = player->getBulletTimer();
@@ -37,6 +36,7 @@ void Game::addPlayer(int id, const std::string& name) {
     int colorID = findNextAvailableColorID(team);
     glm::vec3 color = (team == 1) ? redShades[colorID] : greenShades[colorID];
 
+    //
     mPlayers.push_back(std::make_unique<Player>(id, name, team, colorID, color));
     std::cout << "Player: " << name << " joined with ID: " << id << " and color ID: " << colorID << std::endl;
 }
@@ -295,6 +295,8 @@ void Game::update(){
         setChargeActive(1, true);
     }
     if(keyStates[sgct::Key::L]) {
+        // Get id
+        
         // Shoot
         if(mPlayers[1]->isAlive()){
         shotBullet(1);

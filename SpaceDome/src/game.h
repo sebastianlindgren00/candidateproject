@@ -34,7 +34,6 @@
 struct syncData {
     PlayerData playerData;
     //ObjectData objectData:
-
 };
 
 //Implemented as explicit singleton, handles pretty much everything
