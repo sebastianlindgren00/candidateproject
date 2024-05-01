@@ -201,10 +201,12 @@ function Controller() {
                 {joystickController(handleMove, handleStart, handleStop)}
                 <div className="board" id="board">
                 <p style={{marginBottom:"-0.5%"}}>Boost</p>
-                  <div style={{marginBottom:"5%"}} className="boardContent" id="boardContent">
-                      <div style={{height:"1.5em", width:"100%", display:"flex", alignItems: "center",justifyContent:"flexStart"}}>
+                  <div style={{marginBottom:"5%",
+                                    boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)"}} className="boardContent" id="boardContent">
+                      <div style={{height:"1.5em", width:"100%", display:"flex", alignItems: "center",justifyContent:"flexStart",
+                                        boxShadow: "inset 0 4px 8px 0 rgba(0, 0, 0, 0.2),inset  0 6px 20px 0 rgba(0, 0, 0, 0.19)"}}>
                         <div style={{height:"90%", width:boostState+"%",backgroundColor:"red",display:"flex",
-                                          boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)"}}>
+                                          boxShadow: "inset 1px 0.5px 0.5px 1px rgba(0, 0, 0, 0.3)"}}>
                         </div>
                       </div>
                   </div>
