@@ -26,24 +26,24 @@ void Star::update(std::vector<std::unique_ptr<Star>>& stars) {
     for (auto& other_star : stars) {
         if (this != other_star.get()) {
             glm::vec3 diff = sPosition - other_star->getPosition();
-            float distance = sqrt(diff.y * diff.y + diff.z * diff.z);
+            float distance = sqrt(diff.x * diff.x + diff.y * diff.y);
 
             if (distance == 0) {
                 // Apply a random directional impulse when distance is zero
                 float angle = angleDis(gen);
-                glm::vec3 randomImpulse(0, cos(angle) * 0.01, sin(angle) * 0.01);
+                glm::vec3 randomImpulse(sin(angle) * 0.01, cos(angle) * 0.01, 0);
                 tempPosition += randomImpulse;
                 continue;
             }
 
             if (distance < 0.1) {
                 float forceMagnitude = (0.1 - distance) / 0.2;
-                glm::vec3 diffYz(0, diff.y, diff.z);
+                glm::vec3 diffYz(diff.x, diff.y, 0);
 
                 if (glm::length(diffYz) != 0) {
                     glm::vec3 repulsionForce = glm::normalize(diffYz) * forceMagnitude;
                     // Add a small random component to the direction of the repulsion force
-                    glm::vec3 randomComponent(0, dis(gen)/10, dis(gen)/10);
+                    glm::vec3 randomComponent(dis(gen)/10, dis(gen)/10, 0);
                     repulsionForce += randomComponent; // Adjust strength of randomness
                     tempPosition += repulsionForce;
                 }
@@ -56,10 +56,12 @@ void Star::update(std::vector<std::unique_ptr<Star>>& stars) {
 }
 
 
-void Star::draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram) const
+void Star::draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const
 {
-
-    Utility::setupShaderForDrawing(shaderProgram, sPosition, sColor, sOrientation, 0.1, 1);
+    glm::mat4 projection = pMatrix;
+    glm::mat4 view = vMatrix;
+    
+    Utility::setupShaderForDrawing(shaderProgram, sPosition, sColor, sOrientation, 0.1, 1, projection, view);
 
     //draw
     auto& meshes = assimpLoader->getMeshes(); // Using getMeshes() method to access the meshes

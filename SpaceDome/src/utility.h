@@ -45,24 +45,19 @@ public:
 	static unsigned int textureFromFile(const char* path, const std::string& directory/*bool gamma = false*/);
 	
 	//setting up shaders before drawing
-	static void setupShaderForDrawing(const GLuint shaderProgram, const glm::vec3& position, const glm::vec3& color, float orientation, float scale, int rotAxis);
-	static void setupShaderForDrawingMaterial(const GLuint shaderProgram, const glm::vec3& position, float orientation, float scale, int rotAxis);
+	static void setupShaderForDrawing(const GLuint shaderProgram, const glm::vec3& position, const glm::vec3& color, float orientation, float scale, int rotAxis, glm::mat4 pMatrix, glm::mat4 vMatrix);
+	static void setupShaderForDrawingMaterial(const GLuint shaderProgram, const glm::vec3& position, float orientation, float scale, int rotAxis, glm::mat4 pMatrix, glm::mat4 vMatrix);
 	static GLuint compileShader(GLenum type, const char* source);
 	static GLuint createShaderProgram(const char* vertexSource, const char* fragmentSource);
 
 	//calculate positions for texts
 	static glm::vec2 screenPositions[8];
 	static const glm::vec3 worldPositions[8];
-	static glm::vec2 CalculateScreenPositionsPlayers(glm::vec3 playerpos);
-	static void CalculateScreenPositions();
+	static glm::vec2 CalculateScreenPositionsPlayers(glm::vec3 playerpos, glm::mat4 pMatrix, glm::mat4 vMatrix);
+	static void CalculateScreenPositions(glm::mat4 pMatrix, glm::mat4 vMatrix);
 
 private:
 
-	static const glm::mat4 projectionMatrix;
-    static const glm::vec3 viewPos;
-    static const glm::vec3 cameraTarget;
-    static const glm::vec3 upDirection;
-    static const glm::mat4 viewMatrix;
-	
+
 	GLuint textVAO, textVBO;
 };

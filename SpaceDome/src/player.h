@@ -30,7 +30,7 @@ public:
 	Player();
 
 	//Constructor
-	Player(const int id, const std::string& name, int team, int colorID, glm::vec3 color);
+	Player(const int id, const std::string& name, int team, int colorID, glm::vec3 color, glm::mat4 pMatrix, glm::mat4 vMatrix);
 
 	//Destructor
 	~Player();
@@ -45,7 +45,7 @@ public:
 	int update(const std::vector<std::unique_ptr<Bullet>>& mBullets);
 
 	//Draw the player
-	void draw(const std::vector<std::unique_ptr<AssimpLoader>>& modelsRed ,const std::vector<std::unique_ptr<AssimpLoader>>& modelsGreen, const GLuint shaderProgram) const;
+	void draw(const std::vector<std::unique_ptr<AssimpLoader>>& modelsRed ,const std::vector<std::unique_ptr<AssimpLoader>>& modelsGreen, const GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const;
 
 	void updatePlayerData(playerData& data);
 

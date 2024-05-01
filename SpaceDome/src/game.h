@@ -41,6 +41,10 @@ static Game& instance() {
     return instance;
 }
 
+void setMatrixes(glm::mat4 pMatrix, glm::mat4 vMatrix) { 
+    projectionMatrix = pMatrix;
+    viewMatrix = vMatrix;
+    } 
 
 bool hasPlayers() const { return !mPlayers.empty(); }
 
@@ -127,12 +131,17 @@ int getBulletID() {return bulletID;}
 void addBulletID() {bulletID++;}
 
 
+static glm::mat4 projectionMatrix;
+static glm::mat4 viewMatrix;
+
 private:
 //Constructor
 Game()  {
     redShades = generateColorShades(baseRed, 50, 1);
     greenShades = generateColorShades(baseGreen, 50, 2);
 }
+
+
 
 std::vector<glm::vec3> redShades;
 std::vector<glm::vec3> greenShades;
@@ -153,7 +162,7 @@ float mMaxTime = 60; //seconds
 //float mLastTime = 0;
 float mResetGame = 10;
 
-float xPosBgObjects = -2;
+float zPosBgObjects = -2;
 int starDelayCounter = 0;
 int starDelay = (rand() % 100) + 1;
 //int amountOfPlayers;

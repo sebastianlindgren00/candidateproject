@@ -1,6 +1,6 @@
 #include "player.h"
 
-Player::Player(const int id, const std::string& name, int team, int colorID, glm::vec3 color){
+Player::Player(const int id, const std::string& name, int team, int colorID, glm::vec3 color, glm::mat4 pMatrix, glm::mat4 vMatrix){
     mIsAlive = true;
     mName = name;
     mPlayerID = id;
@@ -8,18 +8,24 @@ Player::Player(const int id, const std::string& name, int team, int colorID, glm
     mPlayerColor = color;
     int randx = rand() %50;
     int randy = rand() %50;
-    mOrientation = 0.25 - (float)randx/100;
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<float> dist(0.0f, 2.0f * M_PI);
+    float random_angle = dist(gen);
+
+    mOrientation = random_angle;
     if(team == 1) {
         //mPos = position of red spawn;
-        mPosition = glm::vec3(0.0f, 0.25f-(float)randx/100, -(fovScale/21)+(float)randy/100); // spawn position
+        mPosition = glm::vec3(-(fovScale/21)+(float)randy/100, 0.25f-(float)randx/100, 0.0); // spawn position
         mTeam = 1;
     } else {
         //mPos = position of green spawn;
-        mPosition = glm::vec3(0.0f, 0.25f-(float)randx/100, (fovScale/21)-(float)randy/100); // spawn position
+        mPosition = glm::vec3((fovScale/21)-(float)randy/100, 0.25f-(float)randx/100, 0.0); // spawn position
         mTeam = 2;
     }
 
-    textPosition = Utility::CalculateScreenPositionsPlayers( mPosition * glm::vec3(1,-1,1) - glm::vec3(0,-0.5f,0));
+    textPosition = Utility::CalculateScreenPositionsPlayers( mPosition * glm::vec3(1,-1,1) - glm::vec3(0,-0.5f,0), pMatrix, vMatrix);
 
 }
 
@@ -63,9 +69,9 @@ int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets) {
             superCharge = 200;
             
             if(mTeam == 1){
-                mPosition = glm::vec3(0.0f, 0.25f-(float)randx/100, -(fovScale/21)+(float)randy/100);
+                mPosition = glm::vec3(0.25f-(float)randx/100, -(fovScale/21)+(float)randy/100, 0.0);
             }else 
-                mPosition = glm::vec3(0.0f, 0.25f-(float)randx/100, (fovScale/21)-(float)randy/100);
+                mPosition = glm::vec3(0.25f-(float)randx/100, (fovScale/21)-(float)randy/100, 0.0);
             }
             //textPosition = Utility::CalculateScreenPositionsPlayers( mPosition * glm::vec3(1,-1,1) - glm::vec3(0,-0.5f,0));
             respawnTimer++;
@@ -107,35 +113,36 @@ int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets) {
     }
 
     setOrientation(mTurnSpeed);
-    setPosition(glm::vec3(0.0f, cos(getOrientation()) * mSpeed, sin(getOrientation()) * mSpeed));
+    setPosition(glm::vec3( cos(getOrientation()) * mSpeed,sin(getOrientation()) * mSpeed, 0.0));
     
     //circle game filed
+    /*
     float distToOrigo = glm::distance(glm::vec3(0.0,0.0,0.0), mPosition);
     if(distToOrigo > boundryX) {
         mPosition.y *= -1;
         mPosition.z *= -1;
     }
-
+*/
     //square game field
-/*
-    if (mPosition.y > boundryX*1.1 || mPosition.y < -boundryX*1.1){
-        mPosition.y *= -1;
-    } else if (mPosition.z > boundryY*1.2 || mPosition.z < -boundryY*1.2)
+
+    if (mPosition.x > boundryX*2 || mPosition.x < -boundryX*2){
+        mPosition.x *= -1;
+    } else if (mPosition.y > boundryY*1.2 || mPosition.y < -boundryY*1.2)
     {
-        mPosition.z *= -1;
+        mPosition.y *= -1;
     }
-    */
+    
 
     setTurnSpeed(0);
     return -1;
 }
 
-void Player::draw(const std::vector<std::unique_ptr<AssimpLoader>>& modelsRed ,const std::vector<std::unique_ptr<AssimpLoader>>& modelsGreen, const GLuint shaderProgram) const {
+void Player::draw(const std::vector<std::unique_ptr<AssimpLoader>>& modelsRed ,const std::vector<std::unique_ptr<AssimpLoader>>& modelsGreen, const GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const {
 	if (!mIsAlive)
 		return;
 
     //setup shaderProgram
-    Utility::setupShaderForDrawing(shaderProgram, mPosition, mPlayerColor, mOrientation, playerScale, 0);
+    Utility::setupShaderForDrawingMaterial(shaderProgram, mPosition, mOrientation, playerScale, 0, pMatrix, vMatrix);
     
     
     //draw

@@ -91,9 +91,11 @@ void renderFullScreenQuad() {
     glBindVertexArray(0);
 }
 
-//--------------------------------
+//---------------------------------
 
 void initOGL(GLFWwindow*) {
+
+    
 
     std::string filePath2 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[4] + ".fbx";
     std::string filePath3 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[5] + ".fbx";
@@ -231,11 +233,39 @@ std::vector<std::string> getHiscoreList(const std::vector<std::unique_ptr<Player
 }
 
 void draw(const RenderData& data) {
-    (void)data;
+    
+    glm::mat4 projectionMatrix;
+    std::memcpy(
+        glm::value_ptr(projectionMatrix),
+        data.projectionMatrix.values,
+        sizeof(mat4)
+    );
+
+    glm::mat4 viewMatrix;
+    std::memcpy(
+        glm::value_ptr(viewMatrix),
+        data.viewMatrix.values,
+        sizeof(mat4)
+    );
+
+    glm::vec3 translation(0.0f, 0.0f, -5.0f); 
+    viewMatrix = glm::translate(viewMatrix, translation);
+
+
+    //test with old matrixes
+    /*
+    projectionMatrix = glm::perspective(glm::radians(fovScale), 800.0f / 500.0f, 0.1f, 100.0f); 
+    const glm::vec3 viewPos = glm::vec3(5.0f, 0.0f, 0.0f); 
+    const glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f); 
+    const glm::vec3 upDirection = glm::vec3(0.0f, 1.0f, 0.0f); 
+    viewMatrix = glm::lookAt(viewPos, cameraTarget, upDirection);
+    */
+
+
 
     //std::cout << "Draw called\n";
     Game& game = Game::instance();
-
+    game.setMatrixes(projectionMatrix, viewMatrix);
     game.addSpawnRot();
 
     //fisheye
@@ -257,13 +287,13 @@ void draw(const RenderData& data) {
 
     //render Text
     Utility utilityInstance;
-    Utility::CalculateScreenPositions();
+    Utility::CalculateScreenPositions(projectionMatrix, viewMatrix);
    
     int timer = game.getEndTime();
 
     glEnable(GL_DEPTH_TEST);
     //render Background
-    Utility::setupShaderForDrawing(shaderProgramTexture, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f), 0, 12, 1);
+    Utility::setupShaderForDrawing(shaderProgramTexture, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f), 0, 12, 1, projectionMatrix, viewMatrix);
     auto& meshesSkyBox = skyboxAssimp->getMeshes();
     for (unsigned int p = 0; p < meshesSkyBox.size(); p++) {
             meshesSkyBox[p].Draw(); // Draw each mesh
@@ -271,7 +301,7 @@ void draw(const RenderData& data) {
 
     if (game.hasBGObjects()) { 
         for (const auto& object : game.getBGObjects()) {
-            object->draw(backgroundObjectsAssimp, shaderProgram); 
+            object->draw(backgroundObjectsAssimp, shaderProgram, projectionMatrix, viewMatrix); 
         }
     }
 
@@ -330,7 +360,7 @@ void draw(const RenderData& data) {
         if (hitBulletId != -1) {
             bulletsToRemove.push_back(hitBulletId); // Collect bullet IDs to remove
         }
-        player->draw(playerModelsRed, playerModelsGreen, shaderProgramTexture);
+        player->draw(playerModelsRed, playerModelsGreen, shaderProgramTexture, projectionMatrix, viewMatrix);
     }
 
     // Now remove the bullets that were marked for removal
@@ -349,27 +379,27 @@ void draw(const RenderData& data) {
 
     if (game.hasBullets()) { 
         for (const auto& bullet : game.getBullets()) {
-            bullet->draw(bulletsAssimp, shaderProgram); 
+            bullet->draw(bulletsAssimp, shaderProgram, projectionMatrix, viewMatrix); 
         }
     }
 
     if(game.hasStars()) {
         for (const auto& stars : game.getStars()){
-            stars->draw(starsAssimp, shaderProgram);
+            stars->draw(starsAssimp, shaderProgram, projectionMatrix, viewMatrix);
         }
     }
 
     for(size_t i = 0; i < objectsAssimp.size(); i++ ){
 
         glm::vec3 objectColor = glm::vec3(0.4f, 1.f, 0.2f);
-        glm::vec3 pos = glm::vec3(-1.0f, 0.0f, fovScale/21);
+        glm::vec3 pos = glm::vec3(fovScale/21, 0.0f, -1.0);
     
         if(i == 0){
             objectColor = glm::vec3(1.f, 0.2f, 0.2f);
-            pos = glm::vec3(-1.0f, 0.0f, -fovScale/21);
+            pos = glm::vec3(-fovScale/21, 0.0f, -1.0);
         }
 
-        Utility::setupShaderForDrawing(shaderProgram, pos, objectColor, game.getSpawnRot(), 0.4, 1);
+        Utility::setupShaderForDrawing(shaderProgram, pos, objectColor, game.getSpawnRot(), 0.4, 1, projectionMatrix, viewMatrix);
     
         //draw
         auto& meshes = objectsAssimp[i]->getMeshes(); // Using getMeshes() method to access the meshes

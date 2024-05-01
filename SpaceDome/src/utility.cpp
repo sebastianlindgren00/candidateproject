@@ -14,30 +14,32 @@ struct Character {
 
 std::map<GLchar, Character> Characters;
 
-void Utility::setupShaderForDrawingMaterial(const GLuint shaderProgram, const glm::vec3& position, float orientation, float scale, int rotAxis) {
+void Utility::setupShaderForDrawingMaterial(const GLuint shaderProgram, const glm::vec3& position, float orientation, float scale, int rotAxis, glm::mat4 pMatrix, glm::mat4 vMatrix) {
     glUseProgram(shaderProgram);
 
     // Create transformation matrices
     glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), position);
     modelMatrix = glm::scale(modelMatrix, glm::vec3(scale, scale, scale));
+
+        float pi = M_PI;
+        modelMatrix = glm::rotate(modelMatrix, -pi/2 , glm::vec3(0.0f, 1.0f, 0.0f));
+        modelMatrix = glm::rotate(modelMatrix, -pi/2 , glm::vec3(1.0f, 0.0f, 0.0f));
+
     if(rotAxis == 0){
         modelMatrix = glm::rotate(modelMatrix, orientation, glm::vec3(1.0f, 0.0f, 0.0f));
     } else if(rotAxis == 1){
-        modelMatrix = glm::rotate(modelMatrix, orientation, glm::vec3(0.0f, 1.0f, 0.0f));
+        modelMatrix = glm::rotate(modelMatrix, orientation, glm::vec3(0.0f, 0.0f, 1.0f));
     } else {
-        modelMatrix = glm::rotate(modelMatrix, orientation, glm::vec3(1.0f, 1.0f, 0.0f));
+        modelMatrix = glm::rotate(modelMatrix, orientation, glm::vec3(1.0f, 1.0f, 1.0f));
     }
 
     // Set model, view, projection matrices uniforms
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
-    glm::mat4 projectionMatrix = glm::perspective(glm::radians(fovScale), 800.0f / 500.0f, 0.1f, 100.0f);
-    glm::vec3 viewPos = glm::vec3(5.0f, 0.0f, 0.0f);
-    glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::vec3 upDirection = glm::vec3(0.0f, 1.0f, 0.0f);
-    glm::mat4 viewMatrix = glm::lookAt(viewPos, cameraTarget, upDirection);
+    glm::mat4 projectionMatrix = pMatrix;
+    glm::mat4 viewMatrix = vMatrix;
 
     // Lighting configuration
-    glm::vec3 lightPos = glm::vec3(5.0f, 0.0f, 3.0f);
+    glm::vec3 lightPos = glm::vec3(0.0f, 0.0f, 3.0f);
     glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
     // Lighting configuration (if it's static, you can set these in initialization)
@@ -46,30 +48,27 @@ void Utility::setupShaderForDrawingMaterial(const GLuint shaderProgram, const gl
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
-    glUniform3fv(glGetUniformLocation(shaderProgram, "viewPos"), 1, glm::value_ptr(viewPos));
 }
 
-void Utility::setupShaderForDrawing(const GLuint shaderProgram, const glm::vec3& position, const glm::vec3& color, float orientation, float scale, int rotAxis) {
+void Utility::setupShaderForDrawing(const GLuint shaderProgram, const glm::vec3& position, const glm::vec3& color, float orientation, float scale, int rotAxis, glm::mat4 pMatrix, glm::mat4 vMatrix) {
     glUseProgram(shaderProgram);
 
     // Create transformation matrices
     glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), position);
     modelMatrix = glm::scale(modelMatrix, glm::vec3(scale, scale, scale));
+    
     if(rotAxis == 0){
-    modelMatrix = glm::rotate(modelMatrix, orientation, glm::vec3(1.0f, 0.0f, 0.0f));
+        modelMatrix = glm::rotate(modelMatrix, orientation, glm::vec3(1.0f, 0.0f, 0.0f));
     } else if(rotAxis == 1){
         modelMatrix = glm::rotate(modelMatrix, orientation, glm::vec3(0.0f, 1.0f, 0.0f));
     } else {
-        modelMatrix = glm::rotate(modelMatrix, orientation, glm::vec3(1.0f, 1.0f, 0.0f));
+        modelMatrix = glm::rotate(modelMatrix, orientation, glm::vec3(1.0f, 1.0f, 1.0f));
     }
-    glm::mat4 projectionMatrix = glm::perspective(glm::radians(fovScale), 800.0f / 500.0f, 0.1f, 100.0f);
-    glm::vec3 viewPos = glm::vec3(5.0f, 0.0f, 0.0f);
-    glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::vec3 upDirection = glm::vec3(0.0f, 1.0f, 0.0f);
-    glm::mat4 viewMatrix = glm::lookAt(viewPos, cameraTarget, upDirection);
+    glm::mat4 projectionMatrix = pMatrix;
+    glm::mat4 viewMatrix = vMatrix;
 
     // Lighting configuration
-    glm::vec3 lightPos = glm::vec3(5.0f, 0.0f, 3.0f);
+    glm::vec3 lightPos = glm::vec3(0.0f, 0.0f, 3.0f);
     glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
     glm::vec3 objectColor = color;
 
@@ -78,7 +77,6 @@ void Utility::setupShaderForDrawing(const GLuint shaderProgram, const glm::vec3&
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
     glUniform3fv(glGetUniformLocation(shaderProgram, "lightPos"), 1, glm::value_ptr(lightPos));
-    glUniform3fv(glGetUniformLocation(shaderProgram, "viewPos"), 1, glm::value_ptr(viewPos));
     glUniform3fv(glGetUniformLocation(shaderProgram, "lightColor"), 1, glm::value_ptr(lightColor));
     glUniform3fv(glGetUniformLocation(shaderProgram, "objectColor"), 1, glm::value_ptr(objectColor));
 }
@@ -203,21 +201,17 @@ const glm::vec3 Utility::worldPositions[8] = {
     glm::vec3(-2, -2 *(fovScale/45), 0)
 };
 glm::vec2 Utility::screenPositions[8];
-const glm::mat4 Utility::projectionMatrix = glm::perspective(glm::radians(fovScale), 800.0f / 500.0f, 0.1f, 100.0f);
-const glm::vec3 Utility::viewPos = glm::vec3(5.0f, 0.0f, 0.0f);
-const glm::vec3 Utility::cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-const glm::vec3 Utility::upDirection = glm::vec3(0.0f, 1.0f, 0.0f);
-const glm::mat4 Utility::viewMatrix = glm::lookAt(Utility::viewPos, Utility::cameraTarget, Utility::upDirection);
 
-glm::vec2 Utility::CalculateScreenPositionsPlayers(glm::vec3 playerpos) {
-    glm::vec4 clipSpacePos = Utility::projectionMatrix * Utility::viewMatrix * glm::vec4(playerpos, 1.0);
+
+glm::vec2 Utility::CalculateScreenPositionsPlayers(glm::vec3 playerpos, glm::mat4 pMatrix, glm::mat4 vMatrix) {
+    glm::vec4 clipSpacePos = pMatrix * vMatrix * glm::vec4(playerpos, 1.0);
     glm::vec3 ndcSpacePos = glm::vec3(clipSpacePos) / clipSpacePos.w;
     return glm::vec2((ndcSpacePos.x + 1.0f) / 2.0f * 800, (1.2f-(fovScale/500) - ndcSpacePos.y) / 2.0f * 500);
 }
 
-void Utility::CalculateScreenPositions() {
+void Utility::CalculateScreenPositions(glm::mat4 pMatrix, glm::mat4 vMatrix) {
     for(size_t i = 0; i < 8; i++){
-    glm::vec4 clipSpacePos = projectionMatrix * viewMatrix * glm::vec4(worldPositions[i], 1.0);
+    glm::vec4 clipSpacePos = pMatrix * vMatrix * glm::vec4(worldPositions[i], 1.0);
     glm::vec3 ndcSpacePos = glm::vec3(clipSpacePos) / clipSpacePos.w;
     screenPositions[i].x = (ndcSpacePos.x + 1.0f) / 2.0f * 800;
     screenPositions[i].y = (1.0f - ndcSpacePos.y) / 2.0f * 500;

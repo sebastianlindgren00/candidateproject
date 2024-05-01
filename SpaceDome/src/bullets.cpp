@@ -9,26 +9,27 @@ void Bullet::update() {
     lifeTime++;
    
     // Update position based on orientation
-    float distToOrigo = glm::distance(glm::vec3(0.0,0.0,0.0), bPosition);
+    //float distToOrigo = glm::distance(glm::vec3(0.0,0.0,0.0), bPosition);
+    /*
     if(distToOrigo > boundryX) {
         bPosition.y *= -1;
         bPosition.z *= -1;
     }
-
+*/
     
-    bPosition += glm::vec3(0.0f, cos(bOrientation) * bSpeed, sin(bOrientation) * bSpeed);
-/*
-        if (bPosition.y > boundryX || bPosition.y < -boundryX){
-        bPosition.y *= -1;
-    } else if (bPosition.z > boundryY || bPosition.z < -boundryY)
+    bPosition += glm::vec3( cos(bOrientation) * bSpeed,sin(bOrientation) * bSpeed, 0.0);
+
+        if (bPosition.x > 8 || bPosition.x < -8){
+        bPosition.x *= -1;
+    } else if (bPosition.y > 3 || bPosition.y < -3)
     {
-        bPosition.z *= -1;
+        bPosition.y *= -1;
     }
-    */
+    
 }
 
-void Bullet::draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram) const {
-    Utility::setupShaderForDrawing(shaderProgram, bPosition, bColor, bOrientation, 0.05, 0);
+void Bullet::draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const {
+    Utility::setupShaderForDrawingMaterial(shaderProgram, bPosition, bOrientation, 0.05, 0, pMatrix, vMatrix);
 
     //draw
     auto& meshes = assimpLoader->getMeshes(); // Using getMeshes() method to access the meshes

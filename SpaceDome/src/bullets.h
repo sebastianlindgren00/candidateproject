@@ -58,7 +58,7 @@ public:
 
     int getID() {return bID;}
 
-    void draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram) const;
+    void draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const;
 
 private:
 

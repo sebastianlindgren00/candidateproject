@@ -9,10 +9,10 @@ void BackgroundObject::update(std::vector<std::unique_ptr<BackgroundObject>>& mB
 {
     for (const auto& object : mBGObjects) {
 
-        if (this != object.get() && this->bPosition.x == object->bPosition.x) {
+        if (this != object.get() && this->bPosition.z == object->bPosition.z) {
             glm::vec3 objectPos = object->getPosition();
             float distance = glm::distance(objectPos, bPosition);
-            if (distance <= 0.9 + bPosition.x/20) {
+            if (distance <= 0.9 + bPosition.z/20) {
                 float speed1 = bSpeed;
                 float speed2 = object->getSpeed();
 
@@ -31,31 +31,32 @@ void BackgroundObject::update(std::vector<std::unique_ptr<BackgroundObject>>& mB
     
     // Update position based on orientation
     bOrientation += bOrientationSpeed;
-    setPosition(glm::vec3(0.0, cos(bDirection) * bSpeed, sin(bDirection) * bSpeed));
+    setPosition(glm::vec3(sin(bDirection) * bSpeed, cos(bDirection) * bSpeed, 0.0));
 
-
+/*
     float distToOrigo = glm::distance(glm::vec3(0.0,0.0,0.0), bPosition);
     if(distToOrigo > boundryX*4) {
         bPosition.y *= -1;
         bPosition.z *= -1;
     }
+    */
 
-/*
+
     //So background Objects dont go out of bounds
     int random = rand() % 10;
-    if (bPosition.y > boundryX*2 || bPosition.y < -boundryX*2){
+    if (bPosition.x > 9 || bPosition.x < -9){
+        bPosition.x *= -1;
+        bOrientation = (float)random;
+    } else if (bPosition.y > 4 || bPosition.y < -4)
+    {
         bPosition.y *= -1;
         bOrientation = (float)random;
-    } else if (bPosition.z > boundryY*2 || bPosition.z < -boundryY*2)
-    {
-        bPosition.z *= -1;
-        bOrientation = (float)random;
     }
-    */
+    
 }
 
-void BackgroundObject::draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram) const {
-    Utility::setupShaderForDrawing(shaderProgram, bPosition, bColor, bOrientation, size, axis);
+void BackgroundObject::draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const {
+    Utility::setupShaderForDrawing(shaderProgram, bPosition, bColor, bOrientation, size, axis, pMatrix, vMatrix);
 
     //draw
     auto& meshes = assimpLoader->getMeshes(); // Using getMeshes() method to access the meshes

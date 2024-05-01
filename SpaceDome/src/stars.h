@@ -19,7 +19,6 @@
 #include "mesh.h"
 #include "utility.h"
 
-#define M_PI 3.14159265358979323846
 
 //Implemented as explicit singleton, handles pretty much everything
 class Star
@@ -36,8 +35,19 @@ public:
         double r = (rand_radius > 1) ? 2 - rand_radius : rand_radius;
         r *= (boundryX);
 
+        std::random_device rd;
+        std::mt19937 gen(rd());
+
+        // Define the range for x and y
+        std::uniform_real_distribution<float> x_dist(-9.0f, 9.0f);
+        std::uniform_real_distribution<float> y_dist(-3.5f, 3.5f);
+
+        // Generate random x and y positions
+        float x = x_dist(gen);
+        float y = y_dist(gen);
+
         sOrientation = (float)random/10;
-        sPosition = glm::vec3(0.0, r*sin(rand_angle),r*cos(rand_angle));
+        sPosition = glm::vec3(x, y, 0.0);
     }
 
 	//constructor for when players drop stars (needs a position)
@@ -61,7 +71,7 @@ public:
 
     int getID(){ return sId; }
 
-    void draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram) const;
+    void draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const;
 
 private:
 

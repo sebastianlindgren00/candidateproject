@@ -19,7 +19,7 @@ if(mPlayers.size() == allShipsGreen.size() + allShipsRed.size()){
     int colorID = findNextAvailableColorID(team);
     glm::vec3 color = (team == 1) ? redShades[colorID] : greenShades[colorID];
 
-    mPlayers.push_back(std::make_unique<Player>(id, name, team, colorID, color));
+    mPlayers.push_back(std::make_unique<Player>(id, name, team, colorID, color, projectionMatrix, viewMatrix));
     std::cout << "Player: " << name << " joined with ID: " << id << " and color ID: " << colorID << std::endl;
 }
 
@@ -147,9 +147,9 @@ void Game::pickUpStars(int id){
 //is a player at spawn and holding stars?
 //hand them in to the teams total stars
 void Game::handInStars(int id){
-    glm::vec3 spawn = glm::vec3(0.0f, 0.0f, -2.0f);
+    glm::vec3 spawn = glm::vec3(0.0f, -2.0f, 0.0f);
     if(mPlayers[id]->getTeam() == 2){
-        spawn = glm::vec3(0.0f, 0.0f, 2.0f);
+        spawn = glm::vec3(0.0f, 2.0f, 0.0f);
     }
     float distance = glm::distance(spawn, mPlayers[id]->getPosition());
 
@@ -174,6 +174,9 @@ void Game::updateTurnSpeed(unsigned int id, float rotAngle) {
 	mPlayers[id]->setTurnSpeed(rotAngle);
 }
 
+glm::mat4 Game::projectionMatrix;
+glm::mat4 Game::viewMatrix;
+
 void Game::update() {
     //First update?	
     if (mLastFrameTime == -1) {
@@ -182,10 +185,10 @@ void Game::update() {
 	}
 
     if(mBGObjects.size() < (int)fovScale/5) {
-        mBGObjects.push_back(std::make_unique<BackgroundObject>(xPosBgObjects));
+        mBGObjects.push_back(std::make_unique<BackgroundObject>(zPosBgObjects));
         if(counterForBGObjects == 3)
         {
-        xPosBgObjects += -1;
+        zPosBgObjects += -1;
         counterForBGObjects = 0;
         }else 
         counterForBGObjects++;
@@ -203,7 +206,7 @@ void Game::update() {
 
     for (auto& player : mPlayers) {
         if (player->isAlive()) {
-            player->setTextPos(Utility::CalculateScreenPositionsPlayers(player->getPosition()* glm::vec3(1,-1,1) - glm::vec3(0,-0.5f,0)));
+            player->setTextPos(Utility::CalculateScreenPositionsPlayers(player->getPosition()* glm::vec3(1,-1,1) - glm::vec3(0,-0.5f,0), projectionMatrix, viewMatrix));
         }
     }
     
@@ -255,19 +258,19 @@ void Game::update() {
     setChargeActive(1, false);
     if(keyStates[sgct::Key::Right]) {
         // Turn right
-        updateTurnSpeed(1, -0.01f);
+        updateTurnSpeed(1, -0.03f);
     }
     if(keyStates[sgct::Key::S]) {
         // Turn right
-        updateTurnSpeed(0, -0.01f);
+        updateTurnSpeed(0, -0.03f);
     }
     if(keyStates[sgct::Key::Left]) {
         // Turn left
-        updateTurnSpeed(1, 0.01f);
+        updateTurnSpeed(1, 0.03f);
     }
     if(keyStates[sgct::Key::A]) {
         // Turn left
-        updateTurnSpeed(0, 0.01f);
+        updateTurnSpeed(0, 0.03f);
     }
     if(keyStates[sgct::Key::LeftShift]) {
         // Charge
@@ -324,7 +327,7 @@ void Game::update() {
                 mStars.push_back(std::make_unique<Star>(player->getPosition(),maxStarsID));
                 maxStarsID++;
             }
-            player->setPosition(glm::vec3(-10.0, 0.0, 0.0));
+            player->setPosition(glm::vec3(0.0, 0.0, -10.0));
             player->nullStars();
             player->setDropStars();
         }
