@@ -16,7 +16,7 @@ function Controller() {
     const baseColor = 'radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(70,70,70,1) 69%, rgba(101,101,101,1) 100%)'
     const stickColor = 'radial-gradient(circle, rgba(16,187,0,1) 0%, rgba(31,147,0,1) 71%, rgba(3,62,0,1) 100%)'
     
-
+    //TODO: komprimera backgrundsbilden
 
     const socketUrl = 'wss://omni.itn.liu.se/ws/'; // Omni websocket
 
