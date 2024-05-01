@@ -59,7 +59,7 @@ Body{
 
 #jStick{
   display: block;
-  margin:10%;
+  margin:5%;
 }
 
 #fireButton{
@@ -71,6 +71,7 @@ Body{
   background: radial-gradient(circle, rgba(241,21,21,1) 0%, rgba(91,16,16,1) 90%, rgba(0,0,0,1) 100%);
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
   border-radius: 50%;
+  margin-left: 25%;
 
   color:white;
   align-items: center;
@@ -87,6 +88,7 @@ Body{
   background: radial-gradient(circle, rgb(238, 184, 7) 0%, rgb(125, 96, 2) 90%, rgba(0,0,0,1) 100%);
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
   border-radius: 50%;
+  margin-left: -25%;
 
   color:white;
   align-items: center;

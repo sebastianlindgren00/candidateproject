@@ -9,6 +9,8 @@ function Controller() {
     const [searchparams] = useSearchParams() // Used to search in the URL
     const [scrOrientation, setScreenOrientation] = useState(window.screen.orientation)
     const [boostState, setBoostState] = useState(100);
+    const [teamState, setTeamState] = useState('no team')
+    const [pointsState, setPointsState] = useState(0);
     const [srvAuth, setSrvAuth] = useState('not authorized')
 
     const baseColor = 'radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(70,70,70,1) 69%, rgba(101,101,101,1) 100%)'
@@ -44,10 +46,21 @@ function Controller() {
         if(JSON.stringify(lastJsonMessage).includes('Authorized')){
           setSrvAuth('authorized')
         }
-        if(JSON.stringify(lastJsonMessage).includes('Booost')){
+        if(JSON.stringify(lastJsonMessage).includes('Boost')){
           setBoostState(parseInt(lastJsonMessage.Boost))
         }
+        if(JSON.stringify(lastJsonMessage).includes('Points')){
+          setPointsState(parseInt(lastJsonMessage.Points))
+        }
+        if(JSON.stringify(lastJsonMessage).includes('Team')){
+          if(parseInt(lastJsonMessage.Team) == 1){
+            setTeamState("Röd")
+          }else{
+            setTeamState("Blå")
+          }
+        }
       }, [lastJsonMessage])
+
 
     scrOrientation.addEventListener('change', function() { //When screen orientation is changed
         setScreenOrientation(window.screen.orientation)
@@ -93,9 +106,12 @@ function Controller() {
         <div id = 'jStick'>
             <Joystick
                 size={120}
+                stickSize={70}
                 baseColor={baseColor}
+                baseShape='square'
                 stickColor={stickColor}
                 throttle={200}
+                controlPlaneShape='axisX'
                 move={(e) => {
                     handleMove({ x: e.x, y: e.y})
                   }}
@@ -112,11 +128,11 @@ function Controller() {
     const handleMove = (e) => { 
         //console.log(e)
         sendJsonMessage({
-          move: e,
+          move: (e.x*0.03),
           userID: searchparams.get('userID')
         })
         console.log(JSON.stringify(
-          {move: e,
+          {move: (e.x*0.03),
            userID: searchparams.get('userID')},
         ))
       };
@@ -159,9 +175,8 @@ function Controller() {
       //Called by boostButton
       const handleBoost = (e) =>{ //Cannot be called while steering with the joystick, must be fixed
         //console.log(e.type);
-        if(boostState >=50){
-          setBoostState(boostState-50)
-          console.log(boostState)
+        if(boostState >=25){
+          setBoostState(boostState-25)
           sendJsonMessage({
             action: "boost",
             userID: searchparams.get('userID')
@@ -188,16 +203,16 @@ function Controller() {
                 <p style={{marginBottom:"-0.5%"}}>Boost</p>
                   <div style={{marginBottom:"5%"}} className="boardContent" id="boardContent">
                       <div style={{height:"1.5em", width:"100%", display:"flex", alignItems: "center",justifyContent:"flexStart"}}>
-                        <div style={{height:"90%", width:(boostState-1)+"%",backgroundColor:"red",display:"flex",
+                        <div style={{height:"90%", width:boostState+"%",backgroundColor:"red",display:"flex",
                                           boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)"}}>
                         </div>
                       </div>
                   </div>
                   <div className="boardContent" id="boardContent">
-                      <p style={{marginLeft:"1%"}}>Poäng: </p>
+                      <p style={{marginLeft:"1%"}}>Poäng: {pointsState}</p>
                   </div>
                   <div className="boardContent" id="boardContent">
-                      <p style={{marginLeft:"1%"}}>Lag: </p>
+                      <p style={{marginLeft:"1%"}}>Lag: {teamState}</p>
                   </div>
                 </div>
                 <div className="buttons">
