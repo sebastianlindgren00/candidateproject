@@ -1,4 +1,4 @@
-import logo from './logo.svg';
+import React from 'react'
 import './App.css';
 import { createSearchParams,useNavigate } from "react-router-dom";
 import {useState} from 'react';
@@ -110,18 +110,22 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h1>SPACE DOME</h1>
-        <label htmlFor="gameID">Game ID:</label>
-        <input type="text" id="gameID" name="gID" placeholder="1234"/>
-        <input type="submit" value="Submit"></input><br></br>
+        <label htmlFor="userName">Namn:</label>
+        <input type="text" id="userName" name="uName" placeholder="Anders Andersson"/>
+        <input type="submit" value="Gå med" onClick={updateUserValues}></input><br></br>
       </header>
-
-      <div className="InfoBox" id="InfoBox" style={{}}>
-        <button id="InfoButton" type="button" onClick={showInfoBox}>
-          <svg id ="svgArrow" width="20px" height="20px" viewBox="0 0 24 24" strokeWidth="2" fill="none" xmlns="http://www.w3.org/2000/svg" color="white">
-          <path d="M12 21L12 3M12 3L20.5 11.5M12 3L3.5 11.5" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"></path>
-          </svg>
+      <div className="InfoBox" id="InfoBox">
+        <button id="InfoButton" type="button">
           INFO
         </button>
+        <p style={{padding:"0.5em"}}>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+          incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+          exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
+          dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+          Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt 
+          mollit anim id est laborum.
+          </p>
       </div>
     </div>
   );
