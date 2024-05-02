@@ -34,6 +34,10 @@ std::unique_ptr<AssimpLoader> modelsAssimp;
 std::unique_ptr<AssimpLoader> bulletsAssimp;
 std::unique_ptr<AssimpLoader> starsAssimp;
 std::unique_ptr<AssimpLoader> skyboxAssimp;
+
+std::unique_ptr<AssimpLoader> greenBulletAssimp;
+std::unique_ptr<AssimpLoader> redBulletAssimp;
+
 std::vector<std::unique_ptr<AssimpLoader>> objectsAssimp;
 std::unique_ptr<AssimpLoader> backgroundObjectsAssimp;
 std::vector<std::string> hiscoreList(3);
@@ -102,10 +106,12 @@ void initOGL(GLFWwindow*) {
 
     std::string filePath2 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[4] + ".fbx";
     std::string filePath3 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[5] + ".fbx";
-    std::string filePath4 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[7] + ".fbx";
+    //std::string filePath4 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[7] + ".fbx";
     std::string filePath5 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[8] + ".fbx";
     std::string filePath6 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[6] + ".fbx";
     std::string filePath7 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[3] + ".fbx";
+    std::string filePath8 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[9] + ".fbx";
+    std::string filePath9 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[10] + ".fbx";
     std::string fontPath = std::string(MODELS_DIRECTORY) + "/font/Michroma-Regular.ttf";
 
     //Utility utility;
@@ -142,12 +148,16 @@ void initOGL(GLFWwindow*) {
 */
     
     //std::string baseDirectory = "../../models/";
-    bulletsAssimp = std::make_unique<AssimpLoader>(filePath4);
+    //bulletsAssimp = std::make_unique<AssimpLoader>(filePath4);
+    
     starsAssimp = std::make_unique<AssimpLoader>(filePath5);
     skyboxAssimp = std::make_unique<AssimpLoader>(filePath6);
     backgroundObjectsAssimp = std::make_unique<AssimpLoader>(filePath7);
     objectsAssimp.push_back(std::make_unique<AssimpLoader>(filePath2));
     objectsAssimp.push_back(std::make_unique<AssimpLoader>(filePath3));
+
+    redBulletAssimp= std::make_unique<AssimpLoader>(filePath8);
+    greenBulletAssimp = std::make_unique<AssimpLoader>(filePath9);
 
 
     //load all models for team Red and than team Green
@@ -439,7 +449,7 @@ void draw(const RenderData& data) {
 
     if (game.hasBullets()) { 
         for (const auto& bullet : game.getBullets()) {
-            bullet->draw(bulletsAssimp, shaderProgram, projectionMatrix, viewMatrix); 
+            bullet->draw(greenBulletAssimp,redBulletAssimp, shaderProgramTexture, projectionMatrix, viewMatrix); 
         }
     }
 
