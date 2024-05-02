@@ -21,7 +21,6 @@ Player::Player(const int id, const std::string& name, int team, int colorID, glm
 
     textPosition = Utility::CalculateScreenPositionsPlayers( mPosition * glm::vec3(1,-1,1) - glm::vec3(0,-0.5f,0));
 
-
 }
 
 Player::~Player()

@@ -19,14 +19,15 @@
 // Data from player class that needs to be synced between nodes. Revise later if all data is needed
 struct PlayerData
 {
-	bool mIsAlive;
-	std::string mName;
+	//bool mIsAlive;
+	//std::string mName;
 	int mPlayerID;
 	int mColorID;
 	float mOrientation;
-	glm::vec3 mPosition;
+	float mPositionX;
+	float mPositionY;
+	float mPositionZ;
 	int mTeam;
-	glm::vec2 textPosition;
 	int mStars;
 	int mStarsHolding;
 	int mSuperCharge;
@@ -94,6 +95,12 @@ public:
 	void fillSuperCharge(){ superCharge += 1; }
 
 	glm::vec3 getPosition(){ return mPosition; }
+
+	float getPositionX(){ return mPosition.x; }
+
+	float getPositionY(){ return mPosition.y; }
+	
+	float getPositionZ(){ return mPosition.z; }
 
 	int getTeam(){ return mTeam; }
 
