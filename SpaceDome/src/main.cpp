@@ -192,10 +192,8 @@ std::vector<std::byte> encode() {
     serializeObject(data, exampleString);
 
     // Serialize sync data
-
-    for (const auto& syncData : Game::instance().fetchSyncData()) {
-        serializeObject(data, syncData);
-    }
+    std::vector<syncData> gameStates = Game::instance().fetchSyncData();
+    serializeObject(data, gameStates);
 
     return data;
 }
@@ -495,7 +493,7 @@ void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Windo
         auto& players = Game::instance().getPlayers();
         if(players.size() > 2) {
             int lastPlayerId = players.back()->getID();
-            Game::instance().removePlayer(lastPlayerId);
+            Game::instance().removePlayer(lastPlayerId); // Can only remove the last player
         }
     } 
 }
@@ -536,8 +534,8 @@ int main(int argc, char** argv) {
     {
 
         wsHandler = std::make_unique<WebSocketHandler>(
-            "wss://omni.itn.liu.se/ws/", // Server address
-            443,                // Server port
+            "localhost", // Server address
+            4685,                // Server port
             connectionEstablished,
             connectionClosed,
             messageReceived

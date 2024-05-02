@@ -66,7 +66,7 @@ public:
 	float getTurnSpeed() const { return mTurnSpeed; }
     int getID() const { return mPlayerID; }
 	const std::string& getName() const { return mName; };
-    const bool isAlive() const { return mIsAlive; };
+    bool isAlive() const { return mIsAlive; };
     
     glm::vec3 getColours() const { return mPlayerColor; };
 
