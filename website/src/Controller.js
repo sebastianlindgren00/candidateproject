@@ -15,18 +15,37 @@ function Controller() {
 
     const baseColor = 'radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(70,70,70,1) 69%, rgba(101,101,101,1) 100%)'
     const stickColor = 'radial-gradient(circle, rgba(16,187,0,1) 0%, rgba(31,147,0,1) 71%, rgba(3,62,0,1) 100%)'
-    
-    //TODO: komprimera backgrundsbilden
 
     const socketUrl = 'wss://omni.itn.liu.se/ws/'; // Omni websocket
 
     const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(
-        socketUrl,
-        {
-          share: false,
-          shouldReconnect: () => true,
-        },
-      )
+      socketUrl,
+      {
+        share: false,
+        shouldReconnect: () => true,
+      },
+    )
+
+    // Incremental increase of the boost bar every 500ms, will become redundant
+    useEffect(() => {
+      const interval = setInterval(() => {if(boostState<=100){
+        setBoostState(boostState + 0.5);
+      }
+      }, 500);
+
+      if(boostState < 25){
+        document.getElementById('boostButton').style.background= 'radial-gradient(circle, rgb(166, 146, 82) 0%, rgb(83, 75, 50) 90%, rgba(0,0,0,1) 100%)'
+        document.getElementById('boostButton').style.color = 'lightgray'
+        document.getElementById('boostButton').style.boxShadow = 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.2),inset 0 3px 10px 0 rgba(0, 0, 0, 0.19)'
+      }else{
+        document.getElementById('boostButton').style.background= 'radial-gradient(circle, rgb(238, 184, 7) 0%, rgb(125, 96, 2) 90%, rgba(0,0,0,1) 100%)'
+        document.getElementById('boostButton').style.color = 'white'
+        document.getElementById('boostButton').style.boxShadow = '0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19)'
+      }
+
+      //Clearing the interval
+      return () => clearInterval(interval);
+  }, [boostState]);
     
       // Run when the connection state (readyState) changes
       useEffect(() => {
@@ -38,20 +57,20 @@ function Controller() {
         }
       }, [readyState])
 
-
-    
+      
       // Run when a new WebSocket message is received (lastJsonMessage)
       useEffect(() => {
         console.log(`Got a new message: ${JSON.stringify(lastJsonMessage)}`)
         if(JSON.stringify(lastJsonMessage).includes('Authorized')){
           setSrvAuth('authorized')
         }
-        if(JSON.stringify(lastJsonMessage).includes('Boost')){
-          setBoostState(parseInt(lastJsonMessage.Boost))
-        }
         if(JSON.stringify(lastJsonMessage).includes('Points')){
           setPointsState(parseInt(lastJsonMessage.Points))
         }
+        if(JSON.stringify(lastJsonMessage).includes('Boost')){
+          setBoostState(parseInt(lastJsonMessage.Boost))
+        }
+
         if(JSON.stringify(lastJsonMessage).includes('Team')){
           if(parseInt(lastJsonMessage.Team) == 1){
             setTeamState("Röd")

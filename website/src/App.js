@@ -59,7 +59,6 @@ function App() {
     })
   }
 
-
   // Source for generateUUID(): https://stackoverflow.com/a/8809472 , acquired 2024-03-20
   function generateUUID() { // Public Domain/MIT
     var d = new Date().getTime();//Timestamp
@@ -80,8 +79,6 @@ function App() {
   const navigate = useNavigate();
  
   useEffect(() => { // Is called every render cycle, because of this an if statement is used before the user is navigated to the controller page
-    console.log('State updated: \n', userID,' : ', userName);
-    console.log('Client is ',srvAuth);
 
     if(userID != 'inital' && userName != 'inital' && userName !='' && srvAuth == 'authorized'){ // The ID and Name must be separate from the inital values, and the username cannot be blank
 
@@ -89,6 +86,10 @@ function App() {
         userID: userID,
         userName: userName
       })
+      console.log(JSON.stringify(
+        {userID: userID,
+         userName: userName}
+      ))
       navigate({
           pathname: '/controller', 
           search: createSearchParams({ // Creates and extension to the URL which is used by Controller.js to read ID and Name
