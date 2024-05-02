@@ -25,13 +25,14 @@ struct playerData {
 
 struct PlayerData
 {
-	// Order is very important here
-	bool mIsAlive; //int32_T uint_t, guaranteed to have a certain width. FIXED LENGTH IS IMPORTANT.
-	std::string mName;
+	//bool mIsAlive;
+	//std::string mName;
 	int mPlayerID;
 	int mColorID;
 	float mOrientation;
-	glm::vec3 mPosition; // store these in floats instead, 3 floats. since glm is not plain old data. std::array float3
+	float mPositionX;
+	float mPositionY;
+	float mPositionZ;
 	int mTeam;
 	int mStars;
 	int mStarsHolding;
@@ -101,6 +102,12 @@ public:
 	void fillSuperCharge(){ superCharge += 1; }
 
 	glm::vec3 getPosition(){ return mPosition; }
+
+	float getPositionX(){ return mPosition.x; }
+
+	float getPositionY(){ return mPosition.y; }
+	
+	float getPositionZ(){ return mPosition.z; }
 
 	int getTeam(){ return mTeam; }
 

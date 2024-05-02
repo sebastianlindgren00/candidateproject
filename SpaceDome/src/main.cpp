@@ -227,6 +227,22 @@ void decode(const std::vector<std::byte>& data) {
 void postSyncPreDraw() {
     // Apply the (now synchronized) application state before the rendering will start
 
+    //Sync gameobjects' state on clients only
+	if (!Engine::instance().isMaster() && Game::instance().isGameActive())
+	{
+		//Engine::instance().setStatsGraphVisibility(areStatsVisible);
+
+		if (!Game::instance().isGameActive())
+			return;
+		else if(states.size() > 0 && !Game::instance().isGameActive()) {
+			Game::instance().fetchSyncData();
+		}
+	}
+	else
+	{
+		//if (Game::instance().isGameActive())
+		//	Game::instance().sendPointsToServer(wsHandler);
+	}
 
 
 }
