@@ -192,8 +192,8 @@ std::vector<std::byte> encode() {
     serializeObject(data, exampleString);
 
     // Serialize sync data
-    //std::vector<syncData> gameStates = Game::instance().fetchSyncData();
-    //serializeObject(data, gameStates);
+    std::vector<syncData> gameStates = Game::instance().fetchSyncData();
+    serializeObject(data, gameStates);
 
     return data;
 }

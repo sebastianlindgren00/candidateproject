@@ -19,12 +19,13 @@
 // Data from player class that needs to be synced between nodes. Revise later if all data is needed
 struct PlayerData
 {
-	bool mIsAlive;
+	// Order is very important here
+	bool mIsAlive; //int32_T uint_t, guaranteed to have a certain width. FIXED LENGTH IS IMPORTANT.
 	std::string mName;
 	int mPlayerID;
 	int mColorID;
 	float mOrientation;
-	glm::vec3 mPosition;
+	glm::vec3 mPosition; // store these in floats instead, 3 floats. since glm is not plain old data. std::array float3
 	int mTeam;
 	int mStars;
 	int mStarsHolding;
@@ -64,7 +65,7 @@ public:
 	float getTurnSpeed() const { return mTurnSpeed; }
     int getID() const { return mPlayerID; }
 	const std::string& getName() const { return mName; };
-    const bool isAlive() const { return mIsAlive; };
+    bool isAlive() const { return mIsAlive; };
     
     glm::vec3 getColours() const { return mPlayerColor; };
 
@@ -92,7 +93,7 @@ public:
 
 	void fillSuperCharge(){ superCharge += 1; }
 
-	glm::vec3 getPosition(){ return mPosition; }
+	glm::vec3 getPosition(){ return mPosition; } // change to std::array<float, 3> getPosition() const { return mPosition; }
 
 	int getTeam(){ return mTeam; }
 
