@@ -248,7 +248,18 @@ void draw(const RenderData& data) {
         sizeof(mat4)
     );
 
-    glm::vec3 translation(0.0f, 0.0f, -5.0f); 
+    //const sgct::RenderData &data;
+    const sgct::Window &sgctWindowRef = data.window; // Assume data.window is a reference to sgct::Window
+    const sgct::Window *sgctWindowPtr = &sgctWindowRef;
+
+    GLFWwindow* glfwWindow = sgctWindowPtr->windowHandle();
+
+    if (!glfwWindow) {
+        std::cerr << "Failed to get GLFWwindow pointer from sgct::Window." << std::endl;
+        return;
+    }
+
+    glm::vec3 translation(0.0f, 0.0f, -2.0f); 
     viewMatrix = glm::translate(viewMatrix, translation);
 
 
@@ -287,7 +298,7 @@ void draw(const RenderData& data) {
 
     //render Text
     Utility utilityInstance;
-    Utility::CalculateScreenPositions(projectionMatrix, viewMatrix);
+    
    
     int timer = game.getEndTime();
 
@@ -304,6 +315,7 @@ void draw(const RenderData& data) {
             object->draw(backgroundObjectsAssimp, shaderProgram, projectionMatrix, viewMatrix); 
         }
     }
+    Utility::CalculateScreenPositions(projectionMatrix, viewMatrix);
 
     glDisable(GL_DEPTH_TEST);
      //dont draw players, stars and objects if game is at hold
@@ -311,36 +323,36 @@ void draw(const RenderData& data) {
     
         timer = game.getRestartTime();
         std::string textTime = "NEW GAME STARTS IN: " + std::to_string(timer);
-        utilityInstance.RenderText(shaderProgramText, textTime, 7, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f));
+        utilityInstance.RenderText(shaderProgramText, textTime, 7, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
         if(game.getStars(1) > game.getStars(2)){
-            utilityInstance.RenderText(shaderProgramText, "Red Team Won!", 6, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f));
+            utilityInstance.RenderText(shaderProgramText, "Red Team Won!", 6, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
         } else if(game.getStars(1) < game.getStars(2)){
-            utilityInstance.RenderText(shaderProgramText, "Green Team Won!", 6, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f));
+            utilityInstance.RenderText(shaderProgramText, "Green Team Won!", 6, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
         } else {
-            utilityInstance.RenderText(shaderProgramText, "The Game Ended In A Draw!", 6, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f));
+            utilityInstance.RenderText(shaderProgramText, "The Game Ended In A Draw!", 6, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
         }
 
         hiscoreList = getHiscoreList(game.getPlayers());
 
-        utilityInstance.RenderText(shaderProgramText, textRed, 5, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f));
-        utilityInstance.RenderText(shaderProgramText, textGreen, 4, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f));
-        utilityInstance.RenderText(shaderProgramText, "Player Hiscore:", 3, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f));
+        utilityInstance.RenderText(shaderProgramText, textRed, 5, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
+        utilityInstance.RenderText(shaderProgramText, textGreen, 4, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
+        utilityInstance.RenderText(shaderProgramText, "Player Hiscore:", 3, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
         if(game.getPlayers().size() > 0){
-        utilityInstance.RenderText(shaderProgramText, hiscoreList[0], 2, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f));
+        utilityInstance.RenderText(shaderProgramText, hiscoreList[0], 2, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
         }
         if(game.getPlayers().size() > 1){
-        utilityInstance.RenderText(shaderProgramText, hiscoreList[1], 1, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f));
+        utilityInstance.RenderText(shaderProgramText, hiscoreList[1], 1, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
         }if(game.getPlayers().size() > 2){
-        utilityInstance.RenderText(shaderProgramText, hiscoreList[2], 0, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f));
+        utilityInstance.RenderText(shaderProgramText, hiscoreList[2], 0, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
         }
         return;
     } 
 
     std::string textTime = "GAME ENDS IN: " + std::to_string(timer);
 
-    utilityInstance.RenderText(shaderProgramText, textTime, 6, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f));
-    utilityInstance.RenderText(shaderProgramText, textRed, 5, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f));
-    utilityInstance.RenderText(shaderProgramText, textGreen, 4, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f));
+    utilityInstance.RenderText(shaderProgramText, textTime, 6, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
+    utilityInstance.RenderText(shaderProgramText, textRed, 5, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
+    utilityInstance.RenderText(shaderProgramText, textGreen, 4, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
 
     glEnable(GL_DEPTH_TEST);
     if (game.hasPlayers()) {
@@ -424,7 +436,7 @@ void draw(const RenderData& data) {
         if(player->isAlive())
         printsPlayers.push_back(std::make_tuple(player->getName(), player->getTextX(), player->getTextY(), 0.3f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f)));
     }
-    utilityInstance.RenderTextPlayers(shaderProgramText, printsPlayers);
+    utilityInstance.RenderTextPlayers(shaderProgramText, printsPlayers, glfwWindow);
 
     /*
     //For fisheye

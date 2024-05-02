@@ -147,9 +147,9 @@ void Game::pickUpStars(int id){
 //is a player at spawn and holding stars?
 //hand them in to the teams total stars
 void Game::handInStars(int id){
-    glm::vec3 spawn = glm::vec3(0.0f, -2.0f, 0.0f);
+    glm::vec3 spawn = glm::vec3(-2.0f, 0.0f, 0.0f);
     if(mPlayers[id]->getTeam() == 2){
-        spawn = glm::vec3(0.0f, 2.0f, 0.0f);
+        spawn = glm::vec3(2.0f, 0.0f, 0.0f);
     }
     float distance = glm::distance(spawn, mPlayers[id]->getPosition());
 

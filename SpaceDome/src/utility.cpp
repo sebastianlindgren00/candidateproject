@@ -213,8 +213,8 @@ void Utility::CalculateScreenPositions(glm::mat4 pMatrix, glm::mat4 vMatrix) {
     for(size_t i = 0; i < 8; i++){
     glm::vec4 clipSpacePos = pMatrix * vMatrix * glm::vec4(worldPositions[i], 1.0);
     glm::vec3 ndcSpacePos = glm::vec3(clipSpacePos) / clipSpacePos.w;
-    screenPositions[i].x = (ndcSpacePos.x + 1.0f) / 2.0f * 800;
-    screenPositions[i].y = (1.0f - ndcSpacePos.y) / 2.0f * 500;
+    screenPositions[i].x = (ndcSpacePos.x + 1.4f) / 2.0f * 800;
+    screenPositions[i].y = (1.0f - ndcSpacePos.y) / 2.5f * 500;
      }
 }
 
@@ -263,10 +263,12 @@ void Utility::RenderSingleText(GLuint shaderProgram, const std::string& text, fl
     }
 }
 
-void Utility::RenderText(GLuint shaderProgram, std::string text, int row, float scale, glm::vec3 color) {
+void Utility::RenderText(GLuint shaderProgram, std::string text, int row, float scale, glm::vec3 color,  GLFWwindow* glfwWindow) {
     // CalculateScreenPositions must have been called beforehand to populate screenPositions
     float x = Utility::screenPositions[row].x; 
 	float y = Utility::screenPositions[row].y;
+
+
 
     // Prepare text rendering once
     glUseProgram(shaderProgram);
@@ -275,7 +277,9 @@ void Utility::RenderText(GLuint shaderProgram, std::string text, int row, float 
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(textVAO);
     glUniform1i(glGetUniformLocation(shaderProgram, "text"), 0);
-    glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(800), 0.0f, static_cast<float>(500));
+    int width, height;
+    glfwGetFramebufferSize(glfwWindow, &width, &height);
+    glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(width), 0.0f, static_cast<float>(height));
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
     RenderSingleText(shaderProgram, text, x, y, scale, color); // Optimized function for rendering a single text element
@@ -285,15 +289,18 @@ void Utility::RenderText(GLuint shaderProgram, std::string text, int row, float 
     glDisable(GL_BLEND);
 }
 
-void Utility::RenderTextPlayers(GLuint shaderProgram, const std::vector<std::tuple<std::string, float, float, float, glm::vec3>>& texts) {
+void Utility::RenderTextPlayers(GLuint shaderProgram, const std::vector<std::tuple<std::string, float, float, float, glm::vec3>>& texts, GLFWwindow* glfwWindow) {
     // Prepare text rendering once
+  
     glUseProgram(shaderProgram);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(textVAO);
     glUniform1i(glGetUniformLocation(shaderProgram, "text"), 0);
-    glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(800), 0.0f, static_cast<float>(500));
+    int width, height;
+    glfwGetFramebufferSize(glfwWindow, &width, &height);
+    glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(width), 0.0f, static_cast<float>(height));
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
     for (const auto& [text, x, y, scale, color] : texts) {
