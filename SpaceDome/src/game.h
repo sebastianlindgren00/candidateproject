@@ -48,6 +48,8 @@ static Game& instance() {
     return instance;
 }
 
+std::vector<syncData> fetchSyncData();
+
 void setMatrixes(glm::mat4 pMatrix, glm::mat4 vMatrix) { 
     projectionMatrix = pMatrix;
     viewMatrix = vMatrix;

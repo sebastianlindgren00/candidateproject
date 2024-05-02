@@ -23,6 +23,25 @@ struct playerData {
 	bool turnSpeed;
 };
 
+struct PlayerData
+{
+	// Order is very important here
+	bool mIsAlive; //int32_T uint_t, guaranteed to have a certain width. FIXED LENGTH IS IMPORTANT.
+	std::string mName;
+	int mPlayerID;
+	int mColorID;
+	float mOrientation;
+	glm::vec3 mPosition; // store these in floats instead, 3 floats. since glm is not plain old data. std::array float3
+	int mTeam;
+	int mStars;
+	int mStarsHolding;
+	int mSuperCharge;
+	int shotAvailable;
+	float mTurnSpeed;
+	int mBulletTimer;
+	float mSpeed;
+};
+
 class Player
 {
 public:
