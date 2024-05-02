@@ -622,6 +622,12 @@ int main(int argc, char** argv) {
         constexpr const int MessageSize = 1024;
         if (wsHandler->connect("wss", MessageSize)) {
             Log::Info("WebSocket connection initiated!");
+            /* TESTS
+            wsHandler->queueMessage("test test1");
+            wsHandler->queueMessage("test test2");
+            Log::Info(fmt::format("Messages in queue: {} ", wsHandler->queueSize()));
+            wsHandler->tick();
+            */
         } else {
             Log::Error("Failed to initiate WebSocket connection!");
         }
