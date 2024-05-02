@@ -30,11 +30,18 @@
 #include "stars.h"
 #include "backgroundObjects.h"
 
+// Contains all necessary game object data that is used for the sync
+struct syncData {
+    PlayerData playerData;
+    //ObjectData objectData:
+};
+
 //Implemented as explicit singleton, handles pretty much everything
 class Game
 {
 public:
 
+// Creates one instance of a Game. There should only be one active instance of Game at a time
 static Game& instance() {
         static Game instance;
 
@@ -54,8 +61,6 @@ bool hasStars() const { return !mStars.empty(); }
 
 bool hasBGObjects () const { return !mBGObjects.empty(); }
 
-void UpdateScreenPositionsForPlayers(std::vector<Player>& players);
-
 const std::vector<std::unique_ptr<Player>>& getPlayers() const { return mPlayers; }
 
 std::vector<std::unique_ptr<Bullet>>& getBullets() { return mBullets; }
@@ -70,22 +75,27 @@ void operator=(Game const&) = delete;
 
 void addPlayer(int id, const std::string& name);
 
+int getLowestAvailablePlayerID();
+
+static std::vector<glm::vec3> generateColorShades(glm::vec3 baseColor, int count, int team);
+
+int findNextAvailableColorID(int team);
+
 void addBullet(int team, float speed, glm::vec3 position,float orientation, int id);
 
 void shotBullet(int id);
 
-void handInStars(int id);
-
 void removePlayer(int id);
+
+void gameKeyboard(sgct::Key key, sgct::Modifier modifier, sgct::Action action, sgct::Window*);
+
+void pickUpStars(int id);
+
+void handInStars(int id);
 
 void updateTurnSpeed(unsigned int id, float rotAngle);
 
 void setChargeActive(unsigned int id, bool mode){ mPlayers[id]->setChargeMode(mode); }
-void update();
-
-void pickUpStars(int id);
-
-void gameKeyboard(sgct::Key key, sgct::Modifier modifier, sgct::Action action, sgct::Window*);
 
 int getStars(int team) {
     if(team == 1) {
@@ -116,12 +126,6 @@ int getEndTime() { return (int)mMaxTime - mTotalTime; }
 
 int getRestartTime() { return (int)mResetGame - mTotalTime; }
 
-static std::vector<glm::vec3> generateColorShades(glm::vec3 baseColor, int count, int team);
-
-int findNextAvailableColorID(int team);
-
-int getLowestAvailablePlayerID();
-
 float getSpawnRot() {return spawnRotation;}
 
 void addSpawnRot() {spawnRotation += 0.001;}
@@ -134,6 +138,7 @@ void addBulletID() {bulletID++;}
 static glm::mat4 projectionMatrix;
 static glm::mat4 viewMatrix;
 
+void update();
 private:
 //Constructor
 Game()  {

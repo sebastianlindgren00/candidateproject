@@ -49,6 +49,9 @@ GLuint shaderProgramFisheye;
 GLuint framebuffer = 0;
 GLuint textureColorbuffer = 0;
 
+std::vector<syncData> states; 
+
+
 //For Fisheye:
 //---------------------------------
 GLuint quadVAO = 0;
@@ -167,30 +170,50 @@ void initOGL(GLFWwindow*) {
 void preSync() {
     // Do the application simulation step on the server node in here and make sure that
     // the computed state is serialized and deserialized in the encode/decode calls
+    
+    std::vector<std::byte> data; // Store serialized data
 
+    //we check if sgct is run on master machine 
     if (Engine::instance().isMaster() && wsHandler->isConnected() &&
-        Engine::instance().currentFrameNumber() % 100 == 0)
-    {
-        wsHandler->queueMessage("ping");
-    }
+        Engine::instance().currentFrameNumber() % 100 == 0){
 
-    if (Engine::instance().isMaster()) {
-        // This doesn't have to happen every frame, but why not?
+            //if game instance is active 
+            if(Game::instance().isGameActive()){
+                //send time through ws handler to
+
+               std::string timeLeft = std::to_string(Game::instance().getEndTime());
+                wsHandler->queueMessage("Time left: " + timeLeft);
+            }
+
+            if(!Game::instance().isGameActive()){
+                std::string restartTime = to_string(Game::instance().getRestartTime());
+                wsHandler->queueMessage("New round starts in" + restartTime);
+            }
+        
         wsHandler->tick();
     }
-    Game::instance().update();
 
+    if(Engine::instance().isMaster()){
+        Game::instance().update();
+    }
 }
 
 std::vector<std::byte> encode() {
-    // These are just two examples;  remove them and replace them with the logic of your
-    // application that you need to synchronize
     std::vector<std::byte> data;
+
+    // Serialize exampleInt
     serializeObject(data, exampleInt);
+
+    // Serialize exampleString
     serializeObject(data, exampleString);
+
+    // Serialize sync data
+    std::vector<syncData> gameStates = Game::instance().fetchSyncData();
+    serializeObject(data, gameStates);
 
     return data;
 }
+
 
 void decode(const std::vector<std::byte>& data) {
     // These are just two examples;  remove them and replace them with the logic of your
@@ -198,10 +221,14 @@ void decode(const std::vector<std::byte>& data) {
     unsigned pos = 0;
     deserializeObject(data, pos, exampleInt);
     deserializeObject(data, pos, exampleString);
+    deserializeObject(data, pos, states);
 }
 
 void postSyncPreDraw() {
     // Apply the (now synchronized) application state before the rendering will start
+
+
+
 }
 
 std::vector<std::string> getHiscoreList(const std::vector<std::unique_ptr<Player>>& players) {
@@ -494,7 +521,7 @@ void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Windo
     if (key == Key::P && action == Action::Press) {
     if(Game::instance().getPlayers().size() < 100) {
         int id = Game::instance().getLowestAvailablePlayerID();
-        Game::instance().addPlayer(id, "o");
+        Game::instance().addPlayer(id, "o"); // TODO: Add a name from user input, should not be "o"
     }
 }
     
@@ -502,7 +529,7 @@ void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Windo
         auto& players = Game::instance().getPlayers();
         if(players.size() > 2) {
             int lastPlayerId = players.back()->getID();
-            Game::instance().removePlayer(lastPlayerId);
+            Game::instance().removePlayer(lastPlayerId); // Can only remove the last player
         }
     } 
 }
@@ -542,8 +569,8 @@ int main(int argc, char** argv) {
     if (Engine::instance().isMaster()) {
 
         wsHandler = std::make_unique<WebSocketHandler>(
-            "wss://omni.itn.liu.se/ws/", // Server address
-            443,                // Server port
+            "localhost", // Server address
+            4685,                // Server port
             connectionEstablished,
             connectionClosed,
             messageReceived
