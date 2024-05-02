@@ -31,7 +31,7 @@ function Controller() {
       const interval = setInterval(() => {if(boostState<=100){
         setBoostState(boostState + 0.5);
       }
-      }, 500);
+      }, 100);
 
       if(boostState < 25){
         document.getElementById('boostButton').style.background= 'radial-gradient(circle, rgb(166, 146, 82) 0%, rgb(83, 75, 50) 90%, rgba(0,0,0,1) 100%)'
@@ -75,7 +75,7 @@ function Controller() {
           if(parseInt(lastJsonMessage.Team) == 1){
             setTeamState("Röd")
           }else{
-            setTeamState("Blå")
+            setTeamState("Grön")
           }
         }
       }, [lastJsonMessage])
