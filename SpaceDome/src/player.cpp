@@ -73,7 +73,6 @@ int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets) {
             }else 
                 mPosition = glm::vec3(0.25f-(float)randx/100, (fovScale/21)-(float)randy/100, 0.0);
             }
-            //textPosition = Utility::CalculateScreenPositionsPlayers( mPosition * glm::vec3(1,-1,1) - glm::vec3(0,-0.5f,0));
             respawnTimer++;
         return -1; 
     }

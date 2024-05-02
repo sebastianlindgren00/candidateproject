@@ -1,5 +1,29 @@
 #include "game.h"
 
+// Sync
+
+std::vector<syncData> Game::fetchSyncData() {
+    std::vector<syncData> tmp;
+    for (const auto& player : mPlayers) {
+        syncData data;
+        data.playerData.mPlayerID = player->getID();
+        data.playerData.mPosition = player->getPosition();
+        data.playerData.mOrientation = player->getOrientation();
+        data.playerData.mColorID = player->getColorID();
+        data.playerData.mTeam = player->getTeam();
+        data.playerData.mStars = player->getStars();
+        data.playerData.mStarsHolding = player->getHandedInStars();
+        data.playerData.mIsAlive = player->isAlive();
+        data.playerData.mTurnSpeed = player->getTurnSpeed();
+        data.playerData.mSpeed = player->getSpeed();
+        data.playerData.mBulletTimer = player->getBulletTimer();
+        data.playerData.mSuperCharge = player->getSuperCharge();
+        tmp.push_back(data);
+    }
+    return tmp;
+}
+
+
 void Game::addPlayer(int id, const std::string& name) {
 if(mPlayers.size() == allShipsGreen.size() + allShipsRed.size()){
     std::cout << "Cant add this player. The server is full. \n";
@@ -128,6 +152,7 @@ void Game::gameKeyboard(sgct::Key key, sgct::Modifier modifier, sgct::Action act
         keyStates[key] = false;
     }
 }
+
 
 //is a player over a star?
 //pick it up
@@ -277,6 +302,8 @@ void Game::update() {
         setChargeActive(1, true);
     }
     if(keyStates[sgct::Key::L]) {
+        // Get id
+        
         // Shoot
         if(mPlayers[1]->isAlive()){
         shotBullet(1);
@@ -301,7 +328,7 @@ void Game::update() {
         maxStarsID++;
     }
 
-    //remove bullets that have expired
+    //remove bullets that have expired - Move to Bullets class instead?
     mBullets.erase(std::remove_if(mBullets.begin(), mBullets.end(),
     [](const std::unique_ptr<Bullet>& bullet) -> bool {
         return bullet->getLifeTime() >= 150;
