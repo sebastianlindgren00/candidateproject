@@ -280,13 +280,15 @@ void draw(const RenderData& data) {
     const sgct::Window *sgctWindowPtr = &sgctWindowRef;
 
     GLFWwindow* glfwWindow = sgctWindowPtr->windowHandle();
+    int windowWidthOut, windowHeightOut;
+    glfwGetFramebufferSize(glfwWindow, &windowWidthOut, &windowHeightOut);
 
     if (!glfwWindow) {
         std::cerr << "Failed to get GLFWwindow pointer from sgct::Window." << std::endl;
         return;
     }
 
-    glm::vec3 translation(0.0f, 0.0f, -2.0f); 
+    glm::vec3 translation(0.0f, 0.0f, -5.0f); 
     viewMatrix = glm::translate(viewMatrix, translation);
 
 
@@ -303,8 +305,11 @@ void draw(const RenderData& data) {
 
     //std::cout << "Draw called\n";
     Game& game = Game::instance();
-    game.setMatrixes(projectionMatrix, viewMatrix);
+    game.setMatrixes(projectionMatrix, viewMatrix, windowWidthOut, windowHeightOut);
     game.addSpawnRot();
+
+    float textScaleX = windowWidthOut/1500;
+    //float textScaleY = windowWidthOut/1500;
 
     //fisheye
     // Bind framebuffer for offscreen rendering
@@ -342,7 +347,7 @@ void draw(const RenderData& data) {
             object->draw(backgroundObjectsAssimp, shaderProgram, projectionMatrix, viewMatrix); 
         }
     }
-    Utility::CalculateScreenPositions(projectionMatrix, viewMatrix);
+    Utility::CalculateScreenPositions(projectionMatrix, viewMatrix, windowWidthOut, windowHeightOut);
 
     glDisable(GL_DEPTH_TEST);
      //dont draw players, stars and objects if game is at hold
@@ -350,36 +355,36 @@ void draw(const RenderData& data) {
     
         timer = game.getRestartTime();
         std::string textTime = "NEW GAME STARTS IN: " + std::to_string(timer);
-        utilityInstance.RenderText(shaderProgramText, textTime, 7, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
+        utilityInstance.RenderText(shaderProgramText, textTime, 7, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
         if(game.getStars(1) > game.getStars(2)){
-            utilityInstance.RenderText(shaderProgramText, "Red Team Won!", 6, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
+            utilityInstance.RenderText(shaderProgramText, "Red Team Won!", 6, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
         } else if(game.getStars(1) < game.getStars(2)){
-            utilityInstance.RenderText(shaderProgramText, "Green Team Won!", 6, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
+            utilityInstance.RenderText(shaderProgramText, "Green Team Won!", 6, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
         } else {
-            utilityInstance.RenderText(shaderProgramText, "The Game Ended In A Draw!", 6, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
+            utilityInstance.RenderText(shaderProgramText, "The Game Ended In A Draw!", 6, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
         }
 
         hiscoreList = getHiscoreList(game.getPlayers());
 
-        utilityInstance.RenderText(shaderProgramText, textRed, 5, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
-        utilityInstance.RenderText(shaderProgramText, textGreen, 4, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
-        utilityInstance.RenderText(shaderProgramText, "Player Hiscore:", 3, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
+        utilityInstance.RenderText(shaderProgramText, textRed, 5, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
+        utilityInstance.RenderText(shaderProgramText, textGreen, 4, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
+        utilityInstance.RenderText(shaderProgramText, "Player Hiscore:", 3, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
         if(game.getPlayers().size() > 0){
-        utilityInstance.RenderText(shaderProgramText, hiscoreList[0], 2, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
+        utilityInstance.RenderText(shaderProgramText, hiscoreList[0], 2, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
         }
         if(game.getPlayers().size() > 1){
-        utilityInstance.RenderText(shaderProgramText, hiscoreList[1], 1, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
+        utilityInstance.RenderText(shaderProgramText, hiscoreList[1], 1, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
         }if(game.getPlayers().size() > 2){
-        utilityInstance.RenderText(shaderProgramText, hiscoreList[2], 0, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
+        utilityInstance.RenderText(shaderProgramText, hiscoreList[2], 0, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
         }
         return;
     } 
 
     std::string textTime = "GAME ENDS IN: " + std::to_string(timer);
 
-    utilityInstance.RenderText(shaderProgramText, textTime, 6, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
-    utilityInstance.RenderText(shaderProgramText, textRed, 5, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
-    utilityInstance.RenderText(shaderProgramText, textGreen, 4, 0.5f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
+    utilityInstance.RenderText(shaderProgramText, textTime, 6, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
+    utilityInstance.RenderText(shaderProgramText, textRed, 5, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
+    utilityInstance.RenderText(shaderProgramText, textGreen, 4, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
 
     glEnable(GL_DEPTH_TEST);
     if (game.hasPlayers()) {
@@ -461,7 +466,7 @@ void draw(const RenderData& data) {
     std::vector<std::tuple<std::string, float, float, float, glm::vec3>> printsPlayers;
     for(auto& player : game.getPlayers()){
         if(player->isAlive())
-        printsPlayers.push_back(std::make_tuple(player->getName(), player->getTextX(), player->getTextY(), 0.3f+((45-fovScale)/1000), glm::vec3(0.8f, 0.8f, 0.8f)));
+        printsPlayers.push_back(std::make_tuple(player->getName(), player->getTextX(), player->getTextY(),textScaleX/1.5, glm::vec3(0.8f, 0.8f, 0.8f)));
     }
     utilityInstance.RenderTextPlayers(shaderProgramText, printsPlayers, glfwWindow);
 

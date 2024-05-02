@@ -43,7 +43,7 @@ if(mPlayers.size() == allShipsGreen.size() + allShipsRed.size()){
     int colorID = findNextAvailableColorID(team);
     glm::vec3 color = (team == 1) ? redShades[colorID] : greenShades[colorID];
 
-    mPlayers.push_back(std::make_unique<Player>(id, name, team, colorID, color, projectionMatrix, viewMatrix));
+    mPlayers.push_back(std::make_unique<Player>(id, name, team, colorID, color, projectionMatrix, viewMatrix, windowWidth, windowHeight));
     std::cout << "Player: " << name << " joined with ID: " << id << " and color ID: " << colorID << std::endl;
 }
 
@@ -201,6 +201,8 @@ void Game::updateTurnSpeed(unsigned int id, float rotAngle) {
 
 glm::mat4 Game::projectionMatrix;
 glm::mat4 Game::viewMatrix;
+int Game::windowHeight;
+int Game::windowWidth;
 
 void Game::update() {
     //First update?	
@@ -231,7 +233,7 @@ void Game::update() {
 
     for (auto& player : mPlayers) {
         if (player->isAlive()) {
-            player->setTextPos(Utility::CalculateScreenPositionsPlayers(player->getPosition()* glm::vec3(1,-1,1) - glm::vec3(0,-0.5f,0), projectionMatrix, viewMatrix));
+            player->setTextPos(Utility::CalculateScreenPositionsPlayers(player->getPosition()* glm::vec3(1,-1,1) - glm::vec3(0,-0.5f,0), projectionMatrix, viewMatrix, windowWidth, windowHeight));
         }
     }
     

@@ -50,9 +50,11 @@ static Game& instance() {
 
 std::vector<syncData> fetchSyncData();
 
-void setMatrixes(glm::mat4 pMatrix, glm::mat4 vMatrix) { 
+void setMatrixes(glm::mat4 pMatrix, glm::mat4 vMatrix, int width, int height) { 
     projectionMatrix = pMatrix;
     viewMatrix = vMatrix;
+    windowHeight = height;
+    windowWidth = width;
     } 
 
 bool hasPlayers() const { return !mPlayers.empty(); }
@@ -139,6 +141,7 @@ void addBulletID() {bulletID++;}
 
 static glm::mat4 projectionMatrix;
 static glm::mat4 viewMatrix;
+static int windowHeight, windowWidth;
 
 void update();
 private:

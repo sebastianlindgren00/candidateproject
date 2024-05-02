@@ -203,18 +203,19 @@ const glm::vec3 Utility::worldPositions[8] = {
 glm::vec2 Utility::screenPositions[8];
 
 
-glm::vec2 Utility::CalculateScreenPositionsPlayers(glm::vec3 playerpos, glm::mat4 pMatrix, glm::mat4 vMatrix) {
+glm::vec2 Utility::CalculateScreenPositionsPlayers(glm::vec3 playerpos, glm::mat4 pMatrix, glm::mat4 vMatrix, int width, int height) {
     glm::vec4 clipSpacePos = pMatrix * vMatrix * glm::vec4(playerpos, 1.0);
     glm::vec3 ndcSpacePos = glm::vec3(clipSpacePos) / clipSpacePos.w;
-    return glm::vec2((ndcSpacePos.x + 1.0f) / 2.0f * 800, (1.2f-(fovScale/500) - ndcSpacePos.y) / 2.0f * 500);
+    return glm::vec2((ndcSpacePos.x + 1.0f) / 2.0f * width, (1.1f - ndcSpacePos.y) / 2.0f * height);
 }
 
-void Utility::CalculateScreenPositions(glm::mat4 pMatrix, glm::mat4 vMatrix) {
+void Utility::CalculateScreenPositions(glm::mat4 pMatrix, glm::mat4 vMatrix, int width, int height) {
+    
     for(size_t i = 0; i < 8; i++){
     glm::vec4 clipSpacePos = pMatrix * vMatrix * glm::vec4(worldPositions[i], 1.0);
     glm::vec3 ndcSpacePos = glm::vec3(clipSpacePos) / clipSpacePos.w;
-    screenPositions[i].x = (ndcSpacePos.x + 1.4f) / 2.0f * 800;
-    screenPositions[i].y = (1.0f - ndcSpacePos.y) / 2.5f * 500;
+    screenPositions[i].x = (ndcSpacePos.x + 1.4f) / 2.0f * width;
+    screenPositions[i].y = (1.0f - ndcSpacePos.y) / 2.5f * height;
      }
 }
 
@@ -300,6 +301,7 @@ void Utility::RenderTextPlayers(GLuint shaderProgram, const std::vector<std::tup
     glUniform1i(glGetUniformLocation(shaderProgram, "text"), 0);
     int width, height;
     glfwGetFramebufferSize(glfwWindow, &width, &height);
+    std::cout << width << " Width, and " << height << " Height\n";
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(width), 0.0f, static_cast<float>(height));
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 

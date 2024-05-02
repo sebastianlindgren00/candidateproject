@@ -1,6 +1,6 @@
 #include "player.h"
 
-Player::Player(const int id, const std::string& name, int team, int colorID, glm::vec3 color, glm::mat4 pMatrix, glm::mat4 vMatrix){
+Player::Player(const int id, const std::string& name, int team, int colorID, glm::vec3 color, glm::mat4 pMatrix, glm::mat4 vMatrix, int width, int height){
     mIsAlive = true;
     mName = name;
     mPlayerID = id;
@@ -25,7 +25,7 @@ Player::Player(const int id, const std::string& name, int team, int colorID, glm
         mTeam = 2;
     }
 
-    textPosition = Utility::CalculateScreenPositionsPlayers( mPosition * glm::vec3(1,-1,1) - glm::vec3(0,-0.5f,0), pMatrix, vMatrix);
+    textPosition = Utility::CalculateScreenPositionsPlayers( mPosition * glm::vec3(1,-1,1) - glm::vec3(0,-0.5f,0), pMatrix, vMatrix, width, height);
 
 }
 

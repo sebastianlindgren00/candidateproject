@@ -49,7 +49,7 @@ public:
 	Player();
 
 	//Constructor
-	Player(const int id, const std::string& name, int team, int colorID, glm::vec3 color, glm::mat4 pMatrix, glm::mat4 vMatrix);
+	Player(const int id, const std::string& name, int team, int colorID, glm::vec3 color, glm::mat4 pMatrix, glm::mat4 vMatrix, int width, int height);
 
 	//Destructor
 	~Player();
