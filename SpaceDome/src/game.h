@@ -168,11 +168,11 @@ bool mGameActive = true;
 std::unordered_map<sgct::Key, bool> keyStates;
 float mLastFrameTime = sgct::time();
 float mTotalTime = 0;
-float mMaxTime = 10; //seconds
+float mMaxTime = 25; //seconds
 //float mLastTime = 0;
 float mResetGame = 10;
 
-float zPosBgObjects = -2;
+float zPosBgObjects = -3;
 int starDelayCounter = 0;
 int starDelay = (rand() % 100) + 1;
 //int amountOfPlayers;
@@ -180,7 +180,7 @@ int teamRed = 0;
 int teamGreen = 0;
 int redTeamStars = 0;
 int greenTeamStars = 0;
-float handInRadius = 0.4f;
+float handInRadius = 0.7f;
 int maxStarsID = 0;
 int redWins = 0;
 int greenWins = 0;

@@ -43,6 +43,8 @@ public:
 	void RenderTextPlayers(GLuint shaderProgram, const std::vector<std::tuple<std::string, float, float, float, glm::vec3>>& texts, GLFWwindow* glfwWindow);
 	void RenderSingleText(GLuint shaderProgram, const std::string& text, float x, float y, float scale, const glm::vec3& color);
 	
+	void setScaleConst(float s) {scale = s;}
+
 	//getting textures
 	static unsigned int textureFromFile(const char* path, const std::string& directory/*bool gamma = false*/);
 	
@@ -57,6 +59,8 @@ public:
 	static const glm::vec3 worldPositions[8];
 	static glm::vec2 CalculateScreenPositionsPlayers(glm::vec3 playerpos, glm::mat4 pMatrix, glm::mat4 vMatrix, int width, int height);
 	static void CalculateScreenPositions(glm::mat4 pMatrix, glm::mat4 vMatrix, int width, int height);
+
+	static float scale;
 
 private:
 

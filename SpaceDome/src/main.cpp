@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <iostream>
 #include "assimp/Importer.hpp"
 #include <AssimpLoader.h>
 #include <glm/gtc/matrix_transform.hpp>
@@ -21,6 +22,9 @@
 #include <GLFW/glfw3.h>
 #include "game.h"
 #include "shaderManager.h"
+#include "/Users/sebastianlindgren/Documents/GitHub/candidateproject/SpaceDome/ext/rapidjson/document.h"
+#include "/Users/sebastianlindgren/Documents/GitHub/candidateproject/SpaceDome/ext/rapidjson/error/en.h"
+
 
 namespace {
     std::unique_ptr<WebSocketHandler> wsHandler;
@@ -56,53 +60,7 @@ GLuint textureColorbuffer = 0;
 std::vector<syncData> states; 
 
 
-//For Fisheye:
-//---------------------------------
-GLuint quadVAO = 0;
-GLuint quadVBO = 0;
-
-void initFullScreenQuad() {
-    float quadVertices[] = {
-        // Positions   // TexCoords
-        -1.0f,  1.0f,  0.0f, 1.0f,
-        -1.0f, -1.0f,  0.0f, 0.0f,
-         1.0f, -1.0f,  1.0f, 0.0f,
-
-        -1.0f,  1.0f,  0.0f, 1.0f,
-         1.0f, -1.0f,  1.0f, 0.0f,
-         1.0f,  1.0f,  1.0f, 1.0f
-    };
-
-    // Setup screen VAO
-    glGenVertexArrays(1, &quadVAO);
-    glGenBuffers(1, &quadVBO);
-    glBindVertexArray(quadVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
-
-    // Position attribute
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    // Texture coordinate attribute
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    // Unbind the VAO first (not the VBO or EBO), then unbind the VBO
-    glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
-
-void renderFullScreenQuad() {
-    glBindVertexArray(quadVAO);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-    glBindVertexArray(0);
-}
-
-//---------------------------------
-
 void initOGL(GLFWwindow*) {
-
-    
 
     std::string filePath2 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[4] + ".fbx";
     std::string filePath3 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[5] + ".fbx";
@@ -119,33 +77,6 @@ void initOGL(GLFWwindow*) {
     shaderProgramTexture = Utility::createShaderProgram(vertexShaderSourceTexture, fragmentShaderSourceTexture);
     shaderProgramMaterial = Utility::createShaderProgram(vertexShaderSourceMaterial, fragmentShaderSourceMaterial);
     shaderProgramText = Utility::createShaderProgram(vertexShaderSourceText, fragmentShaderSourceText);
-
-    //for fisheye?
- /*
-    initFullScreenQuad();
-     // Framebuffer configuration
-    glGenFramebuffers(1, &framebuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-
-    // Create a color attachment texture
-    glGenTextures(1, &textureColorbuffer);
-    glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL); // Use your desired dimensions
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    // Attach it to currently bound framebuffer object
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
-
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-
-    // Load shaders and get a shader program for fisheye effect
-    shaderProgramFisheye = Utility::createShaderProgram(vertexShaderSourceFisheye, fragmentShaderSourceFisheye);
-*/
     
     //std::string baseDirectory = "../../models/";
     //bulletsAssimp = std::make_unique<AssimpLoader>(filePath4);
@@ -187,6 +118,7 @@ void preSync() {
     if (Engine::instance().isMaster() && wsHandler->isConnected() &&
         Engine::instance().currentFrameNumber() % 100 == 0){
 
+            wsHandler->queueMessage("ping");
             //if game instance is active 
             if(Game::instance().isGameActive()){
                 //send time through ws handler to
@@ -218,8 +150,8 @@ std::vector<std::byte> encode() {
     serializeObject(data, exampleString);
 
     // Serialize sync data
-    //std::vector<syncData> gameStates = Game::instance().fetchSyncData();
-    //serializeObject(data, gameStates);
+    std::vector<syncData> gameStates = Game::instance().fetchSyncData();
+    serializeObject(data, gameStates);
 
     return data;
 }
@@ -253,8 +185,6 @@ void postSyncPreDraw() {
 		//if (Game::instance().isGameActive())
 		//	Game::instance().sendPointsToServer(wsHandler);
 	}
-
-
 }
 
 std::vector<std::string> getHiscoreList(const std::vector<std::unique_ptr<Player>>& players) {
@@ -306,7 +236,8 @@ void draw(const RenderData& data) {
     const sgct::Window *sgctWindowPtr = &sgctWindowRef;
 
     GLFWwindow* glfwWindow = sgctWindowPtr->windowHandle();
-    int windowWidthOut, windowHeightOut;
+    int windowWidthOut = 2560;
+    int windowHeightOut = 1440;
     glfwGetFramebufferSize(glfwWindow, &windowWidthOut, &windowHeightOut);
 
     if (!glfwWindow) {
@@ -314,20 +245,8 @@ void draw(const RenderData& data) {
         return;
     }
 
-    glm::vec3 translation(0.0f, 0.0f, -5.0f); 
+    glm::vec3 translation(0.0f, 0.0f, -4.0f); 
     viewMatrix = glm::translate(viewMatrix, translation);
-
-
-    //test with old matrixes
-    /*
-    projectionMatrix = glm::perspective(glm::radians(fovScale), 800.0f / 500.0f, 0.1f, 100.0f); 
-    const glm::vec3 viewPos = glm::vec3(5.0f, 0.0f, 0.0f); 
-    const glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f); 
-    const glm::vec3 upDirection = glm::vec3(0.0f, 1.0f, 0.0f); 
-    viewMatrix = glm::lookAt(viewPos, cameraTarget, upDirection);
-    */
-
-
 
     //std::cout << "Draw called\n";
     Game& game = Game::instance();
@@ -336,33 +255,23 @@ void draw(const RenderData& data) {
 
     float textScaleX = windowWidthOut/1500;
     //float textScaleY = windowWidthOut/1500;
-
-    //fisheye
-    // Bind framebuffer for offscreen rendering
-    //glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-    //glViewport(0, 0, 800, 600); // Match the framebuffer size
-    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    //glEnable(GL_DEPTH_TEST);
-
-    //annars
     
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
     
-
     std::string textRed = "RED TEAM: " + std::to_string(game.getStars(1));
     std::string textGreen = "GREEN TEAM: " + std::to_string(game.getStars(2));
 
     //render Text
     Utility utilityInstance;
-    
+    utilityInstance.setScaleConst((float)windowHeightOut/1440);
    
     int timer = game.getEndTime();
 
     glEnable(GL_DEPTH_TEST);
     //render Background
-    Utility::setupShaderForDrawing(shaderProgramTexture, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f), 0, 12, 1, projectionMatrix, viewMatrix);
+    Utility::setupShaderForDrawing(shaderProgramTexture, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f), 0, 20, 1, projectionMatrix, viewMatrix);
     auto& meshesSkyBox = skyboxAssimp->getMeshes();
     for (unsigned int p = 0; p < meshesSkyBox.size(); p++) {
             meshesSkyBox[p].Draw(); // Draw each mesh
@@ -426,7 +335,7 @@ void draw(const RenderData& data) {
                 game.addBulletID();
             }
 
-        int hitBulletId = player->update(bullets);
+        int hitBulletId = player->update(bullets, windowHeightOut);
         if (hitBulletId != -1) {
             bulletsToRemove.push_back(hitBulletId); // Collect bullet IDs to remove
         }
@@ -462,14 +371,14 @@ void draw(const RenderData& data) {
     for(size_t i = 0; i < objectsAssimp.size(); i++ ){
 
         glm::vec3 objectColor = glm::vec3(0.4f, 1.f, 0.2f);
-        glm::vec3 pos = glm::vec3(fovScale/21, 0.0f, -1.0);
+        glm::vec3 pos = glm::vec3(windowHeightOut/300, 0.0f, -3.0);
     
         if(i == 0){
             objectColor = glm::vec3(1.f, 0.2f, 0.2f);
-            pos = glm::vec3(-fovScale/21, 0.0f, -1.0);
+            pos = glm::vec3(-windowHeightOut/300, 0.0f, -3.0);
         }
 
-        Utility::setupShaderForDrawing(shaderProgram, pos, objectColor, game.getSpawnRot(), 0.4, 1, projectionMatrix, viewMatrix);
+        Utility::setupShaderForDrawing(shaderProgram, pos, objectColor, game.getSpawnRot(), 0.7, 1, projectionMatrix, viewMatrix);
     
         //draw
         auto& meshes = objectsAssimp[i]->getMeshes(); // Using getMeshes() method to access the meshes
@@ -496,23 +405,11 @@ void draw(const RenderData& data) {
     }
     utilityInstance.RenderTextPlayers(shaderProgramText, printsPlayers, glfwWindow);
 
-    /*
-    //For fisheye
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glViewport(0, 0, 800, 600); // Replace with actual window size
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
 
-    glUseProgram(shaderProgramFisheye);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
-    glUniform1i(glGetUniformLocation(shaderProgramFisheye, "screenTexture"), 0);
-
-    renderFullScreenQuad();
-
-    // Clean up
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glUseProgram(0);
-    */
+void draw2D(const RenderData& data)
+{
+    
 }
 
 void cleanup() {
@@ -520,8 +417,6 @@ void cleanup() {
     // should behave symmetrically to the initOGL function
     glDeleteFramebuffers(1, &framebuffer);
     glDeleteTextures(1, &textureColorbuffer);
-    glDeleteVertexArrays(1, &quadVAO);
-    glDeleteBuffers(1, &quadVBO);
 
 }
 /*
@@ -538,20 +433,7 @@ void keyboard(Key key, Modifier modifier, Action action, int, Window*) {
     }
 }
 */
-void connectionEstablished() {
-    Log::Info("Connection established");
-}
 
-void connectionClosed() {
-    Log::Info("Why is it closing");
-    Log::Info("Connection closed");
-}
-
-void messageReceived(const void* data, size_t length) {
-    std::string_view msg = std::string_view(reinterpret_cast<const char*>(data), length);
-    //Log::Info(fmt::format("Message received: {}", msg));
-    std::string message = msg.data();
-}
 
 void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Window* window) {
     // Forward the event to your game's keyboard handler
@@ -575,6 +457,50 @@ void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Windo
             Game::instance().removePlayer(lastPlayerId); // Can only remove the last player
         }
     } 
+}
+
+void connectionEstablished() {
+    Log::Info("Connection established");
+}
+
+void connectionClosed() {
+    Log::Info("Connection closed");
+}
+
+
+// Define your message handling functions
+void handleServerJoin(const std::string& userData) {
+    // Handle server join message
+    // Example: Log the user data
+    std::cout << "User joined: " << userData << std::endl;
+}
+
+void messageReceived(const void* data, size_t length) {
+    // Message received from WebSocket server
+    std::string msg(reinterpret_cast<const char*>(data), length);
+    
+    // Parse the JSON message and handle it accordingly
+    // For simplicity, let's assume it's a JSON message containing 'type' and 'user'
+    // Example: {"type": "server_join", "user": "random_user_id"}
+    // Parse the message and extract 'type' and 'user'
+    // You can use your preferred JSON parsing library for this
+    // Here, we'll just demonstrate with simple string manipulation
+    size_t typePos = msg.find("type");
+    if (typePos != std::string::npos) {
+        // Extract the message type
+        size_t userPos = msg.find("user");
+        if (userPos != std::string::npos) {
+            std::string type = msg.substr(typePos + 7, userPos - typePos - 10);
+            std::string userData = msg.substr(userPos + 7);
+            
+            // Handle the message based on its type
+            if (type == "server_join") {
+                // Call the corresponding message handling function
+                handleServerJoin(userData);
+            }
+            // Add other message types as needed
+        }
+    }
 }
 
 int main(int argc, char** argv) {
@@ -611,15 +537,9 @@ int main(int argc, char** argv) {
     // Won't work if this is commented out
     if (Engine::instance().isMaster()) {
 
-        wsHandler = std::make_unique<WebSocketHandler>(
-            "localhost", // Server address
-            4685,                // Server port
-            connectionEstablished,
-            connectionClosed,
-            messageReceived
-        );
-
+        wsHandler = std::make_unique<WebSocketHandler>("localhost", 4685, connectionEstablished, connectionClosed, messageReceived);
         constexpr const int MessageSize = 1024;
+
         if (wsHandler->connect("wss", MessageSize)) {
             Log::Info("WebSocket connection initiated!");
             /* TESTS

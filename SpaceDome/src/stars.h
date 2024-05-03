@@ -41,15 +41,15 @@ public:
         std::mt19937 gen(rd());
 
         // Define the range for x and y
-        std::uniform_real_distribution<float> x_dist(-9.0f, 9.0f);
-        std::uniform_real_distribution<float> y_dist(-3.5f, 3.5f);
+        std::uniform_real_distribution<float> x_dist(-boundryX, boundryX);
+        std::uniform_real_distribution<float> y_dist(-boundryY, boundryY);
 
         // Generate random x and y positions
         float x = x_dist(gen);
         float y = y_dist(gen);
 
         sOrientation = (float)random/10;
-        sPosition = glm::vec3(x, y, 0.0);
+        sPosition = glm::vec3(x, y, -1.5);
     }
 
 	//constructor for when players drop stars (needs a position)

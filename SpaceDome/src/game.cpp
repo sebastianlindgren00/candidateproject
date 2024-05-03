@@ -180,9 +180,9 @@ void Game::pickUpStars(int id){
 //is a player at spawn and holding stars?
 //hand them in to the teams total stars
 void Game::handInStars(int id){
-    glm::vec3 spawn = glm::vec3(-2.0f, 0.0f, 0.0f);
+    glm::vec3 spawn = glm::vec3(-windowHeight/300, 0.0f, -1.5f);
     if(mPlayers[id]->getTeam() == 2){
-        spawn = glm::vec3(2.0f, 0.0f, 0.0f);
+        spawn = glm::vec3(windowHeight/300, 0.0f, -1.5f);
     }
     float distance = glm::distance(spawn, mPlayers[id]->getPosition());
 
@@ -219,7 +219,7 @@ void Game::update() {
 	return;
 	}
 
-    if(mBGObjects.size() < (int)fovScale/5) {
+    if(mBGObjects.size() < (int)windowHeight/1000) {
         mBGObjects.push_back(std::make_unique<BackgroundObject>(zPosBgObjects));
         if(counterForBGObjects == 3)
         {
@@ -330,7 +330,7 @@ void Game::update() {
         starDelayCounter++;
     }
 
-    int totalStars = (int)(25 + 1.5*(teamRed + teamGreen))*(fovScale/(fovScale*0.9));
+    int totalStars = (int)(25 + 1.5*(teamRed + teamGreen))*(windowHeight/(windowHeight*0.6));
     if((int)mStars.size() < totalStars && starDelayCounter >= starDelay){
         starDelay = (rand() % 50) + 1;
         starDelayCounter = 0;

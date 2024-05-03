@@ -191,16 +191,18 @@ void Utility::LoadFontAtlas(const std::string& fontPath) {
     FT_Done_FreeType(ft);
 }
 
+float Utility::scale = 0.7f;
+
 //initialise positions and matrixes for rendering text
 const glm::vec3 Utility::worldPositions[8] = {
-    glm::vec3(-2, 2.5 *(fovScale/45), 0),
-    glm::vec3(-2, 2 *(fovScale/45), 0),
-    glm::vec3(-2, 1.5 *(fovScale/45), 0),
-    glm::vec3(-2, 1 *(fovScale/45), 0),
-    glm::vec3(-2, -0, 0),
-    glm::vec3(-2, -0.5 *(fovScale/45), 0),
-    glm::vec3(-2, -1 *(fovScale/45), 0),
-    glm::vec3(-2, -2 *(fovScale/45), 0)
+    glm::vec3(0, 2.5 *scale, -0.5),
+    glm::vec3(0, 2 *scale, -0.5),
+    glm::vec3(0, 1.5 *scale, -0.5),
+    glm::vec3(0, 1 *scale, -0.5),
+    glm::vec3(0, -0, -0.5),
+    glm::vec3(0, -0.5 *scale, -0.5),
+    glm::vec3(0, -1 *scale, -0.5),
+    glm::vec3(0, -2 *scale, -0.5)
 };
 glm::vec2 Utility::screenPositions[8];
 
@@ -216,7 +218,7 @@ void Utility::CalculateScreenPositions(glm::mat4 pMatrix, glm::mat4 vMatrix, int
     for(size_t i = 0; i < 8; i++){
     glm::vec4 clipSpacePos = pMatrix * vMatrix * glm::vec4(worldPositions[i], 1.0);
     glm::vec3 ndcSpacePos = glm::vec3(clipSpacePos) / clipSpacePos.w;
-    screenPositions[i].x = (ndcSpacePos.x + 1.4f) / 2.0f * width;
+    screenPositions[i].x = (ndcSpacePos.x + 1.0f) / 2.0f * width;
     screenPositions[i].y = (1.0f - ndcSpacePos.y) / 2.5f * height;
      }
 }

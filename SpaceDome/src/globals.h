@@ -22,7 +22,7 @@ const float playerScale = 0.15f;
 const float fovScale = 50.0f;
 
 //boundries for game field
-const float boundryX = fovScale/19;
-const float boundryY = fovScale/15;
+const float boundryX = 9;
+const float boundryY = 6;
 
 #endif // GLOBALS_H

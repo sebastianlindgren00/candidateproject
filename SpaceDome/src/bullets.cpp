@@ -19,9 +19,9 @@ void Bullet::update() {
     
     bPosition += glm::vec3( cos(bOrientation) * bSpeed,sin(bOrientation) * bSpeed, 0.0);
 
-        if (bPosition.x > 8 || bPosition.x < -8){
+        if (bPosition.x > boundryX || bPosition.x < -boundryX){
         bPosition.x *= -1;
-    } else if (bPosition.y > 3 || bPosition.y < -3)
+    } else if (bPosition.y > boundryY || bPosition.y < -boundryY)
     {
         bPosition.y *= -1;
     }
