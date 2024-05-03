@@ -47,11 +47,13 @@ public:
         float x = x_dist(gen);
         float y = y_dist(gen);
 
-
+/*
         double rand_angle = 2 * M_PI * rand() / (double)RAND_MAX; // Random angle
         double rand_radius = rand() / (double)RAND_MAX + rand() / (double)RAND_MAX; // Random radius
         double r = (rand_radius > 1) ? 2 - rand_radius : rand_radius;
         r *= (boundryX*2);
+*/
+
         bPosition = glm::vec3(x, y, zPos);
     }
 	//Destructor

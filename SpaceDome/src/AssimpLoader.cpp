@@ -27,7 +27,8 @@ void AssimpLoader::loadModel(std::string path) {
 
     processNode(scene->mRootNode, scene);
 
-    std::cout << "Loaded " << meshes.size() << " meshes.\n";
+    //check
+    //std::cout << "Loaded " << meshes.size() << " meshes.\n";
 }
 
 void AssimpLoader::processNode(aiNode *node, const aiScene *scene){
@@ -91,7 +92,9 @@ Mesh AssimpLoader::processMesh(aiMesh *mesh, const aiScene *scene){
     std::vector<Texture> specularMaps = loadMaterialTextures(material, 
                                         aiTextureType_SPECULAR, "texture_specular");
     textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-    std::cout << "Textures inserted: " << textures.size() << "\n";
+
+    //check
+    //std::cout << "Textures inserted: " << textures.size() << "\n";
     } 
     
     return Mesh(vertices, indices, textures);
@@ -109,7 +112,8 @@ std::vector<Texture> AssimpLoader::loadMaterialTextures(aiMaterial *mat, aiTextu
         texture.mId = Utility::textureFromFile(str.C_Str(), mDirectory);
 
         std::string full_path = mDirectory + "/" + str.C_Str();
-        std::cout << "Loading texture from path: " << full_path << std::endl;
+        //check
+        //std::cout << "Loading texture from path: " << full_path << std::endl;
 
         texture.mType = typeName;
         texture.mPath = mDirectory + "/" + str.C_Str();

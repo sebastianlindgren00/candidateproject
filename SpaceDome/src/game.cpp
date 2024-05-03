@@ -4,16 +4,24 @@
 
 std::vector<syncData> Game::fetchSyncData() {
     std::vector<syncData> tmp;
+
     for (const auto& player : mPlayers) {
         syncData data;
         data.playerData.mPlayerID = player->getID();
-        data.playerData.mPosition = player->getPosition();
+        data.playerData.mPositionX = player->getPositionX();
+        data.playerData.mPositionY = player->getPositionY();
+        data.playerData.mPositionZ = player->getPositionZ();
         data.playerData.mOrientation = player->getOrientation();
         data.playerData.mColorID = player->getColorID();
         data.playerData.mTeam = player->getTeam();
         data.playerData.mStars = player->getStars();
         data.playerData.mStarsHolding = player->getHandedInStars();
-        data.playerData.mIsAlive = player->isAlive();
+
+        //Bool och strings gör att syncen inte fungerar. 
+        //Just nu compilear det. 
+
+        //data.playerData.mIsAlive = player->isAlive();
+        //data.playerData.textPos = player->getTextPos();
         data.playerData.mTurnSpeed = player->getTurnSpeed();
         data.playerData.mSpeed = player->getSpeed();
         data.playerData.mBulletTimer = player->getBulletTimer();
@@ -43,7 +51,7 @@ if(mPlayers.size() == allShipsGreen.size() + allShipsRed.size()){
     int colorID = findNextAvailableColorID(team);
     glm::vec3 color = (team == 1) ? redShades[colorID] : greenShades[colorID];
 
-    mPlayers.push_back(std::make_unique<Player>(id, name, team, colorID, color, projectionMatrix, viewMatrix));
+    mPlayers.push_back(std::make_unique<Player>(id, name, team, colorID, color, projectionMatrix, viewMatrix, windowWidth, windowHeight));
     std::cout << "Player: " << name << " joined with ID: " << id << " and color ID: " << colorID << std::endl;
 }
 
@@ -172,9 +180,9 @@ void Game::pickUpStars(int id){
 //is a player at spawn and holding stars?
 //hand them in to the teams total stars
 void Game::handInStars(int id){
-    glm::vec3 spawn = glm::vec3(0.0f, -2.0f, 0.0f);
+    glm::vec3 spawn = glm::vec3(-2.0f, 0.0f, 0.0f);
     if(mPlayers[id]->getTeam() == 2){
-        spawn = glm::vec3(0.0f, 2.0f, 0.0f);
+        spawn = glm::vec3(2.0f, 0.0f, 0.0f);
     }
     float distance = glm::distance(spawn, mPlayers[id]->getPosition());
 
@@ -201,6 +209,8 @@ void Game::updateTurnSpeed(unsigned int id, float rotAngle) {
 
 glm::mat4 Game::projectionMatrix;
 glm::mat4 Game::viewMatrix;
+int Game::windowHeight;
+int Game::windowWidth;
 
 void Game::update() {
     //First update?	
@@ -231,7 +241,7 @@ void Game::update() {
 
     for (auto& player : mPlayers) {
         if (player->isAlive()) {
-            player->setTextPos(Utility::CalculateScreenPositionsPlayers(player->getPosition()* glm::vec3(1,-1,1) - glm::vec3(0,-0.5f,0), projectionMatrix, viewMatrix));
+            player->setTextPos(Utility::CalculateScreenPositionsPlayers(player->getPosition()* glm::vec3(1,-1,1) - glm::vec3(0,-0.5f,0), projectionMatrix, viewMatrix, windowWidth, windowHeight));
         }
     }
     

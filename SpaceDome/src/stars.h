@@ -19,6 +19,8 @@
 #include "mesh.h"
 #include "utility.h"
 
+#define M_PI 3.14159265358979323846
+
 
 //Implemented as explicit singleton, handles pretty much everything
 class Star
@@ -29,12 +31,12 @@ public:
 	Star(int id){
         int random = rand() % 100;  
         sId = id;
-
+/*
         double rand_angle = 2 * M_PI * rand() / (double)RAND_MAX; // Random angle
         double rand_radius = rand() / (double)RAND_MAX + rand() / (double)RAND_MAX; // Random radius
         double r = (rand_radius > 1) ? 2 - rand_radius : rand_radius;
         r *= (boundryX);
-
+*/
         std::random_device rd;
         std::mt19937 gen(rd());
 
