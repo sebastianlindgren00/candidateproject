@@ -22,8 +22,8 @@
 #include <GLFW/glfw3.h>
 #include "game.h"
 #include "shaderManager.h"
-#include "/Users/sebastianlindgren/Documents/GitHub/candidateproject/SpaceDome/ext/rapidjson/document.h"
-#include "/Users/sebastianlindgren/Documents/GitHub/candidateproject/SpaceDome/ext/rapidjson/error/en.h"
+//#include "/Users/sebastianlindgren/Documents/GitHub/candidateproject/SpaceDome/ext/rapidjson/document.h"
+//#include "/Users/sebastianlindgren/Documents/GitHub/candidateproject/SpaceDome/ext/rapidjson/error/en.h"
 
 
 namespace {
@@ -161,8 +161,6 @@ void decode(const std::vector<std::byte>& data) {
     // These are just two examples;  remove them and replace them with the logic of your
     // application that you need to synchronize
     unsigned pos = 0;
-    deserializeObject(data, pos, exampleInt);
-    deserializeObject(data, pos, exampleString);
     deserializeObject(data, pos, states);
 }
 
@@ -231,6 +229,13 @@ void draw(const RenderData& data) {
         sizeof(mat4)
     );
 
+    glm::mat4 modelMatrix;
+    std::memcpy(
+        glm::value_ptr(modelMatrix),
+        data.modelMatrix.values,
+        sizeof(mat4)
+    );
+
     //const sgct::RenderData &data;
     const sgct::Window &sgctWindowRef = data.window; // Assume data.window is a reference to sgct::Window
     const sgct::Window *sgctWindowPtr = &sgctWindowRef;
@@ -245,12 +250,14 @@ void draw(const RenderData& data) {
         return;
     }
 
-    glm::vec3 translation(0.0f, 0.0f, -4.0f); 
-    viewMatrix = glm::translate(viewMatrix, translation);
+    //glm::vec3 translation(0.0f, 0.0f, -4.0f); 
+    //viewMatrix = glm::translate(viewMatrix, translation);
 
     //std::cout << "Draw called\n";
     Game& game = Game::instance();
-    game.setMatrixes(projectionMatrix, viewMatrix, windowWidthOut, windowHeightOut);
+
+
+    game.setMatrixes(projectionMatrix, modelMatrix*viewMatrix, windowWidthOut, windowHeightOut);
     game.addSpawnRot();
 
     float textScaleX = windowWidthOut/1500;
@@ -279,10 +286,10 @@ void draw(const RenderData& data) {
 
     if (game.hasBGObjects()) { 
         for (const auto& object : game.getBGObjects()) {
-            object->draw(backgroundObjectsAssimp, shaderProgram, projectionMatrix, viewMatrix); 
+            object->draw(backgroundObjectsAssimp, shaderProgram, projectionMatrix, modelMatrix*viewMatrix); 
         }
     }
-    Utility::CalculateScreenPositions(projectionMatrix, viewMatrix, windowWidthOut, windowHeightOut);
+    Utility::CalculateScreenPositions(projectionMatrix, modelMatrix*viewMatrix, windowWidthOut, windowHeightOut);
 
     glDisable(GL_DEPTH_TEST);
      //dont draw players, stars and objects if game is at hold
@@ -339,7 +346,7 @@ void draw(const RenderData& data) {
         if (hitBulletId != -1) {
             bulletsToRemove.push_back(hitBulletId); // Collect bullet IDs to remove
         }
-        player->draw(playerModelsRed, playerModelsGreen, shaderProgramTexture, projectionMatrix, viewMatrix);
+        player->draw(playerModelsRed, playerModelsGreen, shaderProgramTexture, projectionMatrix, modelMatrix*viewMatrix);
     }
 
     // Now remove the bullets that were marked for removal
@@ -358,13 +365,13 @@ void draw(const RenderData& data) {
 
     if (game.hasBullets()) { 
         for (const auto& bullet : game.getBullets()) {
-            bullet->draw(greenBulletAssimp,redBulletAssimp, shaderProgramTexture, projectionMatrix, viewMatrix); 
+            bullet->draw(greenBulletAssimp,redBulletAssimp, shaderProgramTexture, projectionMatrix, modelMatrix*viewMatrix); 
         }
     }
 
     if(game.hasStars()) {
         for (const auto& stars : game.getStars()){
-            stars->draw(starsAssimp, shaderProgram, projectionMatrix, viewMatrix);
+            stars->draw(starsAssimp, shaderProgram, projectionMatrix, modelMatrix*viewMatrix);
         }
     }
 
@@ -378,7 +385,7 @@ void draw(const RenderData& data) {
             pos = glm::vec3(-windowHeightOut/300, 0.0f, -3.0);
         }
 
-        Utility::setupShaderForDrawing(shaderProgram, pos, objectColor, game.getSpawnRot(), 0.7, 1, projectionMatrix, viewMatrix);
+        Utility::setupShaderForDrawing(shaderProgram, pos, objectColor, game.getSpawnRot(), 0.7, 1, projectionMatrix, modelMatrix*viewMatrix);
     
         //draw
         auto& meshes = objectsAssimp[i]->getMeshes(); // Using getMeshes() method to access the meshes

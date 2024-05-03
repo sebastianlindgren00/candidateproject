@@ -305,7 +305,7 @@ void Utility::RenderTextPlayers(GLuint shaderProgram, const std::vector<std::tup
     glUniform1i(glGetUniformLocation(shaderProgram, "text"), 0);
     int width, height;
     glfwGetFramebufferSize(glfwWindow, &width, &height);
-    std::cout << width << " Width, and " << height << " Height\n";
+    //std::cout << width << " Width, and " << height << " Height\n";
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(width), 0.0f, static_cast<float>(height));
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
