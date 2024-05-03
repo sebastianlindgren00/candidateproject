@@ -81,15 +81,6 @@ function App() {
   useEffect(() => { // Is called every render cycle, because of this an if statement is used before the user is navigated to the controller page
 
     if(userID != 'inital' && userName != 'inital' && userName !='' && srvAuth == 'authorized'){ // The ID and Name must be separate from the inital values, and the username cannot be blank
-
-      sendJsonMessage({
-        userID: userID,
-        userName: userName
-      })
-      console.log(JSON.stringify(
-        {userID: userID,
-         userName: userName}
-      ))
       navigate({
           pathname: '/controller', 
           search: createSearchParams({ // Creates and extension to the URL which is used by Controller.js to read ID and Name

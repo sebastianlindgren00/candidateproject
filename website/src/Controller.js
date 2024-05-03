@@ -12,6 +12,8 @@ function Controller() {
     const [teamState, setTeamState] = useState('no team')
     const [pointsState, setPointsState] = useState(0);
     const [srvAuth, setSrvAuth] = useState('not authorized')
+    const [userID, setUserId] = useState('inital')
+    const [userName, setUserName] = useState('inital')
 
     const baseColor = 'radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(70,70,70,1) 69%, rgba(101,101,101,1) 100%)'
     const stickColor = 'radial-gradient(circle, rgba(16,187,0,1) 0%, rgba(31,147,0,1) 71%, rgba(3,62,0,1) 100%)'
@@ -63,6 +65,14 @@ function Controller() {
         console.log(`Got a new message: ${JSON.stringify(lastJsonMessage)}`)
         if(JSON.stringify(lastJsonMessage).includes('Authorized')){
           setSrvAuth('authorized')
+          sendJsonMessage({
+            userID: searchparams.get('userID'),
+            userName: searchparams.get('userID')
+          })
+          console.log(JSON.stringify(
+            {userID: searchparams.get('userID'),
+             userName: searchparams.get('userName')}
+          ))
         }
         if(JSON.stringify(lastJsonMessage).includes('Points')){
           setPointsState(parseInt(lastJsonMessage.Points))
