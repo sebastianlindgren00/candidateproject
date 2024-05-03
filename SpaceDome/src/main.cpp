@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <iostream>
 #include "assimp/Importer.hpp"
 #include <AssimpLoader.h>
 #include <glm/gtc/matrix_transform.hpp>
@@ -21,6 +22,9 @@
 #include <GLFW/glfw3.h>
 #include "game.h"
 #include "shaderManager.h"
+#include "/Users/sebastianlindgren/Documents/GitHub/candidateproject/SpaceDome/ext/rapidjson/document.h"
+#include "/Users/sebastianlindgren/Documents/GitHub/candidateproject/SpaceDome/ext/rapidjson/error/en.h"
+
 
 namespace {
     std::unique_ptr<WebSocketHandler> wsHandler;
@@ -177,6 +181,7 @@ void preSync() {
     if (Engine::instance().isMaster() && wsHandler->isConnected() &&
         Engine::instance().currentFrameNumber() % 100 == 0){
 
+            wsHandler->queueMessage("ping");
             //if game instance is active 
             if(Game::instance().isGameActive()){
                 //send time through ws handler to
@@ -495,20 +500,7 @@ void keyboard(Key key, Modifier modifier, Action action, int, Window*) {
     }
 }
 */
-void connectionEstablished() {
-    Log::Info("Connection established");
-}
 
-void connectionClosed() {
-    Log::Info("Why is it closing");
-    Log::Info("Connection closed");
-}
-
-void messageReceived(const void* data, size_t length) {
-    std::string_view msg = std::string_view(reinterpret_cast<const char*>(data), length);
-    //Log::Info(fmt::format("Message received: {}", msg));
-    std::string message = msg.data();
-}
 
 void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Window* window) {
     // Forward the event to your game's keyboard handler
@@ -532,6 +524,50 @@ void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Windo
             Game::instance().removePlayer(lastPlayerId); // Can only remove the last player
         }
     } 
+}
+
+void connectionEstablished() {
+    Log::Info("Connection established");
+}
+
+void connectionClosed() {
+    Log::Info("Connection closed");
+}
+
+
+// Define your message handling functions
+void handleServerJoin(const std::string& userData) {
+    // Handle server join message
+    // Example: Log the user data
+    std::cout << "User joined: " << userData << std::endl;
+}
+
+void messageReceived(const void* data, size_t length) {
+    // Message received from WebSocket server
+    std::string msg(reinterpret_cast<const char*>(data), length);
+    
+    // Parse the JSON message and handle it accordingly
+    // For simplicity, let's assume it's a JSON message containing 'type' and 'user'
+    // Example: {"type": "server_join", "user": "random_user_id"}
+    // Parse the message and extract 'type' and 'user'
+    // You can use your preferred JSON parsing library for this
+    // Here, we'll just demonstrate with simple string manipulation
+    size_t typePos = msg.find("type");
+    if (typePos != std::string::npos) {
+        // Extract the message type
+        size_t userPos = msg.find("user");
+        if (userPos != std::string::npos) {
+            std::string type = msg.substr(typePos + 7, userPos - typePos - 10);
+            std::string userData = msg.substr(userPos + 7);
+            
+            // Handle the message based on its type
+            if (type == "server_join") {
+                // Call the corresponding message handling function
+                handleServerJoin(userData);
+            }
+            // Add other message types as needed
+        }
+    }
 }
 
 int main(int argc, char** argv) {
@@ -568,17 +604,11 @@ int main(int argc, char** argv) {
     // Won't work if this is commented out
     if (Engine::instance().isMaster()) {
 
-        wsHandler = std::make_unique<WebSocketHandler>(
-            "localhost", // Server address
-            4685,                // Server port
-            connectionEstablished,
-            connectionClosed,
-            messageReceived
-        );
-
+        wsHandler = std::make_unique<WebSocketHandler>("localhost", 4685, connectionEstablished, connectionClosed, messageReceived);
         constexpr const int MessageSize = 1024;
+
         if (wsHandler->connect("wss", MessageSize)) {
-            Log::Info("WebSocket connection initiated!");
+            Log::Info("WebSocket connection initiated");
         } else {
             Log::Error("Failed to initiate WebSocket connection!");
         }

@@ -249,7 +249,7 @@ void WebSocketHandler::tick() {
         lws_service(_pImpl->context, 0);
     }
 }
-
+// send message to Omni
 void WebSocketHandler::queueMessage(std::string message) {
     std::vector<std::byte> msg(message.size());
     std::transform(

@@ -23,6 +23,7 @@ osOutgoingCondition = threading.Condition()
 omniOutgoingCondition = threading.Condition()
 
 # CHANGE HERE: Client outgoing messages
+# When i connect from c++ a new connection is made here
 def osOutgoingMessages(client : socket.socket):
     """Send messages to OpenSpace from Omni input queue"""
     # On connection with server we always send token message, this allows OS to reconnect
