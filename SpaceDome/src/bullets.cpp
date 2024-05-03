@@ -28,14 +28,25 @@ void Bullet::update() {
     
 }
 
-void Bullet::draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const {
+void Bullet::draw(const std::unique_ptr<AssimpLoader>& bulletsGreen,const std::unique_ptr<AssimpLoader>& bulletsRed, GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const {
+
     Utility::setupShaderForDrawingMaterial(shaderProgram, bPosition, bOrientation, 0.05, 0, pMatrix, vMatrix);
 
     //draw
-    auto& meshes = assimpLoader->getMeshes(); // Using getMeshes() method to access the meshes
-    for (unsigned int i = 0; i < meshes.size(); i++) {
+    if(bTeam == 2){
+        auto& meshes = bulletsRed->getMeshes(); // Using getMeshes() method to access the meshes
+        for (unsigned int i = 0; i < meshes.size(); i++) {
+        meshes[i].Draw(); // Draw each mesh
+    }}else{
+
+        auto& meshes = bulletsGreen->getMeshes(); // Using getMeshes() method to access the meshes
+        for (unsigned int i = 0; i < meshes.size(); i++) {
         meshes[i].Draw(); // Draw each mesh
     }
+
+    }
+    
+   
     //check for errors
     GLenum err;
     while ((err = glGetError()) != GL_NO_ERROR) {

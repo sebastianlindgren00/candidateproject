@@ -8,10 +8,10 @@ cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 project("SpaceDome")
 
 #-----------FOR MAC APPLE SILICON------------------------------------------------------
-#set(CMAKE_OSX_ARCHITECTURES "arm64" CACHE STRING "Build architectures for Mac OS X" FORCE)
-#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-macro-redefined")
+set(CMAKE_OSX_ARCHITECTURES "arm64" CACHE STRING "Build architectures for Mac OS X" FORCE)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-macro-redefined")
 
-#set(CMAKE_PREFIX_PATH "/opt/homebrew")
+set(CMAKE_PREFIX_PATH "/opt/homebrew")
 #--------------END OF MAC--------------------------------------------------------------
 
 # Add the libraries that this application depends on,
@@ -46,11 +46,11 @@ set(MODELS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/models")
 
 find_package(glm REQUIRED)
 #MAC
-#find_package(PNG REQUIRED)
+find_package(PNG REQUIRED)
 
 # Debug messages
-#message(STATUS "PNG include dir: ${PNG_INCLUDE_DIR}") # Fixed variable name
-#message(STATUS "PNG libraries: ${PNG_LIBRARIES}") # Correct variable name
+message(STATUS "PNG include dir: ${PNG_INCLUDE_DIR}") # Fixed variable name
+message(STATUS "PNG libraries: ${PNG_LIBRARIES}") # Correct variable name
 #ENDMAC
 
 #
@@ -79,7 +79,6 @@ add_executable(${PROJECT_NAME}
   src/shaderManager.h
   src/backgroundObjects.cpp
   src/backgroundObjects.h
-  #src/nodes_test.xml
 )
 #---------- MAC
 #include_directories(/opt/homebrew/Cellar/libpng/1.6.43/include)
@@ -95,14 +94,14 @@ target_include_directories(${PROJECT_NAME} PRIVATE
   ext/assimp/include
   ${LIBWEBSOCKETS_INCLUDE_DIRS}
   #MAC
-  #${PNG_INCLUDE_DIR} # Use the variable set by find_package
+  ${PNG_INCLUDE_DIR} # Use the variable set by find_package
   #ENDMAC
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE sgct websockets glm::glm assimp)
+#target_link_libraries(${PROJECT_NAME} PRIVATE sgct websockets glm::glm assimp)
 
 #----------MAC
-#target_link_libraries(${PROJECT_NAME} PRIVATE sgct websockets glm::glm assimp ${PNG_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PRIVATE sgct websockets glm::glm assimp ${PNG_LIBRARIES})
 #-----------END MAC
 
 # Models folder path fix! 

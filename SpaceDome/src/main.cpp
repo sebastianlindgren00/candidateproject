@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <iostream>
 #include "assimp/Importer.hpp"
 #include <AssimpLoader.h>
 #include <glm/gtc/matrix_transform.hpp>
@@ -21,6 +22,9 @@
 #include <GLFW/glfw3.h>
 #include "game.h"
 #include "shaderManager.h"
+#include "/Users/sebastianlindgren/Documents/GitHub/candidateproject/SpaceDome/ext/rapidjson/document.h"
+#include "/Users/sebastianlindgren/Documents/GitHub/candidateproject/SpaceDome/ext/rapidjson/error/en.h"
+
 
 namespace {
     std::unique_ptr<WebSocketHandler> wsHandler;
@@ -34,6 +38,10 @@ std::unique_ptr<AssimpLoader> modelsAssimp;
 std::unique_ptr<AssimpLoader> bulletsAssimp;
 std::unique_ptr<AssimpLoader> starsAssimp;
 std::unique_ptr<AssimpLoader> skyboxAssimp;
+
+std::unique_ptr<AssimpLoader> greenBulletAssimp;
+std::unique_ptr<AssimpLoader> redBulletAssimp;
+
 std::vector<std::unique_ptr<AssimpLoader>> objectsAssimp;
 std::unique_ptr<AssimpLoader> backgroundObjectsAssimp;
 std::vector<std::string> hiscoreList(3);
@@ -56,10 +64,12 @@ void initOGL(GLFWwindow*) {
 
     std::string filePath2 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[4] + ".fbx";
     std::string filePath3 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[5] + ".fbx";
-    std::string filePath4 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[7] + ".fbx";
+    //std::string filePath4 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[7] + ".fbx";
     std::string filePath5 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[8] + ".fbx";
     std::string filePath6 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[6] + ".fbx";
     std::string filePath7 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[3] + ".fbx";
+    std::string filePath8 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[9] + ".fbx";
+    std::string filePath9 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[10] + ".fbx";
     std::string fontPath = std::string(MODELS_DIRECTORY) + "/font/Michroma-Regular.ttf";
 
     //Utility utility;
@@ -69,12 +79,16 @@ void initOGL(GLFWwindow*) {
     shaderProgramText = Utility::createShaderProgram(vertexShaderSourceText, fragmentShaderSourceText);
     
     //std::string baseDirectory = "../../models/";
-    bulletsAssimp = std::make_unique<AssimpLoader>(filePath4);
+    //bulletsAssimp = std::make_unique<AssimpLoader>(filePath4);
+    
     starsAssimp = std::make_unique<AssimpLoader>(filePath5);
     skyboxAssimp = std::make_unique<AssimpLoader>(filePath6);
     backgroundObjectsAssimp = std::make_unique<AssimpLoader>(filePath7);
     objectsAssimp.push_back(std::make_unique<AssimpLoader>(filePath2));
     objectsAssimp.push_back(std::make_unique<AssimpLoader>(filePath3));
+
+    redBulletAssimp= std::make_unique<AssimpLoader>(filePath8);
+    greenBulletAssimp = std::make_unique<AssimpLoader>(filePath9);
 
 
     //load all models for team Red and than team Green
@@ -104,6 +118,7 @@ void preSync() {
     if (Engine::instance().isMaster() && wsHandler->isConnected() &&
         Engine::instance().currentFrameNumber() % 100 == 0){
 
+            wsHandler->queueMessage("ping");
             //if game instance is active 
             if(Game::instance().isGameActive()){
                 //send time through ws handler to
@@ -343,7 +358,7 @@ void draw(const RenderData& data) {
 
     if (game.hasBullets()) { 
         for (const auto& bullet : game.getBullets()) {
-            bullet->draw(bulletsAssimp, shaderProgram, projectionMatrix, viewMatrix); 
+            bullet->draw(greenBulletAssimp,redBulletAssimp, shaderProgramTexture, projectionMatrix, viewMatrix); 
         }
     }
 
@@ -418,20 +433,7 @@ void keyboard(Key key, Modifier modifier, Action action, int, Window*) {
     }
 }
 */
-void connectionEstablished() {
-    Log::Info("Connection established");
-}
 
-void connectionClosed() {
-    Log::Info("Why is it closing");
-    Log::Info("Connection closed");
-}
-
-void messageReceived(const void* data, size_t length) {
-    std::string_view msg = std::string_view(reinterpret_cast<const char*>(data), length);
-    //Log::Info(fmt::format("Message received: {}", msg));
-    std::string message = msg.data();
-}
 
 void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Window* window) {
     // Forward the event to your game's keyboard handler
@@ -455,6 +457,50 @@ void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Windo
             Game::instance().removePlayer(lastPlayerId); // Can only remove the last player
         }
     } 
+}
+
+void connectionEstablished() {
+    Log::Info("Connection established");
+}
+
+void connectionClosed() {
+    Log::Info("Connection closed");
+}
+
+
+// Define your message handling functions
+void handleServerJoin(const std::string& userData) {
+    // Handle server join message
+    // Example: Log the user data
+    std::cout << "User joined: " << userData << std::endl;
+}
+
+void messageReceived(const void* data, size_t length) {
+    // Message received from WebSocket server
+    std::string msg(reinterpret_cast<const char*>(data), length);
+    
+    // Parse the JSON message and handle it accordingly
+    // For simplicity, let's assume it's a JSON message containing 'type' and 'user'
+    // Example: {"type": "server_join", "user": "random_user_id"}
+    // Parse the message and extract 'type' and 'user'
+    // You can use your preferred JSON parsing library for this
+    // Here, we'll just demonstrate with simple string manipulation
+    size_t typePos = msg.find("type");
+    if (typePos != std::string::npos) {
+        // Extract the message type
+        size_t userPos = msg.find("user");
+        if (userPos != std::string::npos) {
+            std::string type = msg.substr(typePos + 7, userPos - typePos - 10);
+            std::string userData = msg.substr(userPos + 7);
+            
+            // Handle the message based on its type
+            if (type == "server_join") {
+                // Call the corresponding message handling function
+                handleServerJoin(userData);
+            }
+            // Add other message types as needed
+        }
+    }
 }
 
 int main(int argc, char** argv) {
@@ -491,17 +537,17 @@ int main(int argc, char** argv) {
     // Won't work if this is commented out
     if (Engine::instance().isMaster()) {
 
-        wsHandler = std::make_unique<WebSocketHandler>(
-            "localhost", // Server address
-            4685,                // Server port
-            connectionEstablished,
-            connectionClosed,
-            messageReceived
-        );
-
+        wsHandler = std::make_unique<WebSocketHandler>("localhost", 4685, connectionEstablished, connectionClosed, messageReceived);
         constexpr const int MessageSize = 1024;
+
         if (wsHandler->connect("wss", MessageSize)) {
             Log::Info("WebSocket connection initiated!");
+            /* TESTS
+            wsHandler->queueMessage("test test1");
+            wsHandler->queueMessage("test test2");
+            Log::Info(fmt::format("Messages in queue: {} ", wsHandler->queueSize()));
+            wsHandler->tick();
+            */
         } else {
             Log::Error("Failed to initiate WebSocket connection!");
         }
