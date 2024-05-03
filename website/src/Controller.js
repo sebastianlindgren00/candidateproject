@@ -66,11 +66,11 @@ function Controller() {
         if(JSON.stringify(lastJsonMessage).includes('Authorized')){
           setSrvAuth('authorized')
           sendJsonMessage({
-            userID: searchparams.get('userID'),
+            //userID: searchparams.get('userID')
             userName: searchparams.get('userID')
           })
           console.log(JSON.stringify(
-            {userID: searchparams.get('userID'),
+            {//userID: searchparams.get('userID')
              userName: searchparams.get('userName')}
           ))
         }
@@ -157,34 +157,37 @@ function Controller() {
     const handleMove = (e) => { 
         //console.log(e)
         sendJsonMessage({
-          move: (e.x*0.03),
-          userID: searchparams.get('userID')
+          move: (e.x*0.03)
+          //userID: searchparams.get('userID')
         })
         console.log(JSON.stringify(
-          {move: (e.x*0.03),
-           userID: searchparams.get('userID')},
+          {move: (e.x*0.03)
+           //userID: searchparams.get('userID')
+          },
         ))
       };
       const handleStop = (e) => {
         //console.log(e);
         sendJsonMessage({
-          move: e,
-          userID: searchparams.get('userID')
+          move: e
+          //userID: searchparams.get('userID')
         })
         console.log(JSON.stringify(
-          {move: e,
-           userID: searchparams.get('userID')}
+          {move: e
+           //userID: searchparams.get('userID')
+          }
         ))
       };
       const handleStart = (e) => {
         //console.log(e);
         sendJsonMessage({
-          move: e,
-          userID: searchparams.get('userID')
+          move: e
+          //userID: searchparams.get('userID')
         })
         console.log(JSON.stringify(
-          {move: e,
-           userID: searchparams.get('userID')}
+          {move: e
+           //userID: searchparams.get('userID')
+          }
         ))
       };
 
@@ -192,12 +195,13 @@ function Controller() {
       const handleShoot = (e) =>{ //Cannot be called while steering with the joystick, must be fixed
         //console.log(e.type);
         sendJsonMessage({
-          action: "fire",
-          userID: searchparams.get('userID')
+          action: "fire"
+          //userID: searchparams.get('userID')
         })
         console.log(JSON.stringify(
-          {action: "fire",
-           userID: searchparams.get('userID')}
+          {action: "fire"
+           //userID: searchparams.get('userID')
+          }
         ))
       }
 
@@ -207,12 +211,13 @@ function Controller() {
         if(boostState >=25){
           setBoostState(boostState-25)
           sendJsonMessage({
-            action: "boost",
-            userID: searchparams.get('userID')
+            action: "boost"
+            //userID: searchparams.get('userID')
           })
           console.log(JSON.stringify(
-            {action: "boost",
-             userID: searchparams.get('userID')}
+            {action: "boost"
+             //userID: searchparams.get('userID')
+            }
           ))
         }
       }
