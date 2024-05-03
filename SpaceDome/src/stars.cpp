@@ -31,7 +31,7 @@ void Star::update(std::vector<std::unique_ptr<Star>>& stars) {
             if (distance == 0) {
                 // Apply a random directional impulse when distance is zero
                 float angle = angleDis(gen);
-                glm::vec3 randomImpulse(sin(angle) * 0.01, cos(angle) * 0.01, 0);
+                glm::vec3 randomImpulse(sin(angle) * 0.01, cos(angle) * 0.01, -1.5);
                 tempPosition += randomImpulse;
                 continue;
             }

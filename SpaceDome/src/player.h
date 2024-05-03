@@ -62,7 +62,7 @@ public:
 	void setTurnSpeed(float turnSpeed) { mTurnSpeed = turnSpeed; };
 
 	//Update position
-	int update(const std::vector<std::unique_ptr<Bullet>>& mBullets);
+	int update(const std::vector<std::unique_ptr<Bullet>>& mBullets, float height);
 
 	//Draw the player
 	void draw(const std::vector<std::unique_ptr<AssimpLoader>>& modelsRed ,const std::vector<std::unique_ptr<AssimpLoader>>& modelsGreen, const GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const;

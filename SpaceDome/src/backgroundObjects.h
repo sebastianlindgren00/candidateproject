@@ -40,8 +40,8 @@ public:
         std::mt19937 gen(rd());
 
         // Define the range for x and y
-        std::uniform_real_distribution<float> x_dist(-8.0f, 8.0f);
-        std::uniform_real_distribution<float> y_dist(-3.5f, 3.5f);
+        std::uniform_real_distribution<float> x_dist(-boundryX, boundryX);
+        std::uniform_real_distribution<float> y_dist(-boundryY, boundryY);
 
         // Generate random x and y positions
         float x = x_dist(gen);

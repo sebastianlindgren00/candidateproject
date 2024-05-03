@@ -17,11 +17,11 @@ Player::Player(const int id, const std::string& name, int team, int colorID, glm
     mOrientation = random_angle;
     if(team == 1) {
         //mPos = position of red spawn;
-        mPosition = glm::vec3(-(fovScale/21)+(float)randy/100, 0.25f-(float)randx/100, 0.0); // spawn position
+        mPosition = glm::vec3(-(height/300)+(float)randy/100, 0.25f-(float)randx/100, -1.5); // spawn position
         mTeam = 1;
     } else {
         //mPos = position of green spawn;
-        mPosition = glm::vec3((fovScale/21)-(float)randy/100, 0.25f-(float)randx/100, 0.0); // spawn position
+        mPosition = glm::vec3((height/300)-(float)randy/100, 0.25f-(float)randx/100, -1.5); // spawn position
         mTeam = 2;
     }
 
@@ -53,7 +53,7 @@ void Player::updatePlayerData(playerData& data) {
     mTurnSpeed = data.turnSpeed;
 }
 
-int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets) {
+int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets, float height) {
     if(bulletTimer < shotAvailable){
         bulletTimer++;
     }
@@ -69,9 +69,9 @@ int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets) {
             superCharge = 200;
             
             if(mTeam == 1){
-                mPosition = glm::vec3(0.25f-(float)randx/100, -(fovScale/21)+(float)randy/100, 0.0);
+                mPosition = glm::vec3(-(height/300)+(float)randy/100, 0.25f-(float)randx/100, -1.5);
             }else 
-                mPosition = glm::vec3(0.25f-(float)randx/100, (fovScale/21)-(float)randy/100, 0.0);
+                mPosition = glm::vec3((height/300)+(float)randy/100, 0.25f-(float)randx/100, -1.5);
             }
             respawnTimer++;
         return -1; 
@@ -124,9 +124,9 @@ int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets) {
 */
     //square game field
 
-    if (mPosition.x > boundryX*2 || mPosition.x < -boundryX*2){
+    if (mPosition.x > boundryX || mPosition.x < -boundryX){
         mPosition.x *= -1;
-    } else if (mPosition.y > boundryY*1.2 || mPosition.y < -boundryY*1.2)
+    } else if (mPosition.y > boundryY || mPosition.y < -boundryY)
     {
         mPosition.y *= -1;
     }

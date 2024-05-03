@@ -44,13 +44,13 @@ void BackgroundObject::update(std::vector<std::unique_ptr<BackgroundObject>>& mB
 
     //So background Objects dont go out of bounds
     int random = rand() % 10;
-    if (bPosition.x > 9 || bPosition.x < -9){
+    if (bPosition.x > boundryX || bPosition.x < -boundryX){
         bPosition.x *= -1;
-        bOrientation = (float)random;
-    } else if (bPosition.y > 4 || bPosition.y < -4)
+        //bOrientation = (float)random;
+    } else if (bPosition.y > boundryY || bPosition.y < -boundryY)
     {
         bPosition.y *= -1;
-        bOrientation = (float)random;
+        //bOrientation = (float)random;
     }
     
 }
