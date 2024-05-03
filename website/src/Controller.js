@@ -159,13 +159,13 @@ function Controller() {
     const handleMove = (e) => { 
         //console.log(e)
         sendJsonMessage({
-          type: 'action',
-          move: (e.x*0.03)
+          type: 'action_move',
+          value: (e.x*0.03)
           //userID: searchparams.get('userID')
         })
         console.log(JSON.stringify(
-          {type: 'action',
-           move: (e.x*0.03)
+          {type: 'action_move',
+            value: (e.x*0.03)
            //userID: searchparams.get('userID')
           },
         ))
@@ -173,13 +173,13 @@ function Controller() {
       const handleStop = (e) => {
         //console.log(e);
         sendJsonMessage({
-          type:'action',
-          move: e
+          type:'action_move',
+          value: e
           //userID: searchparams.get('userID')
         })
         console.log(JSON.stringify(
-          {type:'action',
-            move: e
+          {type:'action_move',
+            value: e
            //userID: searchparams.get('userID')
           }
         ))
@@ -187,13 +187,13 @@ function Controller() {
       const handleStart = (e) => {
         //console.log(e);
         sendJsonMessage({
-          type: 'action',
-          move: e
+          type: 'action_move',
+          value: e
           //userID: searchparams.get('userID')
         })
         console.log(JSON.stringify(
-          {type: 'action',
-            move: e
+          {type: 'action_move',
+            value: e
            //userID: searchparams.get('userID')
           }
         ))
@@ -203,13 +203,13 @@ function Controller() {
       const handleShoot = (e) =>{ //Cannot be called while steering with the joystick, must be fixed
         //console.log(e.type);
         sendJsonMessage({
-          type:'action',
-          fire:'1'
+          type:'action_fire',
+          value:'1'
           //userID: searchparams.get('userID')
         })
         console.log(JSON.stringify(
-          {type:'action',
-           fire:'1'
+          {type:'action_fire',
+           value:'1'
            //userID: searchparams.get('userID')
           }
         ))
@@ -221,13 +221,13 @@ function Controller() {
         if(boostState >=25){
           setBoostState(boostState-25)
           sendJsonMessage({
-            type:'action',
-            boost:'1'
+            type:'action_boost',
+            value:'1'
             //userID: searchparams.get('userID')
           })
           console.log(JSON.stringify(
-            {type:'action',
-             boost:'1'
+            {type:'action_boost',
+             value:'1'
              //userID: searchparams.get('userID')
             }
           ))
