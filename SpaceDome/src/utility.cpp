@@ -1,10 +1,6 @@
 #include "utility.h"
-
 #include <ft2build.h>
 #include FT_FREETYPE_H
-
-#define M_PI 3.14159265358979323846
-
 
 //declaring a text character
 struct Character {
@@ -13,6 +9,11 @@ struct Character {
     glm::ivec2 Bearing;    // Offset from baseline to left/top of glyph
     GLuint     Advance;    // Offset to advance to next glyph
 };
+
+GLuint Utility::planeVAO = 0;
+GLuint Utility::planeVBO = 0;
+GLuint Utility::planeEBO = 0;
+bool Utility::planeInitialized = false;
 
 std::map<GLchar, Character> Characters;
 
@@ -195,17 +196,114 @@ float Utility::scale = 0.7f;
 
 //initialise positions and matrixes for rendering text
 const glm::vec3 Utility::worldPositions[8] = {
-    glm::vec3(0, 2.5 *scale, -0.5),
-    glm::vec3(0, 2 *scale, -0.5),
-    glm::vec3(0, 1.5 *scale, -0.5),
-    glm::vec3(0, 1 *scale, -0.5),
-    glm::vec3(0, -0, -0.5),
-    glm::vec3(0, -0.5 *scale, -0.5),
-    glm::vec3(0, -1 *scale, -0.5),
-    glm::vec3(0, -2 *scale, -0.5)
+    glm::vec3(0, 2.5 *scale, 0),
+    glm::vec3(0, 2 *scale, 0),
+    glm::vec3(0, 1.5 *scale, 0),
+    glm::vec3(0, 1 *scale, 0),
+    glm::vec3(0, 0, 0),
+    glm::vec3(0, -0.5 *scale, 0),
+    glm::vec3(0, -1 *scale, 0),
+    glm::vec3(0, -2 *scale, 0)
 };
 glm::vec2 Utility::screenPositions[8];
 
+void Utility::setupPlane() {
+    // Check if already initialized
+    if (planeInitialized) {
+        return; // Skip setup if already initialized
+    }
+
+    std::vector<float> planeVertices = {
+        -5.7f, -2.7f, -3.6f,  0.0f, 0.0f,
+         5.7f, -2.7f, -3.6f,  1.0f, 0.0f,
+         5.7f,  2.7f, -3.6f,  1.0f, 1.0f,
+        -5.7f,  2.7f, -3.6f,  0.0f, 1.0f
+    };
+
+    std::vector<unsigned int> planeIndices = {0, 1, 2, 2, 3, 0};
+
+    // Create and bind the VAO
+    glGenVertexArrays(1, &planeVAO);
+    glBindVertexArray(planeVAO);
+
+    // Create and bind the VBO
+    glGenBuffers(1, &planeVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
+    glBufferData(GL_ARRAY_BUFFER, planeVertices.size() * sizeof(float), planeVertices.data(), GL_STATIC_DRAW);
+
+    // Create and bind the EBO
+    glGenBuffers(1, &planeEBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, planeEBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, planeIndices.size() * sizeof(unsigned int), planeIndices.data(), GL_STATIC_DRAW);
+
+    // Define vertex attributes (positions and texture coordinates)
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    // Unbind the VAO to avoid accidental modifications
+    glBindVertexArray(0);
+
+    planeInitialized = true; // Mark as initialized
+}
+
+void Utility::renderPlane(GLuint shaderProgram, GLuint texture, const glm::mat4& projection, const glm::mat4& view) {
+    // Use the given shader program
+    glUseProgram(shaderProgram);
+
+    // Bind the plane VAO
+    glBindVertexArray(Utility::planeVAO);
+
+    // Create a model matrix with translation in the y-axis (moving up by 3 units)
+    glm::mat4 model = glm::mat4(1.0f); // Identity matrix
+    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // Move up by 3 units
+
+    // Combine the model matrix with the view matrix
+    glm::mat4 modelView = view * model;
+
+    // Set the texture uniform if a texture is provided
+    if (texture != 0) {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture);
+
+        GLint texLocation = glGetUniformLocation(shaderProgram, "text");
+        if (texLocation != -1) {
+            glUniform1i(texLocation, 0);
+        } else {
+            std::cerr << "Failed to find sampler uniform 'text' in shader program!" << std::endl;
+        }
+    }
+
+    // Set the projection and view matrix uniforms
+    GLint projLoc = glGetUniformLocation(shaderProgram, "projection");
+    GLint modelViewLoc = glGetUniformLocation(shaderProgram, "modelView");
+    if (projLoc != -1) {
+        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+    }
+    if (modelViewLoc != -1) {
+        glUniformMatrix4fv(modelViewLoc, 1, GL_FALSE, glm::value_ptr(modelView));
+    }
+
+    // Draw the plane (6 indices for two triangles)
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+    // Unbind VAO and texture after drawing
+    glBindVertexArray(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void Utility::setupText() {
+    glGenVertexArrays(1, &textVAO);
+    glGenBuffers(1, &textVBO);
+    glBindVertexArray(textVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, textVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+}
 
 glm::vec2 Utility::CalculateScreenPositionsPlayers(glm::vec3 playerpos, glm::mat4 pMatrix, glm::mat4 vMatrix, int width, int height) {
     glm::vec4 clipSpacePos = pMatrix * vMatrix * glm::vec4(playerpos, 1.0);
@@ -268,12 +366,16 @@ void Utility::RenderSingleText(GLuint shaderProgram, const std::string& text, fl
     }
 }
 
-void Utility::RenderText(GLuint shaderProgram, std::string text, int row, float scale, glm::vec3 color,  GLFWwindow* glfwWindow) {
+void Utility::RenderText(GLuint shaderProgram, std::string text, int row, float scale, glm::vec3 color,  float width, float height) {
     // CalculateScreenPositions must have been called beforehand to populate screenPositions
     float x = Utility::screenPositions[row].x; 
 	float y = Utility::screenPositions[row].y;
 
+    GLint prevVAO;
+    glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &prevVAO);
 
+    GLint prevProgram;
+    glGetIntegerv(GL_CURRENT_PROGRAM, &prevProgram);
 
     // Prepare text rendering once
     glUseProgram(shaderProgram);
@@ -282,8 +384,6 @@ void Utility::RenderText(GLuint shaderProgram, std::string text, int row, float 
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(textVAO);
     glUniform1i(glGetUniformLocation(shaderProgram, "text"), 0);
-    int width, height;
-    glfwGetFramebufferSize(glfwWindow, &width, &height);
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(width), 0.0f, static_cast<float>(height));
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
@@ -292,19 +392,26 @@ void Utility::RenderText(GLuint shaderProgram, std::string text, int row, float 
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_BLEND);
+
+    glBindVertexArray(prevVAO);
+
+    glUseProgram(prevProgram);
 }
 
-void Utility::RenderTextPlayers(GLuint shaderProgram, const std::vector<std::tuple<std::string, float, float, float, glm::vec3>>& texts, GLFWwindow* glfwWindow) {
+void Utility::RenderTextPlayers(GLuint shaderProgram, const std::vector<std::tuple<std::string, float, float, float, glm::vec3>>& texts, int width, int height) {
     // Prepare text rendering once
+
+    GLint prevVAO;
+    glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &prevVAO);
+
+    GLint prevProgram;
+    glGetIntegerv(GL_CURRENT_PROGRAM, &prevProgram);
   
     glUseProgram(shaderProgram);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(textVAO);
-    glUniform1i(glGetUniformLocation(shaderProgram, "text"), 0);
-    int width, height;
-    glfwGetFramebufferSize(glfwWindow, &width, &height);
     //std::cout << width << " Width, and " << height << " Height\n";
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(width), 0.0f, static_cast<float>(height));
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
@@ -316,68 +423,11 @@ void Utility::RenderTextPlayers(GLuint shaderProgram, const std::vector<std::tup
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_BLEND);
+
+    glBindVertexArray(prevVAO);
+
+    glUseProgram(prevProgram);
 }
-
-/*
-void Utility::RenderTextPlayers(GLuint shaderProgram, std::string text, float x, float y, float scale, glm::vec3 color) {
-    // Calculate the width of the text
-    float textWidth = 0;
-    for (auto c : text) {
-        Character ch = Characters[c];
-        textWidth += (ch.Advance >> 6) * scale; // Bitshift by 6 to get value in pixels
-    }
-
-    // CalculateScreenPositions must have been called beforehand to populate screenPositions
-    x -= (textWidth / 2);
-
-
-    // Activate the shader program
-    glUseProgram(shaderProgram);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    // Set uniform variables
-    glUniform3f(glGetUniformLocation(shaderProgram, "textColor"), color.x, color.y, color.z);
-    glUniform1i(glGetUniformLocation(shaderProgram, "text"), 0);
-    glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(800), 0.0f, static_cast<float>(500));
-    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-
-    // Activate texture unit and bind texture
-    glActiveTexture(GL_TEXTURE0);
-    glBindVertexArray(textVAO);
-
-    // Render the text
-    for (auto c : text) {
-        Character ch = Characters[c];
-        GLfloat xpos = x + ch.Bearing.x * scale;
-        GLfloat ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
-        GLfloat w = ch.Size.x * scale;
-        GLfloat h = ch.Size.y * scale;
-
-        // Update VBO for each character
-		GLfloat vertices[6][4] = {
-    		{ xpos,     ypos + h,   0.0, 0.0 }, // Flip y-component here
-    		{ xpos,     ypos,       0.0, 1.0 }, // And here
-    		{ xpos + w, ypos,       1.0, 1.0 },
-
-    		{ xpos,     ypos + h,   0.0, 0.0 },
-    		{ xpos + w, ypos,       1.0, 1.0 },
-    		{ xpos + w, ypos + h,   1.0, 0.0 }   // No change needed for these
-};
-
-
-        glBindTexture(GL_TEXTURE_2D, ch.TextureID);
-        glBindBuffer(GL_ARRAY_BUFFER, textVBO);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-        x += (ch.Advance >> 6) * scale; // Bitshift by 6 to get value in pixels
-    }
-
-    glBindVertexArray(0);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glDisable(GL_BLEND);
-}
-*/
 
 GLuint Utility::compileShader(GLenum type, const char* source) {
     GLint success;

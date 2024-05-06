@@ -22,9 +22,9 @@
 #include <GLFW/glfw3.h>
 #include "game.h"
 #include "shaderManager.h"
+#include "text.h"
 //#include "/Users/sebastianlindgren/Documents/GitHub/candidateproject/SpaceDome/ext/rapidjson/document.h"
 //#include "/Users/sebastianlindgren/Documents/GitHub/candidateproject/SpaceDome/ext/rapidjson/error/en.h"
-
 
 namespace {
     std::unique_ptr<WebSocketHandler> wsHandler;
@@ -34,6 +34,7 @@ namespace {
 
 using namespace sgct;
 
+//different model-containers
 std::unique_ptr<AssimpLoader> modelsAssimp;
 std::unique_ptr<AssimpLoader> bulletsAssimp;
 std::unique_ptr<AssimpLoader> starsAssimp;
@@ -48,17 +49,24 @@ std::vector<std::string> hiscoreList(3);
 std::vector<std::unique_ptr<AssimpLoader>> playerModelsRed;
 std::vector<std::unique_ptr<AssimpLoader>> playerModelsGreen;
 
+//ShaderPrograms
 GLuint shaderProgram;
 GLuint shaderProgramTexture;
 GLuint shaderProgramMaterial;
 GLuint shaderProgramText;
 GLuint shaderProgramFisheye;
+GLuint plainShaderProgram;
+GLuint ShaderProgramTextTexture;
 
+//buffers and textures
 GLuint framebuffer = 0;
 GLuint textureColorbuffer = 0;
-
 std::vector<syncData> states; 
+GLuint textureText;
 
+
+//float for camera movement
+float cameraZ = 0.0f;
 
 void initOGL(GLFWwindow*) {
 
@@ -77,7 +85,9 @@ void initOGL(GLFWwindow*) {
     shaderProgramTexture = Utility::createShaderProgram(vertexShaderSourceTexture, fragmentShaderSourceTexture);
     shaderProgramMaterial = Utility::createShaderProgram(vertexShaderSourceMaterial, fragmentShaderSourceMaterial);
     shaderProgramText = Utility::createShaderProgram(vertexShaderSourceText, fragmentShaderSourceText);
-    
+    plainShaderProgram = Utility::createShaderProgram(vertexShaderSourcePlain, fragmentShaderSourcePlain);
+    ShaderProgramTextTexture = Utility::createShaderProgram(vertexShaderSourceTextTexture, fragmentShaderSourceTextTexture);
+
     //std::string baseDirectory = "../../models/";
     //bulletsAssimp = std::make_unique<AssimpLoader>(filePath4);
     
@@ -90,7 +100,6 @@ void initOGL(GLFWwindow*) {
     redBulletAssimp= std::make_unique<AssimpLoader>(filePath8);
     greenBulletAssimp = std::make_unique<AssimpLoader>(filePath9);
 
-
     //load all models for team Red and than team Green
     for( int i = 0; i < 18; i++){
         std::string path = std::string(MODELS_DIRECTORY) + "/red/" + allShipsRed[i] + ".fbx";
@@ -101,11 +110,18 @@ void initOGL(GLFWwindow*) {
         std::string path = std::string(MODELS_DIRECTORY) + "/green/" + allShipsGreen[i] + ".fbx";
         playerModelsGreen.push_back(std::make_unique<AssimpLoader>(path));
     }
-
     //std::cout << "Attempting to load font from: " << fontPath << std::endl;
     Utility::LoadFontAtlas(fontPath);
 
+    
+
     std::cout << "after assimpLoader \n";
+}
+
+void initializeText(Game& game, TextRenderer& text, std::vector<std::tuple<std::string, float, float, float, glm::vec3>> printsPlayers) {
+    // Assume `game` is the Game object with the latest text data
+    text.updateText(game);
+    text.renderTextToTexture(printsPlayers);
 }
 
 void preSync() {
@@ -156,7 +172,6 @@ std::vector<std::byte> encode() {
     return data;
 }
 
-
 void decode(const std::vector<std::byte>& data) {
     // These are just two examples;  remove them and replace them with the logic of your
     // application that you need to synchronize
@@ -185,98 +200,50 @@ void postSyncPreDraw() {
 	}
 }
 
-std::vector<std::string> getHiscoreList(const std::vector<std::unique_ptr<Player>>& players) {
-
-    int first = 0, second = 0, third = 0;
-
-    for (const auto& player : players) {
-        int stars = player->getHandedInStars();
-        std::string nameAndStars = player->getName() + " " + std::to_string(stars);
-
-        if (stars >= first) {
-            hiscoreList[2] = hiscoreList[1];
-            hiscoreList[1] = hiscoreList[0];
-            hiscoreList[0] = nameAndStars;
-            third = second;
-            second = first;
-            first = stars;
-        } else if (stars >= second) {
-            hiscoreList[2] = hiscoreList[1];
-            hiscoreList[1] = nameAndStars;
-            third = second;
-            second = stars;
-        } else if (stars >= third) {
-            hiscoreList[2] = nameAndStars;
-            third = stars;
-        }
-    }
-    return hiscoreList;
-}
 
 void draw(const RenderData& data) {
     
     glm::mat4 projectionMatrix;
-    std::memcpy(
-        glm::value_ptr(projectionMatrix),
-        data.projectionMatrix.values,
-        sizeof(mat4)
-    );
+    std::memcpy(glm::value_ptr(projectionMatrix),data.projectionMatrix.values,sizeof(mat4));
 
     glm::mat4 viewMatrix;
-    std::memcpy(
-        glm::value_ptr(viewMatrix),
-        data.viewMatrix.values,
-        sizeof(mat4)
-    );
+    std::memcpy( glm::value_ptr(viewMatrix),data.viewMatrix.values,sizeof(mat4));
 
     glm::mat4 modelMatrix;
-    std::memcpy(
-        glm::value_ptr(modelMatrix),
-        data.modelMatrix.values,
-        sizeof(mat4)
-    );
+    std::memcpy(glm::value_ptr(modelMatrix),data.modelMatrix.values,sizeof(mat4));
 
-    //const sgct::RenderData &data;
-    const sgct::Window &sgctWindowRef = data.window; // Assume data.window is a reference to sgct::Window
+    const sgct::Window &sgctWindowRef = data.window;
     const sgct::Window *sgctWindowPtr = &sgctWindowRef;
 
     GLFWwindow* glfwWindow = sgctWindowPtr->windowHandle();
     int windowWidthOut = 2560;
     int windowHeightOut = 1440;
-    glfwGetFramebufferSize(glfwWindow, &windowWidthOut, &windowHeightOut);
 
+    glfwGetFramebufferSize(glfwWindow, &windowWidthOut, &windowHeightOut);
     if (!glfwWindow) {
         std::cerr << "Failed to get GLFWwindow pointer from sgct::Window." << std::endl;
         return;
     }
 
-    //glm::vec3 translation(0.0f, 0.0f, -4.0f); 
-    //viewMatrix = glm::translate(viewMatrix, translation);
+    glm::vec3 translation(0.0f, 0.0f, cameraZ); 
+    viewMatrix = glm::translate(viewMatrix, translation);
 
     //std::cout << "Draw called\n";
     Game& game = Game::instance();
-
-
     game.setMatrixes(projectionMatrix, modelMatrix*viewMatrix, windowWidthOut, windowHeightOut);
     game.addSpawnRot();
 
+    viewMatrix = modelMatrix * viewMatrix;
     float textScaleX = windowWidthOut/1500;
-    //float textScaleY = windowWidthOut/1500;
     
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glEnable(GL_DEPTH_TEST);
-    
-    std::string textRed = "RED TEAM: " + std::to_string(game.getStars(1));
-    std::string textGreen = "GREEN TEAM: " + std::to_string(game.getStars(2));
 
-    //render Text
     Utility utilityInstance;
     utilityInstance.setScaleConst((float)windowHeightOut/1440);
-   
-    int timer = game.getEndTime();
-
+    
     glEnable(GL_DEPTH_TEST);
+
     //render Background
     Utility::setupShaderForDrawing(shaderProgramTexture, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f), 0, 20, 1, projectionMatrix, viewMatrix);
     auto& meshesSkyBox = skyboxAssimp->getMeshes();
@@ -284,51 +251,53 @@ void draw(const RenderData& data) {
             meshesSkyBox[p].Draw(); // Draw each mesh
         }
 
+    //Render the background objects
     if (game.hasBGObjects()) { 
         for (const auto& object : game.getBGObjects()) {
             object->draw(backgroundObjectsAssimp, shaderProgram, projectionMatrix, modelMatrix*viewMatrix); 
         }
     }
-    Utility::CalculateScreenPositions(projectionMatrix, modelMatrix*viewMatrix, windowWidthOut, windowHeightOut);
-
-    glDisable(GL_DEPTH_TEST);
-     //dont draw players, stars and objects if game is at hold
-    if(!game.isGameActive()){
     
-        timer = game.getRestartTime();
-        std::string textTime = "NEW GAME STARTS IN: " + std::to_string(timer);
-        utilityInstance.RenderText(shaderProgramText, textTime, 7, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
-        if(game.getStars(1) > game.getStars(2)){
-            utilityInstance.RenderText(shaderProgramText, "Red Team Won!", 6, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
-        } else if(game.getStars(1) < game.getStars(2)){
-            utilityInstance.RenderText(shaderProgramText, "Green Team Won!", 6, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
+    Utility::CalculateScreenPositions(projectionMatrix, viewMatrix, windowWidthOut, windowHeightOut);
+
+    //utilityInstance.renderPlane(plainShaderProgram, 0, projectionMatrix,viewMatrix);
+
+    if(!game.isGameActive()){
+        // Initialize TextRenderer or call OpenGL functions
+        TextRenderer textRenderer(shaderProgramText, windowWidthOut, windowHeightOut);
+        std::vector<std::tuple<std::string, float, float, float, glm::vec3>> printsPlayers;
+        
+        // Clear any existing errors
+        while (glGetError() != GL_NO_ERROR) {}
+        GLenum err;
+        while ((err = glGetError()) != GL_NO_ERROR) {
+            std::cerr << "OpenGL error after TextRenderer initialization: " << err << std::endl;
+        }
+        initializeText(game, textRenderer, printsPlayers);
+        textureText = textRenderer.getTexture();
+
+        //checks for frameBuffer
+        /*
+        GLint currentFramebuffer;
+        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFramebuffer);
+
+        // Print the currently bound framebuffer to the console
+        std::cout << "Currently bound framebuffer: " << currentFramebuffer << std::endl;
+
+        // If the default framebuffer is expected (which usually has an ID of 0)
+        if (currentFramebuffer == 0) {
+            std::cout << "The default framebuffer is currently bound." << std::endl;
         } else {
-            utilityInstance.RenderText(shaderProgramText, "The Game Ended In A Draw!", 6, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
+            std::cout << "Framebuffer " << currentFramebuffer << " is currently bound." << std::endl;
         }
-
-        hiscoreList = getHiscoreList(game.getPlayers());
-
-        utilityInstance.RenderText(shaderProgramText, textRed, 5, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
-        utilityInstance.RenderText(shaderProgramText, textGreen, 4, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
-        utilityInstance.RenderText(shaderProgramText, "Player Hiscore:", 3, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
-        if(game.getPlayers().size() > 0){
-        utilityInstance.RenderText(shaderProgramText, hiscoreList[0], 2, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
-        }
-        if(game.getPlayers().size() > 1){
-        utilityInstance.RenderText(shaderProgramText, hiscoreList[1], 1, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
-        }if(game.getPlayers().size() > 2){
-        utilityInstance.RenderText(shaderProgramText, hiscoreList[2], 0, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
-        }
+        */  
+        
+        utilityInstance.renderPlane(ShaderProgramTextTexture, textRenderer.getTexture() , projectionMatrix,viewMatrix);
         return;
     } 
 
-    std::string textTime = "GAME ENDS IN: " + std::to_string(timer);
-
-    utilityInstance.RenderText(shaderProgramText, textTime, 6, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
-    utilityInstance.RenderText(shaderProgramText, textRed, 5, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
-    utilityInstance.RenderText(shaderProgramText, textGreen, 4, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
-
-    glEnable(GL_DEPTH_TEST);
+    //Render Players
+    //And controll/check bullets if any are to be removed
     if (game.hasPlayers()) {
     std::vector<int> bulletsToRemove; // This will store the IDs of bullets to remove
     auto& bullets = game.getBullets();
@@ -349,6 +318,8 @@ void draw(const RenderData& data) {
         player->draw(playerModelsRed, playerModelsGreen, shaderProgramTexture, projectionMatrix, modelMatrix*viewMatrix);
     }
 
+
+
     // Now remove the bullets that were marked for removal
     if (!bulletsToRemove.empty()) {
         game.getBullets().erase(
@@ -363,18 +334,21 @@ void draw(const RenderData& data) {
     }
 }
 
+    //Render bullets
     if (game.hasBullets()) { 
         for (const auto& bullet : game.getBullets()) {
             bullet->draw(greenBulletAssimp,redBulletAssimp, shaderProgramTexture, projectionMatrix, modelMatrix*viewMatrix); 
         }
     }
 
+    //Render Stars
     if(game.hasStars()) {
         for (const auto& stars : game.getStars()){
             stars->draw(starsAssimp, shaderProgram, projectionMatrix, modelMatrix*viewMatrix);
         }
     }
 
+    //Render spawn planets
     for(size_t i = 0; i < objectsAssimp.size(); i++ ){
 
         glm::vec3 objectColor = glm::vec3(0.4f, 1.f, 0.2f);
@@ -391,9 +365,6 @@ void draw(const RenderData& data) {
         auto& meshes = objectsAssimp[i]->getMeshes(); // Using getMeshes() method to access the meshes
 
         for (unsigned int p = 0; p < meshes.size(); p++) {
-
-            
-
             meshes[p].Draw(); // Draw each mesh
         }
         //check for errors
@@ -402,21 +373,44 @@ void draw(const RenderData& data) {
             std::cerr << "OpenGL error after linking shader program: " << err << std::endl;
         }
 } 
-    //Player names should be above all else
-    glDisable(GL_DEPTH_TEST);
-
+   
+    // Initialize TextRenderer
+    TextRenderer textRenderer(shaderProgramText, windowWidthOut, windowHeightOut);
+    
     std::vector<std::tuple<std::string, float, float, float, glm::vec3>> printsPlayers;
     for(auto& player : game.getPlayers()){
-        if(player->isAlive())
-        printsPlayers.push_back(std::make_tuple(player->getName(), player->getTextX(), player->getTextY(),textScaleX/1.5, glm::vec3(0.8f, 0.8f, 0.8f)));
+            if(player->isAlive())
+            printsPlayers.push_back(std::make_tuple(player->getName(), player->getTextX(), player->getTextY(),textScaleX/1.5, glm::vec3(0.8f, 0.8f, 0.8f)));
+        }
+
+    // Clear any existing errors
+    while (glGetError() != GL_NO_ERROR) {}
+    GLenum err;
+    while ((err = glGetError()) != GL_NO_ERROR) {
+        std::cerr << "OpenGL error after TextRenderer initialization: " << err << std::endl;
     }
-    utilityInstance.RenderTextPlayers(shaderProgramText, printsPlayers, glfwWindow);
-
-}
-
-void draw2D(const RenderData& data)
-{
+    initializeText(game, textRenderer, printsPlayers);
+    textureText = textRenderer.getTexture();
+       
+    //Prints for frameBuffer checks
+    /*
+    GLint currentFramebuffer;
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFramebuffer);
     
+    // Print the currently bound framebuffer to the console
+    std::cout << "Currently bound framebuffer: " << currentFramebuffer << std::endl;
+
+    
+    // If the default framebuffer is expected (which usually has an ID of 0)
+    if (currentFramebuffer == 0) {
+        std::cout << "The default framebuffer is currently bound." << std::endl;
+    } else {
+        std::cout << "Framebuffer " << currentFramebuffer << " is currently bound." << std::endl;
+    }
+    */
+    
+    //utilityInstance.renderPlane(plainShaderProgram, 0, projectionMatrix,viewMatrix);
+    utilityInstance.renderPlane(ShaderProgramTextTexture, textRenderer.getTexture(), projectionMatrix,viewMatrix);
 }
 
 void cleanup() {
@@ -426,21 +420,6 @@ void cleanup() {
     glDeleteTextures(1, &textureColorbuffer);
 
 }
-/*
-void keyboard(Key key, Modifier modifier, Action action, int, Window*) {
-    Game& game = Game::instance();
-
-    if (key == Key::Esc && action == Action::Press) {
-        Engine::instance().terminate();
-    }
-
-    if (key == Key::Space && modifier == Modifier::Shift && action == Action::Release) {
-        Log::Info("Released space key");
-        wsHandler->disconnect();
-    }
-}
-*/
-
 
 void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Window* window) {
     // Forward the event to your game's keyboard handler
@@ -459,7 +438,7 @@ void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Windo
     
     if (key == Key::O && action == Action::Press) {
         auto& players = Game::instance().getPlayers();
-        if(players.size() > 2) {
+        if(players.size() > 0) {
             int lastPlayerId = players.back()->getID();
             Game::instance().removePlayer(lastPlayerId); // Can only remove the last player
         }
@@ -473,7 +452,6 @@ void connectionEstablished() {
 void connectionClosed() {
     Log::Info("Connection closed");
 }
-
 
 // Define your message handling functions
 void handleServerJoin(const std::string& userData) {
@@ -511,10 +489,12 @@ void messageReceived(const void* data, size_t length) {
 }
 
 int main(int argc, char** argv) {
-    
-    Game::instance().addPlayer(0,"Tim");
-    Game::instance().addPlayer(1,"Viktor");
-    Game::instance().addPlayer(2,"Bas");
+    std::cout << "Please select camera z positon, -4 for normal, 0 for fisheye or other projections: \n";
+    std::cin >> cameraZ;
+
+    //Game::instance().addPlayer(0,"Tim");
+    //Game::instance().addPlayer(1,"Viktor");
+    //Game::instance().addPlayer(2,"Bas");
 
     std::vector<std::string> arg(argv + 1, argv + argc);
     Configuration config = sgct::parseArguments(arg);

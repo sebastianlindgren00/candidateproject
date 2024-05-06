@@ -207,3 +207,64 @@ void main() {
     FragColor = texture(screenTexture, uvDistorted);
 }
 )glsl";
+
+//test for plain plane
+
+const char* vertexShaderSourcePlain = R"glsl(
+#version 330 core
+layout (location = 0) in vec3 aPos; // Position of vertices
+
+uniform mat4 projection;
+uniform mat4 modelView;
+
+void main() {
+    gl_Position = projection * modelView * vec4(aPos, 1.0);
+}
+)glsl";
+
+const char* fragmentShaderSourcePlain = R"glsl(
+#version 330 core
+out vec4 FragColor;
+
+uniform vec3 planeColor; // Uniform color for the plane
+
+void main() {
+    FragColor = vec4(planeColor, 1.0);
+}
+)glsl";
+
+
+//For the text texture
+const char* vertexShaderSourceTextTexture = R"glsl(
+#version 330 core
+layout(location = 0) in vec3 position;
+layout(location = 1) in vec2 texCoords;
+
+out vec2 vTexCoords;
+
+uniform mat4 projection;
+uniform mat4 modelView;
+
+void main() {
+    gl_Position = projection * modelView * vec4(position, 1.0);
+    vTexCoords = texCoords;
+}
+)glsl";
+
+
+
+const char* fragmentShaderSourceTextTexture = R"glsl(
+#version 330 core
+in vec2 vTexCoords;  // Read the texture coordinates from the vertex shader
+out vec4 FragColor;  // Output color
+
+uniform sampler2D text;  // Texture sampler uniform
+
+void main() {
+    vec4 texColor = texture(text, vTexCoords);
+    if (texColor.a == 0.0) {
+        discard;  // Skip fully transparent pixels
+    }
+    FragColor = texColor;
+}
+)glsl";

@@ -13,6 +13,7 @@
 #include <chrono>
 #include <sgct/sgct.h>
 #include <set>
+#include "TextItem.h"
 
 #include "sgct/shareddata.h"
 #include "sgct/log.h"
@@ -58,6 +59,16 @@ void setMatrixes(glm::mat4 pMatrix, glm::mat4 vMatrix, int width, int height) {
     } 
 
 bool hasPlayers() const { return !mPlayers.empty(); }
+
+void getTexts(std::vector<TextItem>& texts);
+
+std::vector<std::string> hiscoreList[3];
+
+std::vector<std::string> getHiscoreList(const std::vector<std::unique_ptr<Player>>& players);
+
+void renderAllTextOnce(GLuint shaderProgramText, GLuint textFramebuffer,float textWidth, float textHeight, GLFWwindow* glfwWindow, Utility utilityInstance );
+
+void renderText(GLuint shaderProgram, float scale, float width, float height, Utility utilityInstance);
 
 bool hasBullets() const { return !mBullets.empty(); }
 
@@ -172,7 +183,7 @@ float mMaxTime = 25; //seconds
 //float mLastTime = 0;
 float mResetGame = 10;
 
-float zPosBgObjects = -3;
+float zPosBgObjects = -4.5;
 int starDelayCounter = 0;
 int starDelay = (rand() % 100) + 1;
 //int amountOfPlayers;

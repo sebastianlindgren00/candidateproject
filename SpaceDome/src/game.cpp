@@ -1,7 +1,6 @@
 #include "game.h"
 
 // Sync
-
 std::vector<syncData> Game::fetchSyncData() {
     std::vector<syncData> tmp;
 
@@ -30,7 +29,6 @@ std::vector<syncData> Game::fetchSyncData() {
     }
     return tmp;
 }
-
 
 void Game::addPlayer(int id, const std::string& name) {
 if(mPlayers.size() == allShipsGreen.size() + allShipsRed.size()){
@@ -74,7 +72,6 @@ int Game::getLowestAvailablePlayerID() {
 
     return id; // Return the lowest unused ID
 }
-
 
 //function to generate unique colors that players can have
 //based on a base color, red == 1 or green == 2, and amount of shades (count)
@@ -161,7 +158,6 @@ void Game::gameKeyboard(sgct::Key key, sgct::Modifier modifier, sgct::Action act
     }
 }
 
-
 //is a player over a star?
 //pick it up
 void Game::pickUpStars(int id){
@@ -219,7 +215,7 @@ void Game::update() {
 	return;
 	}
 
-    if(mBGObjects.size() < (int)windowHeight/1000) {
+    if(mBGObjects.size() < windowHeight/(size_t)100) {
         mBGObjects.push_back(std::make_unique<BackgroundObject>(zPosBgObjects));
         if(counterForBGObjects == 3)
         {
@@ -290,6 +286,8 @@ void Game::update() {
         return;
     } else
 
+
+    if(mPlayers.size() > 1){
     setChargeActive(1, false);
     if(keyStates[sgct::Key::Right]) {
         // Turn right
@@ -325,6 +323,7 @@ void Game::update() {
         shotBullet(0);
         }
     }
+    }
 
     if(starDelayCounter < starDelay){
         starDelayCounter++;
@@ -344,11 +343,6 @@ void Game::update() {
         return bullet->getLifeTime() >= 150;
     }), mBullets.end());
 
-
-    //pick up stars
-    pickUpStars(1);
-    //hand in stars
-    handInStars(1);
     // Commented out 26/03 for testing
     //std::cout << "Red has: " << redTeamStars << " stars\n";
     //std::cout << "Green had: " << greenTeamStars << " stars\n";
@@ -379,3 +373,121 @@ void Game::update() {
     for (auto& bullet : mBullets)
         bullet->update();
 }
+
+
+std::vector<std::string> Game::getHiscoreList(const std::vector<std::unique_ptr<Player>>& players) {
+
+    int first = 0, second = 0, third = 0;
+    std::vector<std::string> hiscoreList(3);
+
+    for (const auto& player : players) {
+        int stars = player->getHandedInStars();
+        std::string nameAndStars = player->getName() + " " + std::to_string(stars);
+
+        if (stars >= first) {
+            hiscoreList[2] = hiscoreList[1];
+            hiscoreList[1] = hiscoreList[0];
+            hiscoreList[0] = nameAndStars;
+            third = second;
+            second = first;
+            first = stars;
+        } else if (stars >= second) {
+            hiscoreList[2] = hiscoreList[1];
+            hiscoreList[1] = nameAndStars;
+            third = second;
+            second = stars;
+        } else if (stars >= third) {
+            hiscoreList[2] = nameAndStars;
+            third = stars;
+        }
+    }
+    return hiscoreList;
+}
+
+void Game::getTexts(std::vector<TextItem>& texts){
+
+    float scale = windowWidth/1300;
+
+    std::string textRed = "RED TEAM: " + std::to_string(getStars(1));
+    std::string textGreen = "GREEN TEAM: " + std::to_string(getStars(2));
+
+    int timer = getEndTime();
+    std::string textTime = "GAME ENDS IN: " + std::to_string(timer);
+
+    if(!isGameActive()){
+        int timer = getRestartTime();
+        textTime = "NEW GAME STARTS IN: " + std::to_string(timer);
+
+        texts.push_back({ textTime, 7, scale, glm::vec3(0.8f, 0.8f, 0.8f) });
+
+        if(getStars(1) > getStars(2)){
+            texts.push_back({ "Red Team Won!", 6, scale, glm::vec3(0.8f, 0.8f, 0.8f) });
+        } else if(getStars(1) < getStars(2)){
+            texts.push_back({ "Green Team Won!", 6, scale, glm::vec3(0.8f, 0.8f, 0.8f) });
+        } else {
+            texts.push_back({ "The Game Ended In A Draw!", 6, scale, glm::vec3(0.8f, 0.8f, 0.8f) });
+        }
+
+        std::vector<std::string> hiscoreList = getHiscoreList(getPlayers());
+
+        texts.push_back({ textRed, 5, scale, glm::vec3(0.8f, 0.8f, 0.8f) });
+        texts.push_back({ textGreen, 4, scale, glm::vec3(0.8f, 0.8f, 0.8f) });
+        texts.push_back({ "Player Hiscore:", 3, scale, glm::vec3(0.8f, 0.8f, 0.8f) });
+
+        if(getPlayers().size() > 0){
+            texts.push_back({ hiscoreList[0], 2, scale, glm::vec3(0.8f, 0.8f, 0.8f) });
+        }
+        if(getPlayers().size() > 1){
+            texts.push_back({ hiscoreList[1], 1, scale, glm::vec3(0.8f, 0.8f, 0.8f) });
+        }if(getPlayers().size() > 2){
+            texts.push_back({ hiscoreList[2], 0, scale, glm::vec3(0.8f, 0.8f, 0.8f) });
+        }
+
+    }else {
+    
+    texts.push_back({ textTime, 6, scale, glm::vec3(0.8f, 0.8f, 0.8f) });
+    texts.push_back({ textRed, 5, scale, glm::vec3(0.8f, 0.8f, 0.8f) });
+    texts.push_back({ textGreen, 4, scale, glm::vec3(0.8f, 0.8f, 0.8f) });
+    }
+}
+
+void Game::renderText(GLuint shaderProgramText,float scale, float width, float height, Utility utilityInstance){
+
+    std::string textRed = "RED TEAM: " + std::to_string(getStars(1));
+    std::string textGreen = "GREEN TEAM: " + std::to_string(getStars(2));
+
+    int timer = getEndTime();
+    std::string textTime = "GAME ENDS IN: " + std::to_string(timer);
+
+    if(!isGameActive()){
+        int timer = getRestartTime();
+        textTime = "NEW GAME STARTS IN: " + std::to_string(timer);
+        utilityInstance.RenderText(shaderProgramText, textTime, 7, scale, glm::vec3(0.8f, 0.8f, 0.8f), width, height);
+        if(getStars(1) > getStars(2)){
+            utilityInstance.RenderText(shaderProgramText, "Red Team Won!", 6, scale, glm::vec3(0.8f, 0.8f, 0.8f), width, height);
+        } else if(getStars(1) < getStars(2)){
+            utilityInstance.RenderText(shaderProgramText, "Green Team Won!", 6, scale, glm::vec3(0.8f, 0.8f, 0.8f), width, height);
+        } else {
+            utilityInstance.RenderText(shaderProgramText, "The Game Ended In A Draw!", 6, scale, glm::vec3(0.8f, 0.8f, 0.8f), width, height);
+        }
+
+        std::vector<std::string> hiscoreList = getHiscoreList(getPlayers());
+
+        utilityInstance.RenderText(shaderProgramText, textRed, 5, scale, glm::vec3(0.8f, 0.8f, 0.8f), width, height);
+        utilityInstance.RenderText(shaderProgramText, textGreen, 4, scale, glm::vec3(0.8f, 0.8f, 0.8f), width, height);
+        utilityInstance.RenderText(shaderProgramText, "Player Hiscore:", 3, scale, glm::vec3(0.8f, 0.8f, 0.8f), width, height);
+        if(getPlayers().size() > 0){
+        utilityInstance.RenderText(shaderProgramText, hiscoreList[0], 2, scale, glm::vec3(0.8f, 0.8f, 0.8f), width, height);
+        }
+        if(getPlayers().size() > 1){
+        utilityInstance.RenderText(shaderProgramText, hiscoreList[1], 1, scale, glm::vec3(0.8f, 0.8f, 0.8f), width, height);
+        }if(getPlayers().size() > 2){
+        utilityInstance.RenderText(shaderProgramText, hiscoreList[2], 0, scale, glm::vec3(0.8f, 0.8f, 0.8f), width, height);
+        }
+    }else 
+
+    utilityInstance.RenderText(shaderProgramText, textTime, 6, scale, glm::vec3(0.8f, 0.8f, 0.8f), width, height);
+    utilityInstance.RenderText(shaderProgramText, textRed, 5, scale, glm::vec3(0.8f, 0.8f, 0.8f), width, height);
+    utilityInstance.RenderText(shaderProgramText, textGreen, 4, scale, glm::vec3(0.8f, 0.8f, 0.8f), width, height);        
+}
+

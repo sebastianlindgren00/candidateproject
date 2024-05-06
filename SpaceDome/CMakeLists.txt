@@ -79,6 +79,9 @@ add_executable(${PROJECT_NAME}
   src/shaderManager.h
   src/backgroundObjects.cpp
   src/backgroundObjects.h
+  src/text.cpp
+  src/text.h
+  src/TextItem.h
 )
 #---------- MAC
 #include_directories(/opt/homebrew/Cellar/libpng/1.6.43/include)
