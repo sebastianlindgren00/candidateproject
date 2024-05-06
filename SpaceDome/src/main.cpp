@@ -234,7 +234,7 @@ void draw(const RenderData& data) {
     game.addSpawnRot();
 
     viewMatrix = modelMatrix * viewMatrix;
-    float textScaleX = windowWidthOut/1500;
+    float textScaleX = static_cast<float>(windowWidthOut)/1500.f;
     
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -374,9 +374,44 @@ void draw(const RenderData& data) {
         }
 } 
    
+    
+}
+
+void draw2D(const RenderData& data){
+    glm::mat4 projectionMatrix;
+    std::memcpy(glm::value_ptr(projectionMatrix),data.projectionMatrix.values,sizeof(mat4));
+
+    glm::mat4 viewMatrix;
+    std::memcpy( glm::value_ptr(viewMatrix),data.viewMatrix.values,sizeof(mat4));
+
+    glm::mat4 modelMatrix;
+    std::memcpy(glm::value_ptr(modelMatrix),data.modelMatrix.values,sizeof(mat4));
+
+    const sgct::Window &sgctWindowRef = data.window;
+    const sgct::Window *sgctWindowPtr = &sgctWindowRef;
+
+    GLFWwindow* glfwWindow = sgctWindowPtr->windowHandle();
+    int windowWidthOut = 2560;
+    int windowHeightOut = 1440;
+
+    glfwGetFramebufferSize(glfwWindow, &windowWidthOut, &windowHeightOut);
+    if (!glfwWindow) {
+        std::cerr << "Failed to get GLFWwindow pointer from sgct::Window." << std::endl;
+        return;
+    }
+
+    glm::vec3 translation(0.0f, 0.0f, cameraZ); 
+    viewMatrix = glm::translate(viewMatrix, translation);
+
+    //std::cout << "Draw called\n";
+    Game& game = Game::instance();
+    game.setMatrixes(projectionMatrix, modelMatrix*viewMatrix, windowWidthOut, windowHeightOut);
+    float textScaleX = static_cast<float>(windowWidthOut)/1500.f;
+
     // Initialize TextRenderer
     TextRenderer textRenderer(shaderProgramText, windowWidthOut, windowHeightOut);
     
+
     std::vector<std::tuple<std::string, float, float, float, glm::vec3>> printsPlayers;
     for(auto& player : game.getPlayers()){
             if(player->isAlive())
@@ -409,8 +444,14 @@ void draw(const RenderData& data) {
     }
     */
     
+    Utility utilityInstance;
+
+    utilityInstance.setScaleConst((float)windowHeightOut/1440.f);
+
     //utilityInstance.renderPlane(plainShaderProgram, 0, projectionMatrix,viewMatrix);
     utilityInstance.renderPlane(ShaderProgramTextTexture, textRenderer.getTexture(), projectionMatrix,viewMatrix);
+
+
 }
 
 void cleanup() {
@@ -507,6 +548,7 @@ int main(int argc, char** argv) {
     callbacks.decode = decode;
     callbacks.postSyncPreDraw = postSyncPreDraw;
     callbacks.draw = draw;
+    callbacks.draw2D = draw2D;
     callbacks.cleanup = cleanup;
     //callbacks.keyboard = keyboard;
     //new Keyboard function

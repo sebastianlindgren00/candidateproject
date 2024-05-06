@@ -406,7 +406,7 @@ std::vector<std::string> Game::getHiscoreList(const std::vector<std::unique_ptr<
 
 void Game::getTexts(std::vector<TextItem>& texts){
 
-    float scale = windowWidth/1300;
+    float scale = 1.0f;
 
     std::string textRed = "RED TEAM: " + std::to_string(getStars(1));
     std::string textGreen = "GREEN TEAM: " + std::to_string(getStars(2));

@@ -58,8 +58,8 @@ public:
 	//calculate positions for texts
 	static glm::vec2 screenPositions[8];
 	static const glm::vec3 worldPositions[8];
-	static glm::vec2 CalculateScreenPositionsPlayers(glm::vec3 playerpos, glm::mat4 pMatrix, glm::mat4 vMatrix, int width, int height);
-	static void CalculateScreenPositions(glm::mat4 pMatrix, glm::mat4 vMatrix, int width, int height);
+	static glm::vec2 CalculateScreenPositionsPlayers(glm::vec3 playerpos, glm::mat4 pMatrix, glm::mat4 vMatrix, float width, float height);
+	static void CalculateScreenPositions(glm::mat4 pMatrix, glm::mat4 vMatrix, float width, float height);
 
 	static float scale;
 

@@ -196,14 +196,14 @@ float Utility::scale = 0.7f;
 
 //initialise positions and matrixes for rendering text
 const glm::vec3 Utility::worldPositions[8] = {
-    glm::vec3(0, 2.5 *scale, 0),
-    glm::vec3(0, 2 *scale, 0),
-    glm::vec3(0, 1.5 *scale, 0),
-    glm::vec3(0, 1 *scale, 0),
-    glm::vec3(0, 0, 0),
-    glm::vec3(0, -0.5 *scale, 0),
-    glm::vec3(0, -1 *scale, 0),
-    glm::vec3(0, -2 *scale, 0)
+    glm::vec3(0, 2.5f *scale, 0),
+    glm::vec3(0, 2.0f *scale, 0),
+    glm::vec3(0, 1.5f *scale, 0),
+    glm::vec3(0, 1.0f *scale, 0),
+    glm::vec3(0, 0.0f, 0),
+    glm::vec3(0, -0.5f *scale, 0),
+    glm::vec3(0, -1.0f *scale, 0),
+    glm::vec3(0, -2.0f *scale, 0)
 };
 glm::vec2 Utility::screenPositions[8];
 
@@ -249,6 +249,8 @@ void Utility::setupPlane() {
 }
 
 void Utility::renderPlane(GLuint shaderProgram, GLuint texture, const glm::mat4& projection, const glm::mat4& view) {
+
+   
     // Use the given shader program
     glUseProgram(shaderProgram);
 
@@ -291,6 +293,12 @@ void Utility::renderPlane(GLuint shaderProgram, GLuint texture, const glm::mat4&
     // Unbind VAO and texture after drawing
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
+
+   
+
+
+
+
 }
 
 void Utility::setupText() {
@@ -305,13 +313,13 @@ void Utility::setupText() {
     glBindVertexArray(0);
 }
 
-glm::vec2 Utility::CalculateScreenPositionsPlayers(glm::vec3 playerpos, glm::mat4 pMatrix, glm::mat4 vMatrix, int width, int height) {
+glm::vec2 Utility::CalculateScreenPositionsPlayers(glm::vec3 playerpos, glm::mat4 pMatrix, glm::mat4 vMatrix, float width, float height) {
     glm::vec4 clipSpacePos = pMatrix * vMatrix * glm::vec4(playerpos, 1.0);
     glm::vec3 ndcSpacePos = glm::vec3(clipSpacePos) / clipSpacePos.w;
     return glm::vec2((ndcSpacePos.x + 1.0f) / 2.0f * width, (1.1f - ndcSpacePos.y) / 2.0f * height);
 }
 
-void Utility::CalculateScreenPositions(glm::mat4 pMatrix, glm::mat4 vMatrix, int width, int height) {
+void Utility::CalculateScreenPositions(glm::mat4 pMatrix, glm::mat4 vMatrix, float width, float height) {
     
     for(size_t i = 0; i < 8; i++){
     glm::vec4 clipSpacePos = pMatrix * vMatrix * glm::vec4(worldPositions[i], 1.0);
