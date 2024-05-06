@@ -54,7 +54,7 @@ void TextRenderer::setupFramebuffer() {
     }
 
     // Set the viewport to the size of the text framebuffer
-    glViewport(0, 0, width, height);
+    //glViewport(0, 0, width, height);
 
     // Clear the framebuffer with a transparent background
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -97,30 +97,24 @@ void TextRenderer::renderTextToTexture(std::vector<std::tuple<std::string, float
 
 
     glBindFramebuffer(GL_FRAMEBUFFER, textFramebuffer);
-    glViewport(0, 0, width, height);
+    //glViewport(0, 0, width, height);
 
-    // Set the clear color to transparent
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-    
-    // Enable blending for transparency
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+   
 
     drawText(); // Render the updated text
 
-    Utility::getInstance().RenderTextPlayers(shaderProgram, printsPlayers, width, height);
+    //Utility::getInstance().RenderTextPlayers(shaderProgram, printsPlayers, width, height);
 
     // Restore the previous framebuffer and viewport
-    glViewport(0, 0, width, height);
+    //glViewport(0, 0, width, height);
 
     // Restore the previous framebuffer and viewport
     glBindFramebuffer(GL_FRAMEBUFFER, previousFramebuffer);
-    glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
+    //glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
 
     // Reset states explicitly to avoid any side effects
-    glDisable(GL_BLEND);
-    glEnable(GL_DEPTH_TEST);
+    //glDisable(GL_BLEND);
+    //glEnable(GL_DEPTH_TEST);
 }
 
 GLuint TextRenderer::getTexture() const {

@@ -214,10 +214,10 @@ void Utility::setupPlane() {
     }
 
     std::vector<float> planeVertices = {
-        -5.7f, -2.7f, -3.6f,  0.0f, 0.0f,
-         5.7f, -2.7f, -3.6f,  1.0f, 0.0f,
-         5.7f,  2.7f, -3.6f,  1.0f, 1.0f,
-        -5.7f,  2.7f, -3.6f,  0.0f, 1.0f
+        -5.7f, -2.7f, -1.6f,  0.0f, 0.0f,
+         5.7f, -2.7f, -1.6f,  1.0f, 0.0f,
+         5.7f,  2.7f, -1.6f,  1.0f, 1.0f,
+        -5.7f,  2.7f, -1.6f,  0.0f, 1.0f
     };
 
     std::vector<unsigned int> planeIndices = {0, 1, 2, 2, 3, 0};
@@ -257,7 +257,7 @@ void Utility::renderPlane(GLuint shaderProgram, GLuint texture, const glm::mat4&
 
     // Create a model matrix with translation in the y-axis (moving up by 3 units)
     glm::mat4 model = glm::mat4(1.0f); // Identity matrix
-    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // Move up by 3 units
+    model = glm::translate(model, glm::vec3(0.0f, 3.0f, 0.0f)); // Move up by 3 units
 
     // Combine the model matrix with the view matrix
     glm::mat4 modelView = view * model;

@@ -292,7 +292,7 @@ void draw(const RenderData& data) {
         }
         */  
         
-        utilityInstance.renderPlane(ShaderProgramTextTexture, textRenderer.getTexture() , projectionMatrix,viewMatrix);
+        utilityInstance.renderPlane(ShaderProgramTextTexture, 0 , projectionMatrix,viewMatrix);
         return;
     } 
 
@@ -492,9 +492,9 @@ int main(int argc, char** argv) {
     std::cout << "Please select camera z positon, -4 for normal, 0 for fisheye or other projections: \n";
     std::cin >> cameraZ;
 
-    //Game::instance().addPlayer(0,"Tim");
-    //Game::instance().addPlayer(1,"Viktor");
-    //Game::instance().addPlayer(2,"Bas");
+    Game::instance().addPlayer(0,"Tim");
+    Game::instance().addPlayer(1,"Viktor");
+    Game::instance().addPlayer(2,"Bas");
 
     std::vector<std::string> arg(argv + 1, argv + argc);
     Configuration config = sgct::parseArguments(arg);
