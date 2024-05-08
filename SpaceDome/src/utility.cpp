@@ -250,7 +250,6 @@ void Utility::setupPlane() {
 
 void Utility::renderPlane(GLuint shaderProgram, GLuint texture, const glm::mat4& projection, const glm::mat4& view) {
 
-   
     // Use the given shader program
     glUseProgram(shaderProgram);
 
@@ -259,7 +258,7 @@ void Utility::renderPlane(GLuint shaderProgram, GLuint texture, const glm::mat4&
 
     // Create a model matrix with translation in the y-axis (moving up by 3 units)
     glm::mat4 model = glm::mat4(1.0f); // Identity matrix
-    model = glm::translate(model, glm::vec3(0.0f, 3.0f, 0.0f)); // Move up by 3 units
+    model = glm::translate(model, glm::vec3(0.0f, 1.0f, 0.0f)); // Move up by 3 units
 
     // Combine the model matrix with the view matrix
     glm::mat4 modelView = view * model;
@@ -293,12 +292,6 @@ void Utility::renderPlane(GLuint shaderProgram, GLuint texture, const glm::mat4&
     // Unbind VAO and texture after drawing
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
-
-   
-
-
-
-
 }
 
 void Utility::setupText() {
@@ -322,10 +315,10 @@ glm::vec2 Utility::CalculateScreenPositionsPlayers(glm::vec3 playerpos, glm::mat
 void Utility::CalculateScreenPositions(glm::mat4 pMatrix, glm::mat4 vMatrix, float width, float height) {
     
     for(size_t i = 0; i < 8; i++){
-    glm::vec4 clipSpacePos = pMatrix * vMatrix * glm::vec4(worldPositions[i], 1.0);
+    glm::vec4 clipSpacePos = pMatrix * vMatrix * glm::vec4(worldPositions[i], 1.0f);
     glm::vec3 ndcSpacePos = glm::vec3(clipSpacePos) / clipSpacePos.w;
-    screenPositions[i].x = (ndcSpacePos.x + 1.0f) / 2.0f * width;
-    screenPositions[i].y = (1.0f - ndcSpacePos.y) / 2.5f * height;
+    screenPositions[i].x = (ndcSpacePos.x + 1.0f) / 2.0f * (float)width;
+    screenPositions[i].y = (1.0f - ndcSpacePos.y) / 2.5f * (float)height;
      }
 }
 
@@ -379,12 +372,6 @@ void Utility::RenderText(GLuint shaderProgram, std::string text, int row, float 
     float x = Utility::screenPositions[row].x; 
 	float y = Utility::screenPositions[row].y;
 
-    GLint prevVAO;
-    glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &prevVAO);
-
-    GLint prevProgram;
-    glGetIntegerv(GL_CURRENT_PROGRAM, &prevProgram);
-
     // Prepare text rendering once
     glUseProgram(shaderProgram);
     glEnable(GL_BLEND);
@@ -401,9 +388,7 @@ void Utility::RenderText(GLuint shaderProgram, std::string text, int row, float 
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_BLEND);
 
-    glBindVertexArray(prevVAO);
 
-    glUseProgram(prevProgram);
 }
 
 void Utility::RenderTextPlayers(GLuint shaderProgram, const std::vector<std::tuple<std::string, float, float, float, glm::vec3>>& texts, int width, int height) {

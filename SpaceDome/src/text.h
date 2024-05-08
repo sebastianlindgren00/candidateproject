@@ -6,7 +6,7 @@
 class TextRenderer {
 public:
     
-    TextRenderer(GLuint shaderProgram, int width, int height);
+    TextRenderer(GLuint shaderProgram, float width, float height);
     ~TextRenderer();
     
     void initialize();

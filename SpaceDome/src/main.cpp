@@ -234,10 +234,11 @@ void draw(const RenderData& data) {
     game.addSpawnRot();
 
     viewMatrix = modelMatrix * viewMatrix;
-    float textScaleX = static_cast<float>(windowWidthOut)/1500.f;
+    float textScaleX = windowWidthOut/1500;
     
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
 
     Utility utilityInstance;
     utilityInstance.setScaleConst((float)windowHeightOut/1440);
@@ -264,7 +265,7 @@ void draw(const RenderData& data) {
 
     if(!game.isGameActive()){
         // Initialize TextRenderer or call OpenGL functions
-        TextRenderer textRenderer(shaderProgramText, windowWidthOut, windowHeightOut);
+        //TextRenderer textRenderer(shaderProgramText, windowWidthOut, windowHeightOut);
         std::vector<std::tuple<std::string, float, float, float, glm::vec3>> printsPlayers;
         
         // Clear any existing errors
@@ -273,8 +274,8 @@ void draw(const RenderData& data) {
         while ((err = glGetError()) != GL_NO_ERROR) {
             std::cerr << "OpenGL error after TextRenderer initialization: " << err << std::endl;
         }
-        initializeText(game, textRenderer, printsPlayers);
-        textureText = textRenderer.getTexture();
+        //initializeText(game, textRenderer, printsPlayers);
+        //textureText = textRenderer.getTexture();
 
         //checks for frameBuffer
         /*
@@ -292,7 +293,7 @@ void draw(const RenderData& data) {
         }
         */  
         
-        utilityInstance.renderPlane(ShaderProgramTextTexture, 0 , projectionMatrix,viewMatrix);
+        //utilityInstance.renderPlane(ShaderProgramTextTexture, textRenderer.getTexture() , projectionMatrix,viewMatrix);
         return;
     } 
 
@@ -375,9 +376,51 @@ void draw(const RenderData& data) {
 } 
    
     
+    /*
+    std::vector<std::tuple<std::string, float, float, float, glm::vec3>> printsPlayers;
+    for(auto& player : game.getPlayers()){
+            if(player->isAlive())
+            printsPlayers.push_back(std::make_tuple(player->getName(), player->getTextX(), player->getTextY(),textScaleX/1.5, glm::vec3(0.8f, 0.8f, 0.8f)));
+        }
+
+    // Initialize TextRenderer
+    TextRenderer textRenderer(shaderProgramText, windowWidthOut, windowHeightOut);
+
+    // Clear any existing errors
+    while (glGetError() != GL_NO_ERROR) {}
+    GLenum err;
+    while ((err = glGetError()) != GL_NO_ERROR) {
+        std::cerr << "OpenGL error after TextRenderer initialization: " << err << std::endl;
+    }
+    initializeText(game, textRenderer, printsPlayers);
+    textureText = textRenderer.getTexture();
+       
+    //Prints for frameBuffer checks
+    
+    GLint currentFramebuffer;
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFramebuffer);
+    
+    // Print the currently bound framebuffer to the console
+    std::cout << "Currently bound framebuffer: " << currentFramebuffer << std::endl;
+
+    
+    // If the default framebuffer is expected (which usually has an ID of 0)
+    if (currentFramebuffer == 0) {
+        std::cout << "The default framebuffer is currently bound." << std::endl;
+    } else {
+        std::cout << "Framebuffer " << currentFramebuffer << " is currently bound." << std::endl;
+    }
+    
+    
+    //utilityInstance.renderPlane(plainShaderProgram, 0, projectionMatrix,viewMatrix);
+    utilityInstance.renderPlane(ShaderProgramTextTexture, textRenderer.getTexture(), projectionMatrix,viewMatrix);
+*/
+
 }
 
-void draw2D(const RenderData& data){
+
+void draw2D(const RenderData& data) {
+    
     glm::mat4 projectionMatrix;
     std::memcpy(glm::value_ptr(projectionMatrix),data.projectionMatrix.values,sizeof(mat4));
 
@@ -403,20 +446,28 @@ void draw2D(const RenderData& data){
     glm::vec3 translation(0.0f, 0.0f, cameraZ); 
     viewMatrix = glm::translate(viewMatrix, translation);
 
-    //std::cout << "Draw called\n";
-    Game& game = Game::instance();
-    game.setMatrixes(projectionMatrix, modelMatrix*viewMatrix, windowWidthOut, windowHeightOut);
-    float textScaleX = static_cast<float>(windowWidthOut)/1500.f;
 
-    // Initialize TextRenderer
-    TextRenderer textRenderer(shaderProgramText, windowWidthOut, windowHeightOut);
+    viewMatrix = modelMatrix * viewMatrix;
+    float textScaleX = windowWidthOut/1500;
     
+    Game& game = Game::instance();
+    game.setMatrixes(projectionMatrix, viewMatrix, windowWidthOut, windowHeightOut);
+    game.addSpawnRot();
+
+    Utility utilityInstance;
+    utilityInstance.setScaleConst((float)windowHeightOut/1440);
+    
+    glEnable(GL_DEPTH_TEST);
+
 
     std::vector<std::tuple<std::string, float, float, float, glm::vec3>> printsPlayers;
     for(auto& player : game.getPlayers()){
             if(player->isAlive())
             printsPlayers.push_back(std::make_tuple(player->getName(), player->getTextX(), player->getTextY(),textScaleX/1.5, glm::vec3(0.8f, 0.8f, 0.8f)));
         }
+
+    // Initialize TextRenderer
+    TextRenderer textRenderer(shaderProgramText, windowWidthOut, windowHeightOut);
 
     // Clear any existing errors
     while (glGetError() != GL_NO_ERROR) {}
@@ -426,31 +477,36 @@ void draw2D(const RenderData& data){
     }
     initializeText(game, textRenderer, printsPlayers);
     textureText = textRenderer.getTexture();
-       
-    //Prints for frameBuffer checks
-    /*
-    GLint currentFramebuffer;
-    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFramebuffer);
     
-    // Print the currently bound framebuffer to the console
-    std::cout << "Currently bound framebuffer: " << currentFramebuffer << std::endl;
 
-    
-    // If the default framebuffer is expected (which usually has an ID of 0)
-    if (currentFramebuffer == 0) {
-        std::cout << "The default framebuffer is currently bound." << std::endl;
+   //----- Texture check
+
+   /*
+   GLuint texture = textRenderer.getTexture();
+    if (glIsTexture(texture)) {
+        std::cout << "Texture " << texture << " is a valid OpenGL texture." << std::endl;
     } else {
-        std::cout << "Framebuffer " << currentFramebuffer << " is currently bound." << std::endl;
+        std::cerr << "Texture " << texture << " is not valid." << std::endl;
+    }
+
+    // Optionally, read pixels from the texture (for debugging purposes)
+    glBindTexture(GL_TEXTURE_2D, texture);
+    std::vector<unsigned char> pixels(windowWidthOut * windowHeightOut * 4); // Assuming RGBA
+    glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
+
+    // Check the pixel data (example)
+    bool hasNonZeroPixels = std::any_of(pixels.begin(), pixels.end(), [](unsigned char p) { return p != 0; });
+    if (hasNonZeroPixels) {
+        std::cout << "The texture contains non-zero pixels." << std::endl;
+    } else {
+        std::cout << "The texture seems empty or contains only zero pixels." << std::endl;
     }
     */
-    
-    Utility utilityInstance;
 
-    utilityInstance.setScaleConst((float)windowHeightOut/1440.f);
+    //utilityInstance.renderPlane(plainShaderProgram, 0, projectionMatrix, viewMatrix);
+    utilityInstance.renderPlane(ShaderProgramTextTexture, textRenderer.getTexture(), projectionMatrix, viewMatrix);
 
-    //utilityInstance.renderPlane(plainShaderProgram, 0, projectionMatrix,viewMatrix);
-    utilityInstance.renderPlane(ShaderProgramTextTexture, textRenderer.getTexture(), projectionMatrix,viewMatrix);
-
+    glDisable(GL_DEPTH_TEST);
 
 }
 
