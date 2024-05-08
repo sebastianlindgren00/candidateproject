@@ -20,7 +20,7 @@ void Star::update(std::vector<std::unique_ptr<Star>>& stars) {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> dis(-0.01, 0.01);
-    std::uniform_real_distribution<> angleDis(0, 2 * M_PI); // Full circle
+    std::uniform_real_distribution<> angleDis(0, 2 * 3.14); // Full circle
     //------------------------------------------------
 
     for (auto& other_star : stars) {

@@ -11,7 +11,7 @@ Player::Player(const int id, const std::string& name, int team, int colorID, glm
 
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_real_distribution<float> dist(0.0f, 2.0f * M_PI);
+    std::uniform_real_distribution<float> dist(0.0f, 2.0f * 3.14);
     float random_angle = dist(gen);
 
     mOrientation = random_angle;
@@ -67,7 +67,7 @@ int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets, float h
             int randy = rand() %100;
             std::random_device rd;
             std::mt19937 gen(rd());
-            std::uniform_real_distribution<float> dist(0.0f, 2.0f * M_PI);
+            std::uniform_real_distribution<float> dist(0.0f, 2.0f * 3.14);
             float random_angle = dist(gen);
             mOrientation = random_angle;
             superCharge = 200;

@@ -87,7 +87,7 @@ const std::vector<std::unique_ptr<Star>>& getStars() const { return mStars; }
 
 const std::vector<std::unique_ptr<BackgroundObject>>& getBGObjects() const { return mBGObjects; }
 
-void setSyncData(std::vector<syncData> data);
+void setSyncData(const std::vector<syncData> data);
 
 //Copying forbidden
 Game(Game const&) = delete;

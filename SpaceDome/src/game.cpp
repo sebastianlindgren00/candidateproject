@@ -50,7 +50,7 @@ std::vector<syncData> Game::fetchSyncData() {
     return tmp;
 }
 
-void Game::setSyncData(std::vector<syncData> data){
+void Game::setSyncData(const std::vector<syncData> data){
     glm::vec3 pos;
     for(size_t i = 0; i < mPlayers.size(); i++) {
         pos = glm::vec3(data[i].playerData.mPositionX, data[i].playerData.mPositionY, data[i].playerData.mPositionZ);
