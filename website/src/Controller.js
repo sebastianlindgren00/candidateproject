@@ -1,7 +1,7 @@
 import './Controller.css';
 import './App'
 import {useState, useEffect} from 'react'
-import { useSearchParams } from 'react-router-dom';
+import { generatePath, useSearchParams } from 'react-router-dom';
 import { Joystick } from 'react-joystick-component'; // Package source: https://www.npmjs.com/package/react-joystick-component
 import useWebSocket, { ReadyState } from "react-use-websocket"
 
@@ -12,7 +12,6 @@ function Controller() {
     const [teamState, setTeamState] = useState('no team')
     const [pointsState, setPointsState] = useState(0);
     const [srvAuth, setSrvAuth] = useState('not authorized')
-    const [userID, setUserId] = useState('inital')
     const [userName, setUserName] = useState('inital')
 
     const baseColor = 'radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(70,70,70,1) 69%, rgba(101,101,101,1) 100%)'
@@ -28,13 +27,23 @@ function Controller() {
       },
     )
 
+    function generateID(){
+      var n = localStorage.getItem('on_load_counter');
+      if (n === null || n >= 100) {
+        n = 0;
+      }
+      n++;
+      
+      localStorage.setItem("on_load_counter", n);
+      return n
+    }
+
     // Incremental increase of the boost bar every 500ms, will become redundant
     useEffect(() => {
       const interval = setInterval(() => {if(boostState<=100){
         setBoostState(boostState + 0.5);
       }
       }, 100);
-
       if(boostState < 25){
         document.getElementById('boostButton').style.background= 'radial-gradient(circle, rgb(166, 146, 82) 0%, rgb(83, 75, 50) 90%, rgba(0,0,0,1) 100%)'
         document.getElementById('boostButton').style.color = 'lightgray'
@@ -65,15 +74,19 @@ function Controller() {
         console.log(`Got a new message: ${JSON.stringify(lastJsonMessage)}`)
         if(JSON.stringify(lastJsonMessage).includes('Authorized')){
           setSrvAuth('authorized')
+          const userID = generateID()
           sendJsonMessage({
             //userID: searchparams.get('userID')
             type: 'game_join',
-            userName: searchparams.get('userName')
+            userName: searchparams.get('userName'),
+            id: userID
           })
           console.log(JSON.stringify(
             {//userID: searchparams.get('userID')
               type: 'game_join',
-             userName: searchparams.get('userName')}
+              userName: searchparams.get('userName'),
+              id: userID
+            }
           ))
         }
         if(JSON.stringify(lastJsonMessage).includes('Points')){
@@ -95,18 +108,21 @@ function Controller() {
 
     scrOrientation.addEventListener('change', function() { //When screen orientation is changed
         setScreenOrientation(window.screen.orientation)
-        if(scrOrientation.type === 'landscape-primary' || scrOrientation.type === 'landscape-secondary'){
+        // Seems to execute on App.js aswell so a control is used to avoid trying to change style of null
+        if(document.getElementById('orientationDisclaimer') !== null || document.getElementById('controlPanel') !== null){
+          if(scrOrientation.type === 'landscape-primary' || scrOrientation.type === 'landscape-secondary'){
             document.getElementById('orientationDisclaimer').style.display = 'none'
             document.getElementById('jStick').style.display = 'flex'
             document.getElementById('fireButton').style.display = 'flex'
             document.getElementById('boostButton').style.display = 'flex'
             document.getElementById('controlPanel').style.display = 'flex'
-        }else{
-            document.getElementById('orientationDisclaimer').style.display = 'flex'
-            document.getElementById('jStick').style.display = 'none'
-            document.getElementById('fireButton').style.display = 'none'
-            document.getElementById('boostButton').style.display = 'none'
-            document.getElementById('controlPanel').style.display = 'none'
+          }else{
+              document.getElementById('orientationDisclaimer').style.display = 'flex'
+              document.getElementById('jStick').style.display = 'none'
+              document.getElementById('fireButton').style.display = 'none'
+              document.getElementById('boostButton').style.display = 'none'
+              document.getElementById('controlPanel').style.display = 'none'
+          }
         }
     })
 

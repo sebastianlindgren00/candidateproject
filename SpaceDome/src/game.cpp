@@ -30,6 +30,16 @@ std::vector<syncData> Game::fetchSyncData() {
     return tmp;
 }
 
+void Game::handleJson(const nlohmann::json& j) {
+
+    // new player joins
+    if (j["type"] == "game_join") {
+        int id = j["id"];
+        std::string name = j["userName"];
+        addPlayer(id, name);
+    }
+}
+
 void Game::addPlayer(int id, const std::string& name) {
 if(mPlayers.size() == allShipsGreen.size() + allShipsRed.size()){
     std::cout << "Cant add this player. The server is full. \n";

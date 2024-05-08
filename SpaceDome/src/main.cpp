@@ -22,6 +22,7 @@
 #include "game.h"
 #include "shaderManager.h"
 #include "text.h"
+#include <queue>
 #include "tcpsocket.h" // For TCPSocket (New testing)
 #include <filesystem> // For Models dir
 #include <nlohmann/json.hpp> // For JSON nlohmann - Why is it in sgct though??
@@ -35,6 +36,10 @@ namespace {
 } // namespace
 
 using namespace sgct;
+
+// OMNI
+std::mutex _messageQueueMutex;
+std::queue<std::string> _messageQueue;
 using json = nlohmann::json;
 
 //different model-containers
@@ -73,9 +78,6 @@ const int Port = 4685;
 const std::string Address = "localhost";
 
 std::unique_ptr<tcpsocket::io::TcpSocket> tcpSocket = std::make_unique<tcpsocket::io::TcpSocket>(Address, Port);
-
-
-
 
 void initOGL(GLFWwindow*) {
 
@@ -147,24 +149,18 @@ void preSync() {
     std::vector<std::byte> data; // Store serialized data
 
     //we check if sgct is run on master machine 
-    if (Engine::instance().isMaster() && //wsHandler->isConnected() &&
+    if (Engine::instance().isMaster() && tcpSocket->isConnected() &&
         Engine::instance().currentFrameNumber() % 100 == 0){
+        printf("Queue initial size : % d\n", _messageQueue.size());
+        std::lock_guard lock(_messageQueueMutex);
+        if (!_messageQueue.empty()) {
 
-            //wsHandler->queueMessage("ping");
-            //if game instance is active 
-            //if(Game::instance().isGameActive()){
-            //    //send time through ws handler to
-
-            //   std::string timeLeft = std::to_string(Game::instance().getEndTime());
-            //    wsHandler->queueMessage("Time left: " + timeLeft);
-            //}
-
-            //if(!Game::instance().isGameActive()){
-            //    std::string restartTime = to_string(Game::instance().getRestartTime());
-            //    wsHandler->queueMessage("New round starts in" + restartTime);
-            //}
-        
-        //wsHandler->tick();
+            printf("Messagequeue size : % d\n", _messageQueue.size());
+            const std::string& msg = _messageQueue.front();
+            nlohmann::json j = nlohmann::json::parse(msg);
+            Game::instance().handleJson(j);
+            _messageQueue.pop();
+        }
     }
 
     if(Engine::instance().isMaster()){
@@ -394,6 +390,20 @@ void draw(const RenderData& data) {
     //utilityInstance.renderPlane(plainShaderProgram, 0, projectionMatrix,viewMatrix);
     utilityInstance.renderPlane(ShaderProgramTextTexture, textRenderer.getTexture(), projectionMatrix,viewMatrix);
 */
+
+// OMNI
+
+    std::string messageString = "";
+    messageString.reserve(256);
+        if (tcpSocket->getMessage(messageString)) {
+        {
+            std::lock_guard lock(_messageQueueMutex);
+            _messageQueue.push(messageString);
+        }
+        std::cout << messageString << '\n';
+        messageString.clear();
+    }
+
 }
 
 void draw2D(const RenderData& data) {
@@ -492,31 +502,6 @@ void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Windo
     if (key == Key::Esc && action == Action::Press) {
         Engine::instance().terminate();
     }
-
-    if (key == Key::P && action == Action::Press) {
-        if (Game::instance().getPlayers().size() < 100) {
-            int id = Game::instance().getLowestAvailablePlayerID();
-            std::string playerName; // Prompt the user to enter a name
-            std::cout << "Enter player name: ";
-            std::cin >> playerName;
-
-            // Serialize player data into JSON
-            nlohmann::json playerData;
-            playerData["id"] = id;
-            playerData["name"] = playerName;
-
-            // Convert JSON to string
-            std::string jsonStr = playerData.dump();
-
-            // Send JSON string over TCP socket
-            bool success = tcpSocket->putMessage(jsonStr);
-            if (!success) {
-                std::cout << "Failed to send player data over TCP socket\n";
-            }
-
-            Game::instance().addPlayer(id, playerName);
-        }
-    }
     
     if (key == Key::O && action == Action::Press) {
         auto& players = Game::instance().getPlayers();
@@ -546,9 +531,10 @@ int main(int argc, char** argv) {
     callbacks.draw = draw;
     callbacks.draw2D = draw2D;
     callbacks.cleanup = cleanup;
-    //callbacks.keyboard = keyboard;
-    //new Keyboard function
     callbacks.keyboard = globalKeyboardHandler;
+
+    tcpSocket->connect();
+
 
     try {
         Engine::create(cluster, callbacks, config);
@@ -559,6 +545,7 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
+    Log::Info("Application started");
     // Won't work if this is commented out
     if (Engine::instance().isMaster()) {
 
@@ -567,27 +554,15 @@ int main(int argc, char** argv) {
             return -1;
         }
 
-        tcpSocket->connect();
-
         if (tcpSocket->isConnected()) {
-            std::cout << "Tcp socket connected";
+            std::cout << "Tcp socket connected \n";
         }
         else if (tcpSocket->isConnecting()) {
             std::cout << "Tcp socket connecting...";
         }
         else {
             std::cout << "Tcp socket could not connect";
-            return -1;
         }
-
-        std::string messageString;
-        messageString.reserve(256);
-        while (tcpSocket->getMessage(messageString)) {
-            std::cout << messageString << '\n';
-        }
-
-        return 0;
-
     }
 
     Engine::instance().exec();

@@ -1,9 +1,10 @@
 #include "player.h" 
+const float M_PI = 3.14159265358979323846;
 
 Player::Player(const int id, const std::string& name, int team, int colorID, glm::vec3 color, glm::mat4 pMatrix, glm::mat4 vMatrix, int width, int height){
     mIsAlive = true;
     mName = name;
-    mPlayerID = id;
+    mPlayerID = id; // quickfix, kinda dirty
     mColorID = colorID;
     mPlayerColor = color;
     int randx = rand() %50;

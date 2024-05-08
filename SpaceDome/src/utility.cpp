@@ -2,6 +2,8 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
+const float M_PI = 3.14159265358979323846;
+
 //declaring a text character
 struct Character {
     GLuint     TextureID;  // Texture ID
@@ -278,9 +280,9 @@ void Utility::renderPlane(GLuint shaderProgram, GLuint texture, const glm::mat4&
 
     // Set the projection and view matrix uniforms
     GLint projLoc = glGetUniformLocation(shaderProgram, "projection");
-    std::cout << "Projection Matrix Location: " << projLoc << std::endl;
+    //std::cout << "Projection Matrix Location: " << projLoc << std::endl;
     GLint modelViewLoc = glGetUniformLocation(shaderProgram, "modelView");
-    std::cout << "ModelView Matrix Location: " << modelViewLoc << std::endl;
+    //std::cout << "ModelView Matrix Location: " << modelViewLoc << std::endl;
 
     if (projLoc != -1) {
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));

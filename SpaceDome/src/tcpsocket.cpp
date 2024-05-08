@@ -205,15 +205,23 @@ namespace tcpsocket::io {
     }
 
     bool TcpSocket::getMessage(std::string& message) {
+        //int initialSize = _inputQueue.size();
+        //printf("Initial inputQueue: %d\n", initialSize);
         const int delimiterIndex = waitForDelimiter();
         if (delimiterIndex == 0) {
             return false;
         }
         std::lock_guard inputLock(_inputQueueMutex);
+        //printf("delimiterIndex: %d\n", delimiterIndex);
+        //int size = _inputQueue.size();
+        //printf("inputQueue: %d\n", size);
         message.assign(_inputQueue.begin(), _inputQueue.begin() + delimiterIndex);
         if (static_cast<int>(_inputQueue.size()) >= delimiterIndex + 1) {
             _inputQueue.erase(_inputQueue.begin(), _inputQueue.begin() + delimiterIndex + 1);
         }
+
+        //int eraseSize = _inputQueue.size();
+        //printf("eraseSize: %d\n", eraseSize);
         return true;
     }
 
@@ -375,6 +383,29 @@ namespace tcpsocket::io {
             _inputNotifier.wait(lock, receivedRequestedInputOrDisconnected);
         }
     }
+    // Old waitForDelimiter
+    // 
+    //int TcpSocket::waitForDelimiter() {
+    //    size_t currentIndex = 0;
+    //    auto receivedRequestedInputOrDisconnected =
+    //        [this, &currentIndex, d = _delimiter.load()]()
+    //        {
+    //            if (_shouldStopThreads || (!_isConnected && !_isConnecting)) {
+    //                return true;
+    //            }
+    //            std::lock_guard queueMutex(_inputQueueMutex);
+    //            auto it = std::find(_inputQueue.begin() + currentIndex, _inputQueue.end(), d);
+    //            currentIndex = it - _inputQueue.begin();
+    //            return it != _inputQueue.end();
+    //        };
+
+    //    // Block execution until the delimiter character was found in the input queue.
+    //    if (!receivedRequestedInputOrDisconnected()) {
+    //        std::unique_lock lock(_inputBufferMutex);
+    //        _inputNotifier.wait(lock, receivedRequestedInputOrDisconnected);
+    //    }
+    //    return static_cast<int>(currentIndex);
+    //}
 
     int TcpSocket::waitForDelimiter() {
         size_t currentIndex = 0;
@@ -390,10 +421,18 @@ namespace tcpsocket::io {
                 return it != _inputQueue.end();
             };
 
-        // Block execution until the delimiter character was found in the input queue.
+        // Block execution until the delimiter character was found in the input queue
+        // or a timeout occurs.
+        std::unique_lock lock(_inputBufferMutex);
         if (!receivedRequestedInputOrDisconnected()) {
-            std::unique_lock lock(_inputBufferMutex);
-            _inputNotifier.wait(lock, receivedRequestedInputOrDisconnected);
+            if (_inputNotifier.wait_for(lock, std::chrono::seconds(1), receivedRequestedInputOrDisconnected)) {
+                // Delimiter found within the timeout period.
+                return static_cast<int>(currentIndex);
+            }
+            else {
+                // Timeout occurred.
+                return  0;//-1; // Or some other appropriate value to indicate timeout.
+            }
         }
         return static_cast<int>(currentIndex);
     }

@@ -2,6 +2,8 @@
 #include <random>
 #include <cmath>
 
+const float M_PI = 3.14159265358979323846;
+
 Star::~Star()
 {
 	//sgct::Log::Info("Player with name=\"%s\" removed", mName.c_str());

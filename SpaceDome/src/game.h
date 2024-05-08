@@ -6,6 +6,7 @@
 #include <iostream>
 #include <map>
 #include <utility>
+
 #include <tuple>
 #include <cmath>
 #include <random>
@@ -24,6 +25,7 @@
 #include "glad/glad.h"
 #include "glm/packing.hpp"
 #include "glm/matrix.hpp"
+#include "nlohmann/json.hpp"
 
 #include "player.h"
 #include "utility.h"
@@ -50,6 +52,8 @@ static Game& instance() {
 }
 
 std::vector<syncData> fetchSyncData();
+
+void handleJson(const nlohmann::json& j);
 
 void setMatrixes(glm::mat4 pMatrix, glm::mat4 vMatrix, int width, int height) { 
     projectionMatrix = pMatrix;
