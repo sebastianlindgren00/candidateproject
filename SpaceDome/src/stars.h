@@ -84,6 +84,12 @@ public:
 
     glm::vec3 getPosition(){ return sPosition; }
 
+    float getPositionX(){ return sPosition.x; }
+
+	float getPositionY(){ return sPosition.y; }
+	
+	float getPositionZ(){ return sPosition.z; }
+
     int getID(){ return sId; }
 
     void draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const;

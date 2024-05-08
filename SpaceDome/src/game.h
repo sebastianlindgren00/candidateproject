@@ -33,10 +33,10 @@
 
 // Contains all necessary game object data that is used for the sync
 struct syncData {
-    std::vector<PlayerData> playerData;
-    std::vector<ObjectData> objectData;
-    std::vector<StarData> starData;
-    std::vector<BulletData> bulletData;
+    PlayerData playerData;
+    ObjectData objectData;
+    StarData starData;
+    BulletData bulletData;
     float gametime;
 };
 
@@ -52,7 +52,7 @@ static Game& instance() {
     return instance;
 }
 
-syncData fetchSyncData();
+std::vector<syncData> fetchSyncData();
 
 void setMatrixes(glm::mat4 pMatrix, glm::mat4 vMatrix, int width, int height) { 
     projectionMatrix = pMatrix;
@@ -87,7 +87,7 @@ const std::vector<std::unique_ptr<Star>>& getStars() const { return mStars; }
 
 const std::vector<std::unique_ptr<BackgroundObject>>& getBGObjects() const { return mBGObjects; }
 
-void setSyncData(const syncData data);
+void setSyncData(std::vector<syncData> data);
 
 //Copying forbidden
 Game(Game const&) = delete;

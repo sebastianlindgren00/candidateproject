@@ -23,7 +23,7 @@ struct ObjectData
 {
 	float bOrientationSpeed;
     float zPos;
-    float bSpeed = 0.001f;
+    float bSpeed;
     float bPositionX;
     float bPositionY;
     float bPositionZ;
@@ -78,6 +78,12 @@ public:
     void setPosition(const glm::vec3& positionChange) { bPosition += positionChange; }
 
     glm::vec3 getPosition() {return bPosition;}
+
+    float getPositionX(){ return bPosition.x; }
+
+	float getPositionY(){ return bPosition.y; }
+	
+	float getPositionZ(){ return bPosition.z; }
 
     void setOrientation(float newOrientation) { bDirection = newOrientation;}
 

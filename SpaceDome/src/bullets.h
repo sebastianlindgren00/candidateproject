@@ -68,6 +68,12 @@ public:
     void setTeam(int t) {bTeam = t;}
     void setID(int i) {bID = i;}
 
+    float getPositionX(){ return bPosition.x; }
+
+	float getPositionY(){ return bPosition.y; }
+	
+	float getPositionZ(){ return bPosition.z; }
+
     float getOrientation() {return bOrientation;}
 
     int getLifeTime(){ return lifeTime; }

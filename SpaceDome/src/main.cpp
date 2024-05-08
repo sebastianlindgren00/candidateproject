@@ -67,7 +67,7 @@ GLuint ShaderProgramTextTexture;
 //buffers and textures
 GLuint framebuffer = 0;
 GLuint textureColorbuffer = 0;
-syncData states; 
+std::vector<syncData> states; 
 GLuint textureText;
 
 //float for camera movement
@@ -176,7 +176,7 @@ std::vector<std::byte> encode() {
     //serializeObject(data, gameOn);
     //serializeObject(data, gameEnded);
 
-    syncData gameStates = Game::instance().fetchSyncData();
+    std::vector<syncData> gameStates = Game::instance().fetchSyncData();
     serializeObject(data, gameStates);
 
     return data;
@@ -188,8 +188,9 @@ void decode(const std::vector<std::byte>& data) {
     unsigned int pos = 0;
 
     deserializeObject(data, pos, states);
-    deserializeObject(data, pos, gameEnded);
-    deserializeObject(data, pos, gameOn);
+   
+    
+    
 }
 
 void postSyncPreDraw() {
