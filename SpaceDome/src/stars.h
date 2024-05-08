@@ -22,6 +22,14 @@
 //#define M_PI 3.14159265358979323846
 
 
+struct StarData
+{
+	float sPositionX;
+    float sPositionY;
+    float sPositionZ;
+    float sOrientation;
+};
+
 //Implemented as explicit singleton, handles pretty much everything
 class Star
 {
@@ -68,6 +76,11 @@ public:
 	Star& operator=(const Star&) = delete;
 
     void update(std::vector<std::unique_ptr<Star>>& stars);
+
+    void setPosition(glm::vec3 pos) { sPosition = pos;}
+    void setOrientation(float o) {sOrientation = o;}
+
+    float getOrientation() {return sOrientation;}
 
     glm::vec3 getPosition(){ return sPosition; }
 

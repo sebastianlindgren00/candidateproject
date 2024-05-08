@@ -3,6 +3,7 @@
 //
 //#include "websockethandler.h"
 #include "sgct/sgct.h"
+#include <sgct/freetype.h>
 #include <glm/glm.hpp>
 #include <glad/glad.h>
 #include <memory>
@@ -30,8 +31,10 @@ std::filesystem::path baseDir;
 
 namespace {
     //std::unique_ptr<WebSocketHandler> wsHandler;
-    int64_t exampleInt = 0;
+    int64_t gameOn = 0;
+    int64_t gameEnded = 0;
     std::string exampleString;
+    
 } // namespace
 
 using namespace sgct;
@@ -64,18 +67,24 @@ GLuint ShaderProgramTextTexture;
 //buffers and textures
 GLuint framebuffer = 0;
 GLuint textureColorbuffer = 0;
-std::vector<syncData> states; 
+syncData states; 
 GLuint textureText;
 
 //float for camera movement
-float cameraZ = 0.0f;
+float cameraZ = -4.0f;
 const int Port = 4685;
 const std::string Address = "localhost";
 
 std::unique_ptr<tcpsocket::io::TcpSocket> tcpSocket = std::make_unique<tcpsocket::io::TcpSocket>(Address, Port);
 
-
-
+void verifyFontPath(const std::string& fontPath) {
+    std::ifstream file(fontPath);
+    if (file.good()) {
+        std::cout << "Font file is accessible at: " << fontPath << std::endl;
+    } else {
+        std::cerr << "Font file not found or inaccessible at: " << fontPath << std::endl;
+    }
+}
 
 void initOGL(GLFWwindow*) {
 
@@ -95,6 +104,8 @@ void initOGL(GLFWwindow*) {
     std::string filePath8 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[9] + ".fbx";
     std::string filePath9 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[10] + ".fbx";
     std::string fontPath = std::string(MODELS_DIRECTORY) + "/font/Michroma-Regular.ttf";
+
+    //verifyFontPath(fontPath);
 
     //Utility utility;
     shaderProgram = Utility::createShaderProgram(vertexShaderSource, fragmentShaderSource);
@@ -128,11 +139,12 @@ void initOGL(GLFWwindow*) {
     }
     //std::cout << "Attempting to load font from: " << fontPath << std::endl;
     Utility::LoadFontAtlas(fontPath);
-
-    
+    text::FontManager::instance().addFont("CustomFont", fontPath);
 
     std::cout << "after assimpLoader \n";
 }
+
+
 
 void initializeText(Game& game, TextRenderer& text, std::vector<std::tuple<std::string, float, float, float, glm::vec3>> printsPlayers) {
     // Assume `game` is the Game object with the latest text data
@@ -143,46 +155,28 @@ void initializeText(Game& game, TextRenderer& text, std::vector<std::tuple<std::
 void preSync() {
     // Do the application simulation step on the server node in here and make sure that
     // the computed state is serialized and deserialized in the encode/decode calls
-    
     std::vector<std::byte> data; // Store serialized data
 
     //we check if sgct is run on master machine 
     if (Engine::instance().isMaster() && //wsHandler->isConnected() &&
         Engine::instance().currentFrameNumber() % 100 == 0){
 
-            //wsHandler->queueMessage("ping");
-            //if game instance is active 
-            //if(Game::instance().isGameActive()){
-            //    //send time through ws handler to
+            
 
-            //   std::string timeLeft = std::to_string(Game::instance().getEndTime());
-            //    wsHandler->queueMessage("Time left: " + timeLeft);
-            //}
-
-            //if(!Game::instance().isGameActive()){
-            //    std::string restartTime = to_string(Game::instance().getRestartTime());
-            //    wsHandler->queueMessage("New round starts in" + restartTime);
-            //}
         
         //wsHandler->tick();
     }
-
-    if(Engine::instance().isMaster()){
-        Game::instance().update();
-    }
+    Game::instance().update();
 }
 
 std::vector<std::byte> encode() {
     std::vector<std::byte> data;
 
     // Serialize exampleInt
-    serializeObject(data, exampleInt);
+    //serializeObject(data, gameOn);
+    //serializeObject(data, gameEnded);
 
-    // Serialize exampleString
-    serializeObject(data, exampleString);
-
-    // Serialize sync data
-    std::vector<syncData> gameStates = Game::instance().fetchSyncData();
+    syncData gameStates = Game::instance().fetchSyncData();
     serializeObject(data, gameStates);
 
     return data;
@@ -191,29 +185,25 @@ std::vector<std::byte> encode() {
 void decode(const std::vector<std::byte>& data) {
     // These are just two examples;  remove them and replace them with the logic of your
     // application that you need to synchronize
-    unsigned pos = 0;
+    unsigned int pos = 0;
+
     deserializeObject(data, pos, states);
+    deserializeObject(data, pos, gameEnded);
+    deserializeObject(data, pos, gameOn);
 }
 
 void postSyncPreDraw() {
     // Apply the (now synchronized) application state before the rendering will start
 
     //Sync gameobjects' state on clients only
-	if (!Engine::instance().isMaster() && Game::instance().isGameActive())
+	if (!Engine::instance().isMaster())
 	{
 		//Engine::instance().setStatsGraphVisibility(areStatsVisible);
 
-		if (!Game::instance().isGameActive())
-			return;
-		else if(states.size() > 0 && !Game::instance().isGameActive()) {
-			Game::instance().fetchSyncData();
-		}
-	}
-	else
-	{
-		//if (Game::instance().isGameActive())
-		//	Game::instance().sendPointsToServer(wsHandler);
-	}
+		
+			Game::instance().setSyncData(states);
+		
+    }
 }
 
 void draw(const RenderData& data) {
@@ -249,12 +239,15 @@ void draw(const RenderData& data) {
     game.addSpawnRot();
 
     viewMatrix = modelMatrix * viewMatrix;
+    float textScaleX = windowWidthOut/1500;
     
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     Utility utilityInstance;
     utilityInstance.setScaleConst((float)windowHeightOut/1440);
+
+    Utility::CalculateScreenPositions(projectionMatrix, viewMatrix, windowWidthOut, windowHeightOut);
     
     glEnable(GL_DEPTH_TEST);
 
@@ -354,6 +347,26 @@ void draw(const RenderData& data) {
             std::cerr << "OpenGL error after linking shader program: " << err << std::endl;
         }
 } 
+
+std::vector<std::tuple<std::string, float, float, float, glm::vec3>> printsPlayers;
+    for(auto& player : game.getPlayers()){
+            if(player->isAlive())
+            printsPlayers.push_back(std::make_tuple(player->getName(), player->getTextX(), player->getTextY(),textScaleX/1.5, glm::vec3(0.8f, 0.8f, 0.8f)));
+        }
+
+    const sgct::vec4 color1 = sgct::vec4(0.8f, 0.8f, 0.8f, 1.0f);
+    for (auto& [text, x, y, scale, color] : printsPlayers){
+    text::print( 
+        data.window,
+        data.viewport,
+        *text::FontManager::instance().font("CustomFont",20),
+        text::Alignment::TopCenter,
+        x,
+        y,
+        color1,
+        text
+    );
+    }
    
     /*
     std::vector<std::tuple<std::string, float, float, float, glm::vec3>> printsPlayers;
@@ -363,7 +376,7 @@ void draw(const RenderData& data) {
         }
 
     // Initialize TextRenderer
-    TextRenderer textRenderer(shaderProgramText, windowWidthOut, windowHeightOut);
+    //TextRenderer textRenderer(shaderProgramText, windowWidthOut, windowHeightOut);
 
     // Clear any existing errors
     while (glGetError() != GL_NO_ERROR) {}
@@ -371,33 +384,22 @@ void draw(const RenderData& data) {
     while ((err = glGetError()) != GL_NO_ERROR) {
         std::cerr << "OpenGL error after TextRenderer initialization: " << err << std::endl;
     }
-    initializeText(game, textRenderer, printsPlayers);
-    textureText = textRenderer.getTexture();
+    //initializeText(game, textRenderer, printsPlayers);
+    //textureText = textRenderer.getTexture();
        
     //Prints for frameBuffer checks
     
     GLint currentFramebuffer;
     glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFramebuffer);
     
-    // Print the currently bound framebuffer to the console
-    std::cout << "Currently bound framebuffer: " << currentFramebuffer << std::endl;
-
     
-    // If the default framebuffer is expected (which usually has an ID of 0)
-    if (currentFramebuffer == 0) {
-        std::cout << "The default framebuffer is currently bound." << std::endl;
-    } else {
-        std::cout << "Framebuffer " << currentFramebuffer << " is currently bound." << std::endl;
-    }
-    
-    
-    //utilityInstance.renderPlane(plainShaderProgram, 0, projectionMatrix,viewMatrix);
-    utilityInstance.renderPlane(ShaderProgramTextTexture, textRenderer.getTexture(), projectionMatrix,viewMatrix);
+    utilityInstance.renderPlane(plainShaderProgram, 0, projectionMatrix,viewMatrix);
+    //utilityInstance.renderPlane(ShaderProgramTextTexture, textRenderer.getTexture(), projectionMatrix,viewMatrix);
 */
 }
 
 void draw2D(const RenderData& data) {
-    
+    /*
     glm::mat4 projectionMatrix;
     std::memcpy(glm::value_ptr(projectionMatrix),data.projectionMatrix.values,sizeof(mat4));
 
@@ -406,6 +408,8 @@ void draw2D(const RenderData& data) {
 
     glm::mat4 modelMatrix;
     std::memcpy(glm::value_ptr(modelMatrix),data.modelMatrix.values,sizeof(mat4));
+*/
+
 
     const sgct::Window &sgctWindowRef = data.window;
     const sgct::Window *sgctWindowPtr = &sgctWindowRef;
@@ -414,38 +418,68 @@ void draw2D(const RenderData& data) {
     int windowWidthOut = 2560;
     int windowHeightOut = 1440;
 
+
     glfwGetFramebufferSize(glfwWindow, &windowWidthOut, &windowHeightOut);
     if (!glfwWindow) {
         std::cerr << "Failed to get GLFWwindow pointer from sgct::Window." << std::endl;
         return;
     }
+    float textScaleX = windowWidthOut/1500;
+    const sgct::vec4 color = sgct::vec4(0.8f, 0.8f, 0.8f, 1.0f);
+    float line = windowHeightOut/1.5;
+    float count = 0;
+/*
+    GLint prevViewport[4];
+    glGetIntegerv(GL_VIEWPORT, prevViewport);
 
     glm::vec3 translation(0.0f, 0.0f, cameraZ); 
     viewMatrix = glm::translate(viewMatrix, translation);
     viewMatrix = modelMatrix * viewMatrix;
-    float textScaleX = windowWidthOut/1500;
-    
+    */
     Game& game = Game::instance();
+    /*
     game.setMatrixes(projectionMatrix, viewMatrix, windowWidthOut, windowHeightOut);
     game.addSpawnRot();
 
     Utility utilityInstance;
     utilityInstance.setScaleConst((float)windowHeightOut/1440);
 
-    Utility::CalculateScreenPositions(projectionMatrix, viewMatrix, windowWidthOut, windowHeightOut);
+    //Utility::CalculateScreenPositions(projectionMatrix, viewMatrix, windowWidthOut, windowHeightOut);
 
     glEnable(GL_DEPTH_TEST);
-
+   */
+    
     std::vector<std::tuple<std::string, float, float, float, glm::vec3>> printsPlayers;
     for(auto& player : game.getPlayers()){
             if(player->isAlive())
             printsPlayers.push_back(std::make_tuple(player->getName(), player->getTextX(), player->getTextY(),textScaleX/1.5, glm::vec3(0.8f, 0.8f, 0.8f)));
         }
 
+    std::vector<TextItem> texts;
+    game.getTexts(texts);
+    
+    for (auto& text : texts){
+    text::print( 
+        data.window,
+        data.viewport,
+        *text::FontManager::instance().font("CustomFont",50),
+        text::Alignment::TopCenter,
+        windowWidthOut/2,
+        line - count*100,
+        color,
+        text.text
+    );
+    count++;
+    if(count == 1){
+        count += 0.5;
+    }
+    }
+    
+
     // Initialize TextRenderer
-    TextRenderer textRenderer(shaderProgramText, windowWidthOut, windowHeightOut);
-    initializeText(game, textRenderer, printsPlayers);
-    textureText = textRenderer.getTexture();
+    //TextRenderer textRenderer(shaderProgramText, windowWidthOut, windowHeightOut);
+    //initializeText(game, textRenderer, printsPlayers);
+    //textureText = textRenderer.getTexture();
     
 
    //----- Texture check
@@ -472,9 +506,9 @@ void draw2D(const RenderData& data) {
     */
 
     //utilityInstance.renderPlane(plainShaderProgram, 0, projectionMatrix, viewMatrix);
-    utilityInstance.renderPlane(ShaderProgramTextTexture, textRenderer.getTexture(), projectionMatrix, viewMatrix);
+    //utilityInstance.renderPlane(ShaderProgramTextTexture, textRenderer.getTexture(), projectionMatrix, viewMatrix);
 
-    glDisable(GL_DEPTH_TEST);
+    //glDisable(GL_DEPTH_TEST);
 }
 
 void cleanup() {
@@ -525,6 +559,7 @@ void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Windo
             Game::instance().removePlayer(lastPlayerId); // Can only remove the last player
         }
     } 
+    
 }
 
 int main(int argc, char** argv) {
@@ -560,6 +595,7 @@ int main(int argc, char** argv) {
     }
 
     // Won't work if this is commented out
+    /*
     if (Engine::instance().isMaster()) {
 
         if (!tcpSocket) {
@@ -589,7 +625,7 @@ int main(int argc, char** argv) {
         return 0;
 
     }
-
+*/
     Engine::instance().exec();
 
     Engine::destroy();

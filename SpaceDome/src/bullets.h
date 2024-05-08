@@ -19,9 +19,20 @@
 #include "mesh.h"
 #include "utility.h"
 
+struct BulletData
+{
+	float bPositionX;
+    float bPositionY;
+    float bPositionZ;
+    float bOrientation;
+    int bTeam;
+    int bID;	
+};
+
 //Implemented as explicit singleton, handles pretty much everything
 class Bullet
 {
+
 
 public:
     //default constructor
@@ -51,6 +62,13 @@ public:
     int getTeam(){ return bTeam; }
     
     glm::vec3 getPosition(){ return bPosition; }
+
+    void setPosition(glm::vec3 pos) { bPosition = pos; }
+    void setOrientation(float o) { bOrientation = o;}
+    void setTeam(int t) {bTeam = t;}
+    void setID(int i) {bID = i;}
+
+    float getOrientation() {return bOrientation;}
 
     int getLifeTime(){ return lifeTime; }
 

@@ -137,7 +137,7 @@ void FontManager::bindShader(const mat4& mvp, const vec4& color, int texture) co
 
 bool FontManager::addFont(std::string name, std::string file) {
     // Perform file exists check
-    file = SystemFontPath + file;
+    //file = SystemFontPath + file;
 
     const bool inserted = _fontPaths.insert({ name, std::move(file) }).second;
     if (!inserted) {

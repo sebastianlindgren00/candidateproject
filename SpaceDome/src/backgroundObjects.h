@@ -19,6 +19,18 @@
 #include "mesh.h"
 #include "utility.h"
 
+struct ObjectData
+{
+	float bOrientationSpeed;
+    float zPos;
+    float bSpeed = 0.001f;
+    float bPositionX;
+    float bPositionY;
+    float bPositionZ;
+    float bDirection;
+    float bOrientation;	
+};
+
 //Implemented as explicit singleton, handles pretty much everything 
 class BackgroundObject
 {
@@ -55,7 +67,7 @@ public:
 
     bPosition = glm::vec3(x, y, zPos);
     }
-    
+
 	//Destructor
 	~BackgroundObject();
 

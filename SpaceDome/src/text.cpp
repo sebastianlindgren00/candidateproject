@@ -60,8 +60,6 @@ void TextRenderer::setupFramebuffer() {
     glEnable(GL_DEPTH_TEST);
 }
 
-
-
 void TextRenderer::drawText() {
     for (const auto& item : currentTextItems) {
         Utility::getInstance().RenderText(shaderProgram, item.text, item.row, item.scale, item.color, width, height);
@@ -92,7 +90,6 @@ void TextRenderer::renderTextToTexture(std::vector<std::tuple<std::string, float
     glEnable(GL_BLEND);
     glDisable(GL_DEPTH_TEST);
 }
-
 
 GLuint TextRenderer::getTexture() const {
     return textTexture;

@@ -95,6 +95,8 @@ public:
 
     void setPosition(const glm::vec3& positionChange) { mPosition += positionChange; }
 
+	void setPositionComplete(const glm::vec3& positionChange){ mPosition = positionChange;}
+
 	void setChargeMode(bool mode){ chargeActive = mode; }
 
 	int getSuperCharge(){ return superCharge; }
@@ -118,6 +120,8 @@ public:
 	void setSpawnTimerFull() { respawnTimer = 500;}
 
     void setOrientation(float angleSpeed) { mOrientation += angleSpeed; }
+
+	void setOrientationComplete(float angle) { mOrientation = angle; }
 
     float getOrientation(){return mOrientation; }
 

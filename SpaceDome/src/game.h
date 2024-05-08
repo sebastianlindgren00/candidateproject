@@ -33,8 +33,11 @@
 
 // Contains all necessary game object data that is used for the sync
 struct syncData {
-    PlayerData playerData;
-    //ObjectData objectData:
+    std::vector<PlayerData> playerData;
+    std::vector<ObjectData> objectData;
+    std::vector<StarData> starData;
+    std::vector<BulletData> bulletData;
+    float gametime;
 };
 
 //Implemented as explicit singleton, handles pretty much everything
@@ -49,7 +52,7 @@ static Game& instance() {
     return instance;
 }
 
-std::vector<syncData> fetchSyncData();
+syncData fetchSyncData();
 
 void setMatrixes(glm::mat4 pMatrix, glm::mat4 vMatrix, int width, int height) { 
     projectionMatrix = pMatrix;
@@ -83,6 +86,8 @@ std::vector<std::unique_ptr<Bullet>>& getBullets() { return mBullets; }
 const std::vector<std::unique_ptr<Star>>& getStars() const { return mStars; }
 
 const std::vector<std::unique_ptr<BackgroundObject>>& getBGObjects() const { return mBGObjects; }
+
+void setSyncData(const syncData data);
 
 //Copying forbidden
 Game(Game const&) = delete;
@@ -135,6 +140,14 @@ int getWins(int team) {
 
 bool isGameActive() { return mGameActive; }
 
+bool shouldReturnTime(){
+    if(mTotalTime - mLastFrameTime > 1){
+        mLastFrameTime = mTotalTime;
+        return true;
+    }
+    return false;
+}
+
 void resetGameTime() { mTotalTime = 0; }
 
 int getEndTime() { return (int)mMaxTime - mTotalTime; }
@@ -179,7 +192,7 @@ bool mGameActive = true;
 std::unordered_map<sgct::Key, bool> keyStates;
 float mLastFrameTime = sgct::time();
 float mTotalTime = 0;
-float mMaxTime = 25; //seconds
+float mMaxTime = 10; //seconds
 //float mLastTime = 0;
 float mResetGame = 10;
 

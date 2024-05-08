@@ -1,33 +1,91 @@
 #include "game.h"
 
 // Sync
-std::vector<syncData> Game::fetchSyncData() {
-    std::vector<syncData> tmp;
-
+syncData Game::fetchSyncData() {
+    syncData all;
+    std::vector<PlayerData> players;
+    std::vector<ObjectData> objects;
+    std::vector<BulletData> bullets;
+    std::vector<StarData> stars;
+    
     for (const auto& player : mPlayers) {
-        syncData data;
-        data.playerData.mPlayerID = player->getID();
-        data.playerData.mPositionX = player->getPositionX();
-        data.playerData.mPositionY = player->getPositionY();
-        data.playerData.mPositionZ = player->getPositionZ();
-        data.playerData.mOrientation = player->getOrientation();
-        data.playerData.mColorID = player->getColorID();
-        data.playerData.mTeam = player->getTeam();
-        data.playerData.mStars = player->getStars();
-        data.playerData.mStarsHolding = player->getHandedInStars();
-
-        //Bool och strings gör att syncen inte fungerar. 
-        //Just nu compilear det. 
-
-        //data.playerData.mIsAlive = player->isAlive();
-        //data.playerData.textPos = player->getTextPos();
-        data.playerData.mTurnSpeed = player->getTurnSpeed();
-        data.playerData.mSpeed = player->getSpeed();
-        data.playerData.mBulletTimer = player->getBulletTimer();
-        data.playerData.mSuperCharge = player->getSuperCharge();
-        tmp.push_back(data);
+        PlayerData data;
+        data.mPositionX = player->getPositionX();
+        data.mPositionY = player->getPositionY();
+        data.mPositionZ = player->getPositionZ();
+        data.mOrientation = player->getOrientation();
+       
+        players.push_back(data);
     }
-    return tmp;
+    for (const auto& object : mBGObjects) {
+        ObjectData data;
+        data.bDirection = object->getOrientation();
+        data.bPositionX = (float)object->getPosition().x;
+        data.bPositionY = (float)object->getPosition().y;
+        data.bPositionZ = (float)object->getPosition().z;
+       
+        objects.push_back(data);
+    }
+    for (const auto& bullet : mBullets) {
+        BulletData data;
+        data.bOrientation = bullet->getOrientation();
+        data.bPositionX = (float)bullet->getPosition().x;
+        data.bPositionY = (float)bullet->getPosition().y;
+        data.bPositionZ = (float)bullet->getPosition().z;
+        data.bTeam = bullet->getTeam();
+        data.bID = bullet->getID();
+       
+        bullets.push_back(data);
+    }
+    for (const auto& star : mStars) {
+        StarData data;
+        data.sPositionX = (float)star->getPosition().x;
+        data.sPositionY = (float)star->getPosition().y;
+        data.sPositionZ = (float)star->getPosition().z;
+        data.sOrientation = star->getOrientation();
+        
+        stars.push_back(data);
+    }
+
+    all.playerData = players;
+    all.objectData = objects;
+    all.starData = stars;
+    all.bulletData = bullets;
+    all.gametime = mTotalTime;
+
+    return all;
+}
+
+void Game::setSyncData(const syncData data){
+    std::vector<syncData> tmp;
+    glm::vec3 pos;
+    for(size_t i = 0; i < mPlayers.size(); i++) {
+        pos = glm::vec3(data.playerData[i].mPositionX, data.playerData[i].mPositionY, data.playerData[i].mPositionZ);
+        mPlayers[i]->setPositionComplete(pos );
+        mPlayers[i]->setOrientationComplete(data.playerData[i].mOrientation);
+    }
+
+    for (size_t i = 0; i < mBGObjects.size(); i++) {
+        pos = glm::vec3(data.objectData[i].bPositionX, data.objectData[i].bPositionY, data.objectData[i].bPositionZ);
+        mBGObjects[i]->setOrientation(data.objectData[i].bDirection);
+        mBGObjects[i]->setPosition(pos);
+    }
+    for (size_t i = 0; i < mBullets.size(); i++) {
+        pos = glm::vec3(data.bulletData[i].bPositionX, data.bulletData[i].bPositionY, data.bulletData[i].bPositionZ);
+        mBullets[i]->setOrientation(data.bulletData[i].bOrientation);
+        mBullets[i]->setPosition(pos);
+        mBullets[i]->setTeam(data.bulletData[i].bTeam);
+        mBullets[i]->setID(data.bulletData[i].bID);
+    }
+
+    for (size_t i = 0; i < mStars.size(); i++) {
+        pos = glm::vec3(data.starData[i].sPositionX, data.starData[i].sPositionY, data.starData[i].sPositionZ);
+        mStars[i]->setPosition(pos);
+        mStars[i]->setOrientation(data.starData[i].sOrientation);
+    }
+
+    mTotalTime = data.gametime;
+
 }
 
 void Game::addPlayer(int id, const std::string& name) {
