@@ -1,9 +1,8 @@
 //
 //  Main.cpp provided under CC0 license
 //
-
+//#include "websockethandler.h"
 #include "sgct/sgct.h"
-#include "websockethandler.h"
 #include <glm/glm.hpp>
 #include <glad/glad.h>
 #include <memory>
@@ -23,16 +22,20 @@
 #include "game.h"
 #include "shaderManager.h"
 #include "text.h"
-//#include "/Users/sebastianlindgren/Documents/GitHub/candidateproject/SpaceDome/ext/rapidjson/document.h"
-//#include "/Users/sebastianlindgren/Documents/GitHub/candidateproject/SpaceDome/ext/rapidjson/error/en.h"
+#include "tcpsocket.h" // For TCPSocket (New testing)
+#include <filesystem> // For Models dir
+#include <nlohmann/json.hpp> // For JSON nlohmann - Why is it in sgct though??
+#include <fstream> // For file reading
+std::filesystem::path baseDir;
 
 namespace {
-    std::unique_ptr<WebSocketHandler> wsHandler;
+    //std::unique_ptr<WebSocketHandler> wsHandler;
     int64_t exampleInt = 0;
     std::string exampleString;
 } // namespace
 
 using namespace sgct;
+using json = nlohmann::json;
 
 //different model-containers
 std::unique_ptr<AssimpLoader> modelsAssimp;
@@ -66,8 +69,22 @@ GLuint textureText;
 
 //float for camera movement
 float cameraZ = 0.0f;
+const int Port = 4685;
+const std::string Address = "localhost";
+
+std::unique_ptr<tcpsocket::io::TcpSocket> tcpSocket = std::make_unique<tcpsocket::io::TcpSocket>(Address, Port);
+
+
+
 
 void initOGL(GLFWwindow*) {
+
+    // I don't want to hard code the path to the models, so I'll use a macro
+    // to get the path to the models directory
+
+    //std::filesystem::path p = std::filesystem::current_path();
+
+    //std::string filepath2 
 
     std::string filePath2 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[4] + ".fbx";
     std::string filePath3 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[5] + ".fbx";
@@ -130,24 +147,24 @@ void preSync() {
     std::vector<std::byte> data; // Store serialized data
 
     //we check if sgct is run on master machine 
-    if (Engine::instance().isMaster() && wsHandler->isConnected() &&
+    if (Engine::instance().isMaster() && //wsHandler->isConnected() &&
         Engine::instance().currentFrameNumber() % 100 == 0){
 
-            wsHandler->queueMessage("ping");
+            //wsHandler->queueMessage("ping");
             //if game instance is active 
-            if(Game::instance().isGameActive()){
-                //send time through ws handler to
+            //if(Game::instance().isGameActive()){
+            //    //send time through ws handler to
 
-               std::string timeLeft = std::to_string(Game::instance().getEndTime());
-                wsHandler->queueMessage("Time left: " + timeLeft);
-            }
+            //   std::string timeLeft = std::to_string(Game::instance().getEndTime());
+            //    wsHandler->queueMessage("Time left: " + timeLeft);
+            //}
 
-            if(!Game::instance().isGameActive()){
-                std::string restartTime = to_string(Game::instance().getRestartTime());
-                wsHandler->queueMessage("New round starts in" + restartTime);
-            }
+            //if(!Game::instance().isGameActive()){
+            //    std::string restartTime = to_string(Game::instance().getRestartTime());
+            //    wsHandler->queueMessage("New round starts in" + restartTime);
+            //}
         
-        wsHandler->tick();
+        //wsHandler->tick();
     }
 
     if(Engine::instance().isMaster()){
@@ -477,11 +494,29 @@ void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Windo
     }
 
     if (key == Key::P && action == Action::Press) {
-    if(Game::instance().getPlayers().size() < 100) {
-        int id = Game::instance().getLowestAvailablePlayerID();
-        Game::instance().addPlayer(id, "o"); // TODO: Add a name from user input, should not be "o"
+        if (Game::instance().getPlayers().size() < 100) {
+            int id = Game::instance().getLowestAvailablePlayerID();
+            std::string playerName; // Prompt the user to enter a name
+            std::cout << "Enter player name: ";
+            std::cin >> playerName;
+
+            // Serialize player data into JSON
+            nlohmann::json playerData;
+            playerData["id"] = id;
+            playerData["name"] = playerName;
+
+            // Convert JSON to string
+            std::string jsonStr = playerData.dump();
+
+            // Send JSON string over TCP socket
+            bool success = tcpSocket->putMessage(jsonStr);
+            if (!success) {
+                std::cout << "Failed to send player data over TCP socket\n";
+            }
+
+            Game::instance().addPlayer(id, playerName);
+        }
     }
-}
     
     if (key == Key::O && action == Action::Press) {
         auto& players = Game::instance().getPlayers();
@@ -492,56 +527,11 @@ void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Windo
     } 
 }
 
-void connectionEstablished() {
-    Log::Info("Connection established");
-}
-
-void connectionClosed() {
-    Log::Info("Connection closed");
-}
-
-// Define your message handling functions
-void handleServerJoin(const std::string& userData) {
-    // Handle server join message
-    // Example: Log the user data
-    std::cout << "User joined: " << userData << std::endl;
-}
-
-void messageReceived(const void* data, size_t length) {
-    // Message received from WebSocket server
-    std::string msg(reinterpret_cast<const char*>(data), length);
-    
-    // Parse the JSON message and handle it accordingly
-    // For simplicity, let's assume it's a JSON message containing 'type' and 'user'
-    // Example: {"type": "server_join", "user": "random_user_id"}
-    // Parse the message and extract 'type' and 'user'
-    // You can use your preferred JSON parsing library for this
-    // Here, we'll just demonstrate with simple string manipulation
-    size_t typePos = msg.find("type");
-    if (typePos != std::string::npos) {
-        // Extract the message type
-        size_t userPos = msg.find("user");
-        if (userPos != std::string::npos) {
-            std::string type = msg.substr(typePos + 7, userPos - typePos - 10);
-            std::string userData = msg.substr(userPos + 7);
-            
-            // Handle the message based on its type
-            if (type == "server_join") {
-                // Call the corresponding message handling function
-                handleServerJoin(userData);
-            }
-            // Add other message types as needed
-        }
-    }
-}
-
 int main(int argc, char** argv) {
-    std::cout << "Please select camera z positon, -4 for normal, 0 for fisheye or other projections: \n";
-    std::cin >> cameraZ;
 
-    Game::instance().addPlayer(0,"Tim");
-    Game::instance().addPlayer(1,"Viktor");
-    Game::instance().addPlayer(2,"Bas");
+    Game::instance().addPlayer(0, "Tim");
+    Game::instance().addPlayer(1, "Viktor");
+    Game::instance().addPlayer(2, "Bas");
 
     std::vector<std::string> arg(argv + 1, argv + argc);
     Configuration config = sgct::parseArguments(arg);
@@ -559,7 +549,7 @@ int main(int argc, char** argv) {
     //callbacks.keyboard = keyboard;
     //new Keyboard function
     callbacks.keyboard = globalKeyboardHandler;
-    
+
     try {
         Engine::create(cluster, callbacks, config);
     }
@@ -572,20 +562,32 @@ int main(int argc, char** argv) {
     // Won't work if this is commented out
     if (Engine::instance().isMaster()) {
 
-        wsHandler = std::make_unique<WebSocketHandler>("localhost", 4685, connectionEstablished, connectionClosed, messageReceived);
-        constexpr const int MessageSize = 1024;
-
-        if (wsHandler->connect("wss", MessageSize)) {
-            Log::Info("WebSocket connection initiated!");
-            /* TESTS
-            wsHandler->queueMessage("test test1");
-            wsHandler->queueMessage("test test2");
-            Log::Info(fmt::format("Messages in queue: {} ", wsHandler->queueSize()));
-            wsHandler->tick();
-            */
-        } else {
-            Log::Error("Failed to initiate WebSocket connection!");
+        if (!tcpSocket) {
+            std::cout << "Error creating tcp socket";
+            return -1;
         }
+
+        tcpSocket->connect();
+
+        if (tcpSocket->isConnected()) {
+            std::cout << "Tcp socket connected";
+        }
+        else if (tcpSocket->isConnecting()) {
+            std::cout << "Tcp socket connecting...";
+        }
+        else {
+            std::cout << "Tcp socket could not connect";
+            return -1;
+        }
+
+        std::string messageString;
+        messageString.reserve(256);
+        while (tcpSocket->getMessage(messageString)) {
+            std::cout << messageString << '\n';
+        }
+
+        return 0;
+
     }
 
     Engine::instance().exec();
@@ -594,11 +596,13 @@ int main(int argc, char** argv) {
 
     std::cout << "\n\n\nRed Team had: " << Game::instance().getWins(1) << " Wins. \n";
     std::cout << "Green Team had: " << Game::instance().getWins(2) << " Wins. \n\n";
-    if(Game::instance().getWins(1) < Game::instance().getWins(2)){
+    if (Game::instance().getWins(1) < Game::instance().getWins(2)) {
         std::cout << "Team Green Won! \n\n\n";
-    }else if(Game::instance().getWins(1) > Game::instance().getWins(2)){
+    }
+    else if (Game::instance().getWins(1) > Game::instance().getWins(2)) {
         std::cout << "Team Red Won! \n\n\n";
-    }else{
+    }
+    else {
         std::cout << "The Game ended in a draw! \n\n\n";
     }
 

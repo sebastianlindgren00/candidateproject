@@ -12,6 +12,8 @@ function Controller() {
     const [teamState, setTeamState] = useState('no team')
     const [pointsState, setPointsState] = useState(0);
     const [srvAuth, setSrvAuth] = useState('not authorized')
+    const [userID, setUserId] = useState('inital')
+    const [userName, setUserName] = useState('inital')
 
     const baseColor = 'radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(70,70,70,1) 69%, rgba(101,101,101,1) 100%)'
     const stickColor = 'radial-gradient(circle, rgba(16,187,0,1) 0%, rgba(31,147,0,1) 71%, rgba(3,62,0,1) 100%)'
@@ -63,6 +65,16 @@ function Controller() {
         console.log(`Got a new message: ${JSON.stringify(lastJsonMessage)}`)
         if(JSON.stringify(lastJsonMessage).includes('Authorized')){
           setSrvAuth('authorized')
+          sendJsonMessage({
+            //userID: searchparams.get('userID')
+            type: 'game_join',
+            userName: searchparams.get('userName')
+          })
+          console.log(JSON.stringify(
+            {//userID: searchparams.get('userID')
+              type: 'game_join',
+             userName: searchparams.get('userName')}
+          ))
         }
         if(JSON.stringify(lastJsonMessage).includes('Points')){
           setPointsState(parseInt(lastJsonMessage.Points))
@@ -147,34 +159,43 @@ function Controller() {
     const handleMove = (e) => { 
         //console.log(e)
         sendJsonMessage({
-          move: (e.x*0.03),
-          userID: searchparams.get('userID')
+          type: 'action_move',
+          value: (e.x*0.03)
+          //userID: searchparams.get('userID')
         })
         console.log(JSON.stringify(
-          {move: (e.x*0.03),
-           userID: searchparams.get('userID')},
+          {type: 'action_move',
+            value: (e.x*0.03)
+           //userID: searchparams.get('userID')
+          },
         ))
       };
       const handleStop = (e) => {
         //console.log(e);
         sendJsonMessage({
-          move: e,
-          userID: searchparams.get('userID')
+          type:'action_move',
+          value: e
+          //userID: searchparams.get('userID')
         })
         console.log(JSON.stringify(
-          {move: e,
-           userID: searchparams.get('userID')}
+          {type:'action_move',
+            value: e
+           //userID: searchparams.get('userID')
+          }
         ))
       };
       const handleStart = (e) => {
         //console.log(e);
         sendJsonMessage({
-          move: e,
-          userID: searchparams.get('userID')
+          type: 'action_move',
+          value: e
+          //userID: searchparams.get('userID')
         })
         console.log(JSON.stringify(
-          {move: e,
-           userID: searchparams.get('userID')}
+          {type: 'action_move',
+            value: e
+           //userID: searchparams.get('userID')
+          }
         ))
       };
 
@@ -182,12 +203,15 @@ function Controller() {
       const handleShoot = (e) =>{ //Cannot be called while steering with the joystick, must be fixed
         //console.log(e.type);
         sendJsonMessage({
-          action: "fire",
-          userID: searchparams.get('userID')
+          type:'action_fire',
+          value:'1'
+          //userID: searchparams.get('userID')
         })
         console.log(JSON.stringify(
-          {action: "fire",
-           userID: searchparams.get('userID')}
+          {type:'action_fire',
+           value:'1'
+           //userID: searchparams.get('userID')
+          }
         ))
       }
 
@@ -197,12 +221,15 @@ function Controller() {
         if(boostState >=25){
           setBoostState(boostState-25)
           sendJsonMessage({
-            action: "boost",
-            userID: searchparams.get('userID')
+            type:'action_boost',
+            value:'1'
+            //userID: searchparams.get('userID')
           })
           console.log(JSON.stringify(
-            {action: "boost",
-             userID: searchparams.get('userID')}
+            {type:'action_boost',
+             value:'1'
+             //userID: searchparams.get('userID')
+            }
           ))
         }
       }

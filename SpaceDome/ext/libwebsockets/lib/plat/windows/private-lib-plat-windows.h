@@ -67,7 +67,7 @@
   #if defined(LWS_HAVE__ATOI64)
    #define atoll _atoi64
   #else
-   #warning No atoll or _atoi64 available, using atoi
+  // #warning No atoll or _atoi64 available, using atoi
    #define atoll atoi
   #endif
  #endif
