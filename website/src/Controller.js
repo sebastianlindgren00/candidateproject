@@ -95,18 +95,21 @@ function Controller() {
 
     scrOrientation.addEventListener('change', function() { //When screen orientation is changed
         setScreenOrientation(window.screen.orientation)
-        if(scrOrientation.type === 'landscape-primary' || scrOrientation.type === 'landscape-secondary'){
+        // Seems to execute on App.js aswell so a control is used to avoid trying to change style of null
+        if(document.getElementById('orientationDisclaimer') !== null || document.getElementById('controlPanel') !== null){
+          if(scrOrientation.type === 'landscape-primary' || scrOrientation.type === 'landscape-secondary'){
             document.getElementById('orientationDisclaimer').style.display = 'none'
             document.getElementById('jStick').style.display = 'flex'
             document.getElementById('fireButton').style.display = 'flex'
             document.getElementById('boostButton').style.display = 'flex'
             document.getElementById('controlPanel').style.display = 'flex'
-        }else{
-            document.getElementById('orientationDisclaimer').style.display = 'flex'
-            document.getElementById('jStick').style.display = 'none'
-            document.getElementById('fireButton').style.display = 'none'
-            document.getElementById('boostButton').style.display = 'none'
-            document.getElementById('controlPanel').style.display = 'none'
+          }else{
+              document.getElementById('orientationDisclaimer').style.display = 'flex'
+              document.getElementById('jStick').style.display = 'none'
+              document.getElementById('fireButton').style.display = 'none'
+              document.getElementById('boostButton').style.display = 'none'
+              document.getElementById('controlPanel').style.display = 'none'
+          }
         }
     })
 

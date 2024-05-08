@@ -11,12 +11,12 @@ function App() {
   const [userID, setUserId] = useState('inital')
   const [userName, setUserName] = useState('inital')
   const [srvAuth, setSrvAuth] = useState('not authorized')
+  const [scrOrientation, setScreenOrientation] = useState(window.screen.orientation)
 
-  var infoBoxStatus = true; // Is the info box opened, when the page loads in this is incorrect but the var needs to be true for the if statement to work
+  var infoBoxStatus = false; // Is the info box opened, when the page loads in this is incorrect but the var needs to be true for the if statement to work
 
 
-
-  const socketUrl = 'wss://omni.itn.liu.se/ws/'; // Omni websocket
+  const socketUrl = 'wss://omni.itn.liu.se/ws/'; // Omni websocket wss://omni.itn.liu.se/ws/
 
   const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(
     socketUrl,
@@ -50,10 +50,10 @@ function App() {
     document.getElementById("InfoButton").addEventListener('click', function(){
       const iB = document.getElementById('InfoBox');
       if(infoBoxStatus){
-        iB.style.marginTop = "-20em"
+        iB.style.display= "none"
         infoBoxStatus = false;
       }else{
-        iB.style.marginTop = "-3.5em"
+        iB.style.display = "flex"
         infoBoxStatus = true;
       }
     })
@@ -100,24 +100,42 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
+        <div className="InfoBox" id="InfoBox">
+          <h2 style={{width:"100%", backgroundColor: '#444c53'}}>Info</h2>
+              <div style={{overflowY:"scroll"}}>
+                <p style={{padding:"0.5em"}}>
+                Välkommen till Space Dome!<br></br>
+                </p>
+                <h3 style={{float:"left", padding:"0.4em"}}>Komma igång</h3>
+                <p style={{float:"left", padding:"0.5em", marginTop:"-1em"}}>
+                För att spela skriver du in ditt önskade användarnamn i fältet och trycker 'Gå med' vilket kommer ta dig
+                till spelkontrollern. Målet i spelet är att samla stjärnor på spelplanen och sedan återvända till ditt lags
+                hemplanet för att få poäng.
+                </p>
+                
+                <h3 style={{float:"left", padding:"0.4em"}}>Spelkontrollern</h3>
+                <p style={{ float:"left", padding:"0.5em", marginTop:"-1em"}}>
+                Raketmotorn i ditt skepp ser till att skeppet alltid åker framåt och för att styra
+                vilken riktning du åker i drar du i den gröna spaken åt vänster eller höger. Skeppet kan skjuta iväg skott mot
+                motståndarna för att få dem att tappa sina stjärnor och detta kan göras med den röda knappen. Om du vill åka
+                snabbare kan du trycka på den gula knappen vilket kommer använda lite av din 'Boost'. Om du får slut på din 'Boost'
+                får du vänta en stund innan du kan använda den igen.
+                </p>
+                <h3 style={{float:"left", padding:"0.4em"}}>Spelets slut</h3>
+                <p style={{ float:"left", padding:"0.5em", marginTop:"-1em"}}>
+                När spelt tar slut vinner det laget som har lämnat in flest stjärnor till sin hemplanet. Lycka till!
+                </p>
+
+              </div>
+        </div>
         <h1>SPACE DOME</h1>
         <label htmlFor="userName">Namn:</label>
         <input type="text" id="userName" name="uName" placeholder="Anders Andersson"/>
         <input type="submit" value="Gå med" onClick={updateUserValues}></input><br></br>
-      </header>
-      <div className="InfoBox" id="InfoBox">
         <button id="InfoButton" type="button">
-          INFO
+            <img src='info.png' style={{height:"50px", width:"50px", display:"flex"}}></img>
         </button>
-        <p style={{padding:"0.5em"}}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-          incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-          exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
-          dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-          Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt 
-          mollit anim id est laborum.
-          </p>
-      </div>
+      </header>
     </div>
   );
 }
