@@ -1,10 +1,5 @@
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
-#
-#
-# @TODO: Change this project to the name of your project
-#
-#
 project("SpaceDome")
 
 #-----------FOR MAC APPLE SILICON------------------------------------------------------
@@ -37,8 +32,8 @@ set_property(TARGET assimp PROPERTY CXX_STANDARD 17)
 set_property(TARGET assimp PROPERTY CXX_STANDARD_REQUIRED ON)
 
 # Models folder path fix!
-# set(MODELS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/models")
-set(MODELS_DIRECTORY "./")
+set(MODELS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/models")
+#set(MODELS_DIRECTORY "./")
 
 find_package(glm REQUIRED)
 #MAC
@@ -96,6 +91,7 @@ add_executable(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME} PRIVATE
   src
   ext/sgct/include
+  ext/sgct/ext/json/include
   #ext/libwebsockets/include
   ext/assimp/include
  # ${LIBWEBSOCKETS_INCLUDE_DIRS}

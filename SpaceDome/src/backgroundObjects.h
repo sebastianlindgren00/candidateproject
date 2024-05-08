@@ -80,7 +80,7 @@ public:
     void draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const;
 
 private:
-float size = 0.4;
+float size = 0.4f;
 int axis = rand() % 3;
 float bOrientationSpeed;
 float zPos;
