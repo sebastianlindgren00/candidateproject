@@ -1,4 +1,4 @@
-#include "player.h"
+#include "player.h" 
 
 Player::Player(const int id, const std::string& name, int team, int colorID, glm::vec3 color, glm::mat4 pMatrix, glm::mat4 vMatrix, int width, int height){
     mIsAlive = true;

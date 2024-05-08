@@ -24,6 +24,8 @@
 
 #include "private-lib-core.h"
 
+#include <sys/stat.h>
+
 const char * const method_names[] = {
 	"GET", "POST", "OPTIONS", "PUT", "PATCH", "DELETE", "CONNECT", "HEAD",
 #ifdef LWS_WITH_HTTP2

@@ -22,6 +22,8 @@
  * IN THE SOFTWARE.
  */
 
+#include <stdint.h>
+
 /* Do not treat - as a terminal character, so "my-token" is one token */
 #define LWS_TOKENIZE_F_MINUS_NONTERM	(1 << 0)
 /* Separately report aggregate colon-delimited tokens */
