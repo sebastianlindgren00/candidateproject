@@ -64,7 +64,6 @@ GLuint textureColorbuffer = 0;
 std::vector<syncData> states; 
 GLuint textureText;
 
-
 //float for camera movement
 float cameraZ = 0.0f;
 
@@ -200,7 +199,6 @@ void postSyncPreDraw() {
 	}
 }
 
-
 void draw(const RenderData& data) {
     
     glm::mat4 projectionMatrix;
@@ -234,12 +232,10 @@ void draw(const RenderData& data) {
     game.addSpawnRot();
 
     viewMatrix = modelMatrix * viewMatrix;
-    float textScaleX = windowWidthOut/1500;
     
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
-
     Utility utilityInstance;
     utilityInstance.setScaleConst((float)windowHeightOut/1440);
     
@@ -259,41 +255,8 @@ void draw(const RenderData& data) {
         }
     }
     
-    Utility::CalculateScreenPositions(projectionMatrix, viewMatrix, windowWidthOut, windowHeightOut);
-
-    //utilityInstance.renderPlane(plainShaderProgram, 0, projectionMatrix,viewMatrix);
-
+    //dont render the rest if game is not active
     if(!game.isGameActive()){
-        // Initialize TextRenderer or call OpenGL functions
-        //TextRenderer textRenderer(shaderProgramText, windowWidthOut, windowHeightOut);
-        std::vector<std::tuple<std::string, float, float, float, glm::vec3>> printsPlayers;
-        
-        // Clear any existing errors
-        while (glGetError() != GL_NO_ERROR) {}
-        GLenum err;
-        while ((err = glGetError()) != GL_NO_ERROR) {
-            std::cerr << "OpenGL error after TextRenderer initialization: " << err << std::endl;
-        }
-        //initializeText(game, textRenderer, printsPlayers);
-        //textureText = textRenderer.getTexture();
-
-        //checks for frameBuffer
-        /*
-        GLint currentFramebuffer;
-        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFramebuffer);
-
-        // Print the currently bound framebuffer to the console
-        std::cout << "Currently bound framebuffer: " << currentFramebuffer << std::endl;
-
-        // If the default framebuffer is expected (which usually has an ID of 0)
-        if (currentFramebuffer == 0) {
-            std::cout << "The default framebuffer is currently bound." << std::endl;
-        } else {
-            std::cout << "Framebuffer " << currentFramebuffer << " is currently bound." << std::endl;
-        }
-        */  
-        
-        //utilityInstance.renderPlane(ShaderProgramTextTexture, textRenderer.getTexture() , projectionMatrix,viewMatrix);
         return;
     } 
 
@@ -375,7 +338,6 @@ void draw(const RenderData& data) {
         }
 } 
    
-    
     /*
     std::vector<std::tuple<std::string, float, float, float, glm::vec3>> printsPlayers;
     for(auto& player : game.getPlayers()){
@@ -415,9 +377,7 @@ void draw(const RenderData& data) {
     //utilityInstance.renderPlane(plainShaderProgram, 0, projectionMatrix,viewMatrix);
     utilityInstance.renderPlane(ShaderProgramTextTexture, textRenderer.getTexture(), projectionMatrix,viewMatrix);
 */
-
 }
-
 
 void draw2D(const RenderData& data) {
     
@@ -445,8 +405,6 @@ void draw2D(const RenderData& data) {
 
     glm::vec3 translation(0.0f, 0.0f, cameraZ); 
     viewMatrix = glm::translate(viewMatrix, translation);
-
-
     viewMatrix = modelMatrix * viewMatrix;
     float textScaleX = windowWidthOut/1500;
     
@@ -456,9 +414,10 @@ void draw2D(const RenderData& data) {
 
     Utility utilityInstance;
     utilityInstance.setScaleConst((float)windowHeightOut/1440);
-    
-    glEnable(GL_DEPTH_TEST);
 
+    Utility::CalculateScreenPositions(projectionMatrix, viewMatrix, windowWidthOut, windowHeightOut);
+
+    glEnable(GL_DEPTH_TEST);
 
     std::vector<std::tuple<std::string, float, float, float, glm::vec3>> printsPlayers;
     for(auto& player : game.getPlayers()){
@@ -468,19 +427,11 @@ void draw2D(const RenderData& data) {
 
     // Initialize TextRenderer
     TextRenderer textRenderer(shaderProgramText, windowWidthOut, windowHeightOut);
-
-    // Clear any existing errors
-    while (glGetError() != GL_NO_ERROR) {}
-    GLenum err;
-    while ((err = glGetError()) != GL_NO_ERROR) {
-        std::cerr << "OpenGL error after TextRenderer initialization: " << err << std::endl;
-    }
     initializeText(game, textRenderer, printsPlayers);
     textureText = textRenderer.getTexture();
     
 
    //----- Texture check
-
    /*
    GLuint texture = textRenderer.getTexture();
     if (glIsTexture(texture)) {
@@ -507,7 +458,6 @@ void draw2D(const RenderData& data) {
     utilityInstance.renderPlane(ShaderProgramTextTexture, textRenderer.getTexture(), projectionMatrix, viewMatrix);
 
     glDisable(GL_DEPTH_TEST);
-
 }
 
 void cleanup() {

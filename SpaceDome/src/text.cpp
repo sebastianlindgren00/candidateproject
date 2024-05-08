@@ -58,12 +58,6 @@ void TextRenderer::setupFramebuffer() {
     // Reset OpenGL states explicitly
     glDisable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
-
-    // Check for any errors
-    GLenum err;
-    while ((err = glGetError()) != GL_NO_ERROR) {
-        std::cerr << "OpenGL error after setting up framebuffer: " << err << std::endl;
-    }
 }
 
 

@@ -254,14 +254,14 @@ void Utility::renderPlane(GLuint shaderProgram, GLuint texture, const glm::mat4&
     glUseProgram(shaderProgram);
 
     // Bind the plane VAO
-    glBindVertexArray(Utility::planeVAO);
+    glBindVertexArray(planeVAO);
 
     // Create a model matrix with translation in the y-axis (moving up by 3 units)
     glm::mat4 model = glm::mat4(1.0f); // Identity matrix
-    model = glm::translate(model, glm::vec3(0.0f, 1.0f, 0.0f)); // Move up by 3 units
+    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // Move up by 3 units
 
     // Combine the model matrix with the view matrix
-    glm::mat4 modelView = view * model;
+    //glm::mat4 modelView = view * model;
 
     // Set the texture uniform if a texture is provided
     if (texture != 0) {
@@ -278,12 +278,15 @@ void Utility::renderPlane(GLuint shaderProgram, GLuint texture, const glm::mat4&
 
     // Set the projection and view matrix uniforms
     GLint projLoc = glGetUniformLocation(shaderProgram, "projection");
+    std::cout << "Projection Matrix Location: " << projLoc << std::endl;
     GLint modelViewLoc = glGetUniformLocation(shaderProgram, "modelView");
+    std::cout << "ModelView Matrix Location: " << modelViewLoc << std::endl;
+
     if (projLoc != -1) {
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
     }
     if (modelViewLoc != -1) {
-        glUniformMatrix4fv(modelViewLoc, 1, GL_FALSE, glm::value_ptr(modelView));
+        glUniformMatrix4fv(modelViewLoc, 1, GL_FALSE, glm::value_ptr(view));
     }
 
     // Draw the plane (6 indices for two triangles)
@@ -387,13 +390,9 @@ void Utility::RenderText(GLuint shaderProgram, std::string text, int row, float 
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_BLEND);
-
-
 }
 
 void Utility::RenderTextPlayers(GLuint shaderProgram, const std::vector<std::tuple<std::string, float, float, float, glm::vec3>>& texts, int width, int height) {
-    // Prepare text rendering once
-
     GLint prevVAO;
     glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &prevVAO);
 
@@ -405,7 +404,6 @@ void Utility::RenderTextPlayers(GLuint shaderProgram, const std::vector<std::tup
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(textVAO);
-    //std::cout << width << " Width, and " << height << " Height\n";
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(width), 0.0f, static_cast<float>(height));
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
