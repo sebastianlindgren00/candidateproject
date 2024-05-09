@@ -20,6 +20,19 @@ Body{
   position: absolute;
 }
 
+#devButton{
+  display: flex;
+  height: 50px;
+  width: 50px;
+  background: blue;
+  border-radius: 50%;
+
+  color:white;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+}
+
 .cPanel{
     width: 95%;
     height: 95%;
