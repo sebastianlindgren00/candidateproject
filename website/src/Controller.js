@@ -13,11 +13,10 @@ function Controller() {
     const [pointsState, setPointsState] = useState(0);
     const [srvAuth, setSrvAuth] = useState('not authorized')
     const [userName, setUserName] = useState('inital')
+    const [userID, setUserID] = useState(0)
 
     const baseColor = 'radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(70,70,70,1) 69%, rgba(101,101,101,1) 100%)'
     const stickColor = 'radial-gradient(circle, rgba(16,187,0,1) 0%, rgba(31,147,0,1) 71%, rgba(3,62,0,1) 100%)'
-    var firstJoin = true;
-
     const socketUrl = 'wss://omni.itn.liu.se/ws/'; // Omni websocket
 
     const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(
@@ -68,6 +67,7 @@ function Controller() {
       useEffect(() => {
         console.log("Connection state changed")
         if (readyState === ReadyState.OPEN) {
+          setUserID(generateID())
           sendJsonMessage({
             token: "bdf3f64d-20fa-4687-bb04-5e86343d90d2"
           })
@@ -80,7 +80,6 @@ function Controller() {
         console.log(`Got a new message: ${JSON.stringify(lastJsonMessage)}`)
         if(JSON.stringify(lastJsonMessage).includes('Authorized')){
           setSrvAuth('authorized')
-          const userID = generateID()
           sendJsonMessage({
             //userID: searchparams.get('userID')
             type: 'game_join',
@@ -146,7 +145,7 @@ function Controller() {
             document.getElementById('boostButton').style.display = 'none'
             document.getElementById('controlPanel').style.display = 'none'
         }
-    })
+    },[userID])
 
     
     
@@ -182,12 +181,14 @@ function Controller() {
         //console.log(e)
         sendJsonMessage({
           type: 'action_move',
-          value: (e.x*0.03)
+          value: (e.x*0.03),
+          id: userID
           //userID: searchparams.get('userID')
         })
         console.log(JSON.stringify(
           {type: 'action_move',
-            value: (e.x*0.03)
+            value: (e.x*0.03),
+            id: userID
            //userID: searchparams.get('userID')
           },
         ))
@@ -196,12 +197,14 @@ function Controller() {
         //console.log(e);
         sendJsonMessage({
           type:'action_move',
-          value: e
+          value: e,
+          id: userID
           //userID: searchparams.get('userID')
         })
         console.log(JSON.stringify(
           {type:'action_move',
-            value: e
+            value: e,
+            id: userID
            //userID: searchparams.get('userID')
           }
         ))
@@ -210,12 +213,14 @@ function Controller() {
         //console.log(e);
         sendJsonMessage({
           type: 'action_move',
-          value: e
+          value: e,
+          id: userID,
           //userID: searchparams.get('userID')
         })
         console.log(JSON.stringify(
           {type: 'action_move',
-            value: e
+            value: e,
+            id: userID
            //userID: searchparams.get('userID')
           }
         ))
@@ -226,12 +231,14 @@ function Controller() {
         //console.log(e.type);
         sendJsonMessage({
           type:'action_fire',
-          value:'1'
+          value:'1',
+          id: userID
           //userID: searchparams.get('userID')
         })
         console.log(JSON.stringify(
           {type:'action_fire',
-           value:'1'
+           value:'1',
+           id: userID
            //userID: searchparams.get('userID')
           }
         ))
@@ -244,12 +251,14 @@ function Controller() {
           setBoostState(boostState-25)
           sendJsonMessage({
             type:'action_boost',
-            value:'1'
+            value:'1',
+            id: userID
             //userID: searchparams.get('userID')
           })
           console.log(JSON.stringify(
             {type:'action_boost',
-             value:'1'
+             value:'1',
+             id: userID,
              //userID: searchparams.get('userID')
             }
           ))
