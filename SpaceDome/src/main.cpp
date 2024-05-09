@@ -73,11 +73,11 @@ std::vector<syncData> states;
 GLuint textureText;
 
 //float for camera movement
-float cameraZ = 0.0f;
+float cameraZ = -4.0f;
 const int Port = 4685;
 const std::string Address = "localhost";
 
-const nlohmann::json startMsg = { {"action", "start"}, {"type", "game_started"}}; // send to server
+const nlohmann::json startMsg = {{"type", "game_started"}, {"action", "start"}}; // send to server
 
 std::unique_ptr<tcpsocket::io::TcpSocket> tcpSocket = std::make_unique<tcpsocket::io::TcpSocket>(Address, Port);
 

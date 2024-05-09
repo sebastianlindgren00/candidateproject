@@ -53,6 +53,12 @@ void Game::handleJson(const nlohmann::json& j) {
 		shotBullet(id);
 	}
 
+    // player boosts 
+    if (j["type"] == "action_boost") {
+		int id = j["id"];
+		setChargeActive(id, true);
+	}
+
 	// player leaves
 	/*if (j["type"] == "game_leave") {
 		int id = j["id"];
