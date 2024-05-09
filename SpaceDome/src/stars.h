@@ -28,6 +28,7 @@ struct StarData
     float sPositionY;
     float sPositionZ;
     float sOrientation;
+    int sId;
 };
 
 //Implemented as explicit singleton, handles pretty much everything
@@ -74,6 +75,22 @@ public:
 	//Stars should be unique
 	Star(const Star&) = default;
 	Star& operator=(const Star&) = delete;
+
+    void getData(StarData& data){
+        data.sPositionX = (float)sPosition.x;
+        data.sPositionY = (float)sPosition.y;
+        data.sPositionZ = (float)sPosition.z;
+        data.sOrientation = sOrientation;
+        data.sId = sId;
+    }
+
+    void setData(StarData data){
+        sPosition.x = data.sPositionX;
+        sPosition.y = data.sPositionY;
+        sPosition.z = data.sPositionZ;
+        sOrientation = data.sOrientation;
+        sId = data.sId;
+    }
 
     void update(std::vector<std::unique_ptr<Star>>& stars);
 

@@ -27,22 +27,33 @@ struct playerData {
 
 struct PlayerData
 {
-	//bool mIsAlive;
-	//std::string mName;
+	//stars data
+	int64_t dropStars;
+	int mStars;
+    int mStarsHolding;
+	//for super Charge
+	int superCharge;
+	int64_t chargeActive;
+	int delayForRefill;
+	int delay;
+	//movement / positioning / player data
 	int mPlayerID;
-	int mColorID;
-	float mOrientation;
-	float mPositionX;
+	int mTeam;
+    float mPositionX;
 	float mPositionY;
 	float mPositionZ;
-	int mTeam;
-	int mStars;
-	int mStarsHolding;
-	int mSuperCharge;
-	int shotAvailable;
+    float mOrientation;
 	float mTurnSpeed;
-	int mBulletTimer;
 	float mSpeed;
+	int mColorID;
+	float hitRadius;
+	//Alive and respawn timer
+	int64_t mIsAlive;
+	int respawnTimer;
+	//info for bullets/shooting
+	int64_t shotBullet;
+	int shotAvailable;
+	int bulletTimer;
 };
 
 class Player
@@ -60,6 +71,109 @@ public:
 	//Players should be unique
 	Player(const Player&) = default;
 	Player& operator=(const Player&) = delete;
+
+	void getData(PlayerData& data){
+		//stars data
+		if(dropStars){
+			data.dropStars = 1;
+		} else{
+			data.dropStars = 0;
+		}
+	
+	data.mStars = mStars;
+    data.mStarsHolding = mStarsHolding;
+	//for super Charge
+	data.superCharge = superCharge;
+	if(chargeActive){
+		data.chargeActive = 1;
+	} else{
+		data.chargeActive = 0;
+	}
+	
+	data.delayForRefill = delayForRefill;
+	data.delay = delay;
+	//movement / positioning / player data
+	data.mPlayerID = mPlayerID;
+	data.mTeam = mTeam;
+    data.mPositionX = (float)mPosition.x;
+	data.mPositionY = (float)mPosition.y;
+	data.mPositionZ = (float)mPosition.z;
+	
+    data.mOrientation = mOrientation;
+	data.mTurnSpeed = mTurnSpeed;
+	data.mSpeed = mSpeed;
+	data.mColorID = mColorID;
+	data.hitRadius = hitRadius;
+	//Alive and respawn timer
+	if(mIsAlive){
+		data.mIsAlive = 1;
+	} else {
+		data.mIsAlive = 0;
+	}
+	
+	data.respawnTimer = respawnTimer;
+	//info for bullets/shooting
+	if(shotBullet){
+		data.shotBullet = 1;
+	} else {
+		data.shotBullet = 0;
+	}
+	
+	data.shotAvailable = shotAvailable;
+	data.bulletTimer = bulletTimer;
+
+	}
+
+	void setData(PlayerData data){
+		//stars data
+		if(data.dropStars == 1){
+			dropStars = true;
+		} else{
+			dropStars = false;
+		}
+	
+	mStars = data.mStars;
+    mStarsHolding = data.mStarsHolding;
+	//for super Charge
+	superCharge = data.superCharge;
+	if(data.chargeActive == 1){
+		chargeActive = true;
+	} else{
+		chargeActive = false;
+	}
+	
+	delayForRefill = data.delayForRefill;
+	delay = data.delay;
+	//movement / positioning / player data
+	mPlayerID = data.mPlayerID;
+	mTeam = data.mTeam;
+    mPosition.x = data.mPositionX;
+	mPosition.y = data.mPositionY;
+	mPosition.z = data.mPositionZ;
+	
+    mOrientation = data.mOrientation;
+	mTurnSpeed = data.mTurnSpeed;
+	mSpeed = data.mSpeed;
+	mColorID = data.mColorID;
+	hitRadius = data.hitRadius;
+	//Alive and respawn timer
+	if(data.mIsAlive == 1){
+		mIsAlive = true;
+	} else {
+		mIsAlive = false;
+	}
+	
+	respawnTimer = data.respawnTimer;
+	//info for bullets/shooting
+	if(data.shotBullet == 1){
+		shotBullet = true;
+	} else {
+		shotBullet = false;
+	}
+	
+	shotAvailable = data.shotAvailable;
+	bulletTimer = data.bulletTimer;
+	}
 
 	void setTurnSpeed(float turnSpeed) { mTurnSpeed = turnSpeed; };
 

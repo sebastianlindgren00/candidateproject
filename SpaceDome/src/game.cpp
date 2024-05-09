@@ -8,45 +8,63 @@ std::vector<syncData> Game::fetchSyncData() {
     for (const auto& player : mPlayers) {
        
         syncData data;
-        data.playerData.mPositionX = player->getPositionX();
-        data.playerData.mPositionY = player->getPositionY();
-        data.playerData.mPositionZ = player->getPositionZ();
-        data.playerData.mOrientation = player->getOrientation();
-       
+        player->getData(data.playerData);
+
         tmp.push_back(data);
     }
-    for (const auto& object : mBGObjects) {
+
+    for (size_t i = 0; i < mBGObjects.size(); i++) {
         syncData data;
-        object->getData(data.objectData);
-       
+        mBGObjects[i]->getData(data.objectData);
+
+       if(tmp.size()-1 > i){
+        tmp[i].objectData = data.objectData;
+       } else {
         tmp.push_back(data);
+        } 
     }
-    for (const auto& bullet : mBullets) {
+    for (size_t i = 0; i < mBullets.size(); i++) {
         syncData data;
-        bullet->getData(data.bulletData);
-        tmp.push_back(data);
-    }
-    for (const auto& star : mStars) {
-        syncData data;
-        data.starData.sPositionX = star->getPositionX();
-        data.starData.sPositionY = star->getPositionY();
-        data.starData.sPositionZ = star->getPositionZ();
-        data.starData.sOrientation = star->getOrientation();
+        mBullets[i]->getData(data.bulletData);
         
+        if(tmp.size()-1 > i){
+        tmp[i].bulletData = data.bulletData;
+       } else {
         tmp.push_back(data);
+        } 
+    }
+    for (size_t i = 0; i < mStars.size(); i++) {
+        syncData data;
+        mStars[i]->getData(data.starData);
+        
+        if(tmp.size()-1 > i){
+        tmp[i].starData = data.starData;
+       } else {
+        tmp.push_back(data);
+        } 
     }
 
     return tmp;
 }
 syncGameData Game::fetchSyncGameData() {
     syncGameData data;
+    
+    data.gameTimeLast = mLastFrameTime;
+    data.totalTime = mTotalTime;
+    data.teamRed = teamRed;
+    data.teamGreen = teamGreen;
     data.greenTeamStars = greenTeamStars;
     data.redTeamStars = redTeamStars;
-    data.totalTime = mTotalTime;
-    data.gameTimeLast = mLastFrameTime;
     data.counterForBGObjects = counterForBGObjects;
     data.zPosBgObjects = zPosBgObjects;
     data.bulletID = bulletID;
+    data.starDelayCounter = starDelayCounter;
+    data.starDelay = starDelay;
+    data.handInRadius = handInRadius;
+    data.maxStarsID = maxStarsID;
+    data.redWins = redWins;
+    data.greenWins = greenWins;
+    data.spawnRotation = spawnRotation;
 
     if(mGameActive){
         data.gameActive = 1;
@@ -58,11 +76,21 @@ syncGameData Game::fetchSyncGameData() {
 void Game::setSyncGameData(const syncGameData data){
     mLastFrameTime = data.gameTimeLast;
     mTotalTime = data.totalTime;
+    teamRed = data.teamRed;
+    teamGreen = data.teamGreen;
     greenTeamStars = data.greenTeamStars;
     redTeamStars = data.redTeamStars;
     counterForBGObjects = data.counterForBGObjects;
     zPosBgObjects = data.zPosBgObjects;
     bulletID = data.bulletID;
+    starDelayCounter = data.starDelayCounter;
+    starDelay = data.starDelay;
+    handInRadius = data.handInRadius;
+    maxStarsID = data.maxStarsID;
+    redWins = data.redWins;
+    greenWins = data.greenWins;
+    spawnRotation = data.spawnRotation;
+
     if(data.gameActive == 0){
         mGameActive = false;
     } else{
@@ -71,31 +99,34 @@ void Game::setSyncGameData(const syncGameData data){
 }
 
 void Game::setSyncData(const std::vector<syncData> data){
-    glm::vec3 pos;
-    size_t index = 0;
+    if(data.size() >= mPlayers.size()){
     for(size_t i = 0; i < mPlayers.size(); i++) {
-        if (index >= data.size()) break;
-        pos = glm::vec3(data[i].playerData.mPositionX, data[i].playerData.mPositionY, data[i].playerData.mPositionZ);
-        mPlayers[i]->setPositionComplete(pos);
-        mPlayers[i]->setOrientationComplete(data[i].playerData.mOrientation);
-    }
-
+        if (i < data.size()) {
+        mPlayers[i]->setData(data[i].playerData);
+        }
+        }
+}
+    if(data.size() >= mBGObjects.size()){
     for (size_t i = 0; i < mBGObjects.size(); i++) {
-        if (index >= data.size()) break;
+        if (i < data.size()) {
         mBGObjects[i]->setData(data[i].objectData);
-    }
+        }
+        }
+    if(data.size() >= mBullets.size()){
     for (size_t i = 0; i < mBullets.size(); i++) {
-        if (index >= data.size()) break;
+        if (i < data.size()) {
         mBullets[i]->setData(data[i].bulletData);
+        }
+        }
     }
-
+    }
+    if(data.size() >= mStars.size()){
     for (size_t i = 0; i < mStars.size(); i++) {
-        if (index >= data.size()) break;
-        pos = glm::vec3(data[i].starData.sPositionX, data[i].starData.sPositionY, data[i].starData.sPositionZ);
-        mStars[i]->setPosition(pos);
-        mStars[i]->setOrientation(data[i].starData.sOrientation);
+        if (i < data.size()){
+        mStars[i]->setData(data[i].starData);
+        }
+        }
     }
-
 }
 
 void Game::addPlayer(int id, const std::string& name) {

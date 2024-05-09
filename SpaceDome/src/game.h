@@ -42,12 +42,20 @@ struct syncData {
 struct syncGameData {
     float gameTimeLast;
     float totalTime;
+    int teamRed;
+    int teamGreen;
     int redTeamStars;
     int greenTeamStars;
     int counterForBGObjects;
     float zPosBgObjects;
     int bulletID;
-
+    int starDelayCounter;
+    int starDelay;
+    float handInRadius;
+    int maxStarsID;
+    int redWins;
+    int greenWins;
+    float spawnRotation;
     int64_t gameActive;
 };
 
