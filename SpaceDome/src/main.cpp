@@ -67,7 +67,8 @@ GLuint ShaderProgramTextTexture;
 //buffers and textures
 GLuint framebuffer = 0;
 GLuint textureColorbuffer = 0;
-std::vector<syncData> states; 
+std::vector<syncData> states;
+
 GLuint textureText;
 
 //float for camera movement
@@ -564,6 +565,8 @@ void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Windo
 }
 
 int main(int argc, char** argv) {
+
+    states.reserve(99*18); 
 
     Game::instance().addPlayer(0, "Tim");
     Game::instance().addPlayer(1, "Viktor");

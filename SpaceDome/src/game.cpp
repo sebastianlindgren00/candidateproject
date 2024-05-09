@@ -6,6 +6,7 @@ std::vector<syncData> Game::fetchSyncData() {
     
     
     for (const auto& player : mPlayers) {
+       
         syncData data;
         data.playerData.mPositionX = player->getPositionX();
         data.playerData.mPositionY = player->getPositionY();
@@ -15,7 +16,7 @@ std::vector<syncData> Game::fetchSyncData() {
         tmp.push_back(data);
     }
     for (const auto& object : mBGObjects) {
-       syncData data;
+        syncData data;
         data.objectData.bDirection = object->getOrientation();
         data.objectData.bPositionX = object->getPositionX();
         data.objectData.bPositionY = object->getPositionY();
@@ -52,18 +53,22 @@ std::vector<syncData> Game::fetchSyncData() {
 
 void Game::setSyncData(const std::vector<syncData> data){
     glm::vec3 pos;
+    size_t index = 0;
     for(size_t i = 0; i < mPlayers.size(); i++) {
+        if (index >= data.size()) break;
         pos = glm::vec3(data[i].playerData.mPositionX, data[i].playerData.mPositionY, data[i].playerData.mPositionZ);
         mPlayers[i]->setPositionComplete(pos);
         mPlayers[i]->setOrientationComplete(data[i].playerData.mOrientation);
     }
 
     for (size_t i = 0; i < mBGObjects.size(); i++) {
+        if (index >= data.size()) break;
         pos = glm::vec3(data[i].objectData.bPositionX, data[i].objectData.bPositionY, data[i].objectData.bPositionZ);
         mBGObjects[i]->setOrientation(data[i].objectData.bDirection);
         mBGObjects[i]->setPosition(pos);
     }
     for (size_t i = 0; i < mBullets.size(); i++) {
+        if (index >= data.size()) break;
         pos = glm::vec3(data[i].bulletData.bPositionX, data[i].bulletData.bPositionY, data[i].bulletData.bPositionZ);
         mBullets[i]->setOrientation(data[i].bulletData.bOrientation);
         mBullets[i]->setPosition(pos);
@@ -72,6 +77,7 @@ void Game::setSyncData(const std::vector<syncData> data){
     }
 
     for (size_t i = 0; i < mStars.size(); i++) {
+        if (index >= data.size()) break;
         pos = glm::vec3(data[i].starData.sPositionX, data[i].starData.sPositionY, data[i].starData.sPositionZ);
         mStars[i]->setPosition(pos);
         mStars[i]->setOrientation(data[i].starData.sOrientation);

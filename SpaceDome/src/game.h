@@ -188,11 +188,11 @@ std::vector<std::unique_ptr<Bullet>> mBullets;
 std::vector<std::unique_ptr<Star>> mStars;
 std::vector<std::unique_ptr<BackgroundObject>> mBGObjects;
 
-bool mGameActive = true;
+bool mGameActive = false;
 std::unordered_map<sgct::Key, bool> keyStates;
 float mLastFrameTime = sgct::time();
 float mTotalTime = 0;
-float mMaxTime = 10; //seconds
+float mMaxTime = 5; //seconds
 //float mLastTime = 0;
 float mResetGame = 10;
 
