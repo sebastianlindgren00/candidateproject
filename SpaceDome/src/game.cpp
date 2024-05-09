@@ -39,7 +39,27 @@ void Game::handleJson(const nlohmann::json& j) {
         std::cout << "Player: " << name << " joined with ID: " << id << std::endl;
         addPlayer(id, name);
     }
-}
+
+    // player moves
+    if (j["type"] == "action_move") {
+		float value = j["value"];
+        int id = j["id"];
+		updateTurnSpeed(id, value);
+	}
+
+	// player shoots
+	if (j["type"] == "action_fire") {
+		int id = j["id"];
+		shotBullet(id);
+	}
+
+	// player leaves
+	/*if (j["type"] == "game_leave") {
+		int id = j["id"];
+		removePlayer(id);
+	}*/
+	}
+
 
 void Game::addPlayer(int id, const std::string& name) {
 if(mPlayers.size() == allShipsGreen.size() + allShipsRed.size()){
@@ -132,6 +152,7 @@ void Game::shotBullet(int id){
         addBullet(mPlayers[id]->getTeam(),mPlayers[id]->getSpeed(),mPlayers[id]->getPosition(),mPlayers[id]->getOrientation(), bulletID);
         mPlayers[id]->restoreTimer();
         bulletID++;
+        printf("Bullet shot\n");
     }
 }
 

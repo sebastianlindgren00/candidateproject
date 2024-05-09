@@ -77,6 +77,8 @@ float cameraZ = 0.0f;
 const int Port = 4685;
 const std::string Address = "localhost";
 
+const nlohmann::json startMsg = { {"action", "start"}, {"type", "game_started"}}; // send to server
+
 std::unique_ptr<tcpsocket::io::TcpSocket> tcpSocket = std::make_unique<tcpsocket::io::TcpSocket>(Address, Port);
 
 void initOGL(GLFWwindow*) {
@@ -514,10 +516,6 @@ int main(int argc, char** argv) {
 
     tcpSocket->connect();
 
-    /*Game::instance().addPlayer(0, "Tim");
-    Game::instance().addPlayer(1, "Viktor");
-    Game::instance().addPlayer(2, "Bas");*/
-
     std::vector<std::string> arg(argv + 1, argv + argc);
     Configuration config = sgct::parseArguments(arg);
     config::Cluster cluster = sgct::loadCluster(config.configFilename);
@@ -561,6 +559,11 @@ int main(int argc, char** argv) {
             std::cout << "Tcp socket could not connect";
         }
     }
+
+    // Send message to server that a new game has started
+    const std::string startString = startMsg.dump();
+    tcpSocket->putMessage(startString);
+
 
     Engine::instance().exec();
 
