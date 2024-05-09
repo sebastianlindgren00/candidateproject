@@ -29,8 +29,8 @@ function Controller() {
 
     function generateID(){
       var n = localStorage.getItem('on_load_counter');
-      if (n === null || n >= 100) {
-        n = 0;
+      if (n === null || n >= 35) {
+        n = -1;
       }
       n++;
       
