@@ -45,8 +45,8 @@ std::vector<syncData> Game::fetchSyncData() {
         tmp.push_back(data);
     }
 
-    syncData data;
-    data.gametime = mTotalTime;
+    if(tmp.size() > 0)
+    tmp[0].gametime = mLastFrameTime;
 
     return tmp;
 }
@@ -83,7 +83,10 @@ void Game::setSyncData(const std::vector<syncData> data){
         mStars[i]->setOrientation(data[i].starData.sOrientation);
     }
 
-   //mTotalTime = data.gametime;
+   for(size_t i = 0; i < 1; i++ ){
+    mLastFrameTime = data[i].gametime;
+
+   }
 
 }
 
