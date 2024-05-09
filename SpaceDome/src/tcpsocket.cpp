@@ -407,6 +407,7 @@ namespace tcpsocket::io {
     //    return static_cast<int>(currentIndex);
     //}
 
+    // New waitForDelimiter
     int TcpSocket::waitForDelimiter() {
         size_t currentIndex = 0;
         auto receivedRequestedInputOrDisconnected =

@@ -77,9 +77,12 @@ float cameraZ = -4.0f;
 const int Port = 4685;
 const std::string Address = "localhost";
 
-const nlohmann::json startMsg = {{"type", "game_started"}, {"action", "start"}}; // send to server
+//std::shared_ptr<tcpsocket::io::TcpSocket> _socket;
+std::thread _thread;
 
-std::unique_ptr<tcpsocket::io::TcpSocket> tcpSocket = std::make_unique<tcpsocket::io::TcpSocket>(Address, Port);
+const nlohmann::json startMsg = {{"type", "game_started"}, {"action", "start"}}; // send to server
+std::shared_ptr<tcpsocket::io::TcpSocket> socket_ = std::make_shared<tcpsocket::io::TcpSocket>(Address, Port);
+//std::unique_ptr<tcpsocket::io::TcpSocket> tcpSocket = std::make_unique<tcpsocket::io::TcpSocket>(Address, Port);
 
 void initOGL(GLFWwindow*) {
 
@@ -151,22 +154,9 @@ void preSync() {
     std::vector<std::byte> data; // Store serialized data
 
     //we check if sgct is run on master machine 
-    if (Engine::instance().isMaster() && tcpSocket->isConnected() &&
+    if (Engine::instance().isMaster() &&
         Engine::instance().currentFrameNumber() % 100 == 0){
-
-        // OMNI
-
-        std::string messageString = "";
-        messageString.reserve(256);
-        if (tcpSocket->getMessage(messageString)) {
-            {
-                std::lock_guard lock(_messageQueueMutex);
-                _messageQueue.push(messageString);
-            }
-            std::cout << messageString << '\n';
-            messageString.clear();
-        }
-
+        
         //std::lock_guard lock(_messageQueueMutex);
         if (!_messageQueue.empty()) {
 
@@ -181,7 +171,19 @@ void preSync() {
         Game::instance().update();
     }
 }
-
+// NEW - added to engine.h as a callback
+void handleOmni() {
+    std::string messageString;
+    messageString.reserve(256);
+    if (socket_->getMessage(messageString)) {
+        {
+            std::lock_guard lock(_messageQueueMutex);
+            _messageQueue.push(messageString);
+        }
+        std::cout << messageString << '\n';
+        messageString.clear();
+    }
+}
 std::vector<std::byte> encode() {
     std::vector<std::byte> data;
 
@@ -503,17 +505,10 @@ void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Windo
         Engine::instance().terminate();
     }
     
-    if (key == Key::O && action == Action::Press) {
-        auto& players = Game::instance().getPlayers();
-        if(players.size() > 0) {
-            int lastPlayerId = players.back()->getID();
-            Game::instance().removePlayer(lastPlayerId); // Can only remove the last player
-        }
-    } 
 }
 
 int main(int argc, char** argv) {
-
+    std::unique_ptr<tcpsocket::io::TcpSocket> tcpSocket = std::make_unique<tcpsocket::io::TcpSocket>(Address, Port);
     tcpSocket->connect();
 
     std::vector<std::string> arg(argv + 1, argv + argc);
@@ -523,6 +518,7 @@ int main(int argc, char** argv) {
     Engine::Callbacks callbacks;
     callbacks.initOpenGL = initOGL;
     callbacks.preSync = preSync;
+    callbacks.handleOmni = handleOmni;
     callbacks.encode = encode;
     callbacks.decode = decode;
     callbacks.postSyncPreDraw = postSyncPreDraw;
@@ -563,6 +559,15 @@ int main(int argc, char** argv) {
     // Send message to server that a new game has started
     const std::string startString = startMsg.dump();
     tcpSocket->putMessage(startString);
+
+    socket_ = std::move(tcpSocket);
+    _thread = std::thread([]() {
+        while (true) {
+            handleOmni(); // Continuously handle messages
+            std::this_thread::sleep_for(std::chrono::milliseconds(10)); // Introduce a 10ms delay between iterations
+        }
+        });
+    //std::move(std::thread([]() {handleOmni(); }));
 
 
     Engine::instance().exec();

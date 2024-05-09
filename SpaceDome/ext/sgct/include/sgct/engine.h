@@ -125,6 +125,10 @@ public:
         /// This function is called before the synchronization stage.
         std::function<void()> preSync;
 
+        // This function handles the incoming messages from omni - ADDED
+        std::function<void()> handleOmni;
+
+
         /// This function is called once per frame after sync but before draw stage.
         std::function<void()> postSyncPreDraw;
 
