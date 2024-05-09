@@ -78,21 +78,23 @@ function Controller() {
       // Run when a new WebSocket message is received (lastJsonMessage)
       useEffect(() => {
         console.log(`Got a new message: ${JSON.stringify(lastJsonMessage)}`)
-        if(JSON.stringify(lastJsonMessage).includes('Authorized')){
+        if(JSON.stringify(lastJsonMessage).includes('Authorized') || srvAuth === 'authorized'){
           setSrvAuth('authorized')
-          sendJsonMessage({
-            //userID: searchparams.get('userID')
-            type: 'game_join',
-            userName: searchparams.get('userName'),
-            id: userID
-          })
-          console.log(JSON.stringify(
-            {//userID: searchparams.get('userID')
+          if(JSON.stringify(lastJsonMessage).includes('game_started')){
+            sendJsonMessage({
+              //userID: searchparams.get('userID')
               type: 'game_join',
               userName: searchparams.get('userName'),
               id: userID
-            }
-          ))
+            })
+            console.log(JSON.stringify(
+              {//userID: searchparams.get('userID')
+                type: 'game_join',
+                userName: searchparams.get('userName'),
+                id: userID
+              }
+            ))
+          }
         }
         if(JSON.stringify(lastJsonMessage).includes('server_join') &&
         JSON.stringify(lastJsonMessage).includes('host')){
@@ -153,7 +155,7 @@ function Controller() {
             document.getElementById('boostButton').style.display = 'none'
             document.getElementById('controlPanel').style.display = 'none'
         }
-    },[userID])
+    })
 
   window.addEventListener("pagehide", () => 
   {  
@@ -286,13 +288,13 @@ function Controller() {
 
     return(
         <div className="Controller">
-            {/* Developer tools*/}
+            {/* Developer tools
                 <div className="devBox">
                     <p style={{color:'white'}}>UserID: {searchparams.get('userID')}</p>
                     <p style={{color:'white'}}>UserName: {searchparams.get('userName')}</p>
                     <p style={{color:'white'}}>Screen orientation: {scrOrientation.type}</p> {/*Does not update, needs to be fixed*/}
                     <span id='devButton'  onClick={clearIDs}>Clear IDs</span>
-                 </div>
+                 {/*</div>*/}
             <div className="cPanel"  id="controlPanel">
                 {joystickController(handleMove, handleStart, handleStop)}
                 <div className="board" id="board">
