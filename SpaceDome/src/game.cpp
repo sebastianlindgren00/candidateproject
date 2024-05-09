@@ -36,6 +36,7 @@ void Game::handleJson(const nlohmann::json& j) {
     if (j["type"] == "game_join") {
         int id = j["id"];
         std::string name = j["userName"];
+        std::cout << "Player: " << name << " joined with ID: " << id << std::endl;
         addPlayer(id, name);
     }
 }

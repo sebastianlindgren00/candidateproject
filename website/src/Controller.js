@@ -16,6 +16,7 @@ function Controller() {
 
     const baseColor = 'radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(70,70,70,1) 69%, rgba(101,101,101,1) 100%)'
     const stickColor = 'radial-gradient(circle, rgba(16,187,0,1) 0%, rgba(31,147,0,1) 71%, rgba(3,62,0,1) 100%)'
+    var firstJoin = true;
 
     const socketUrl = 'wss://omni.itn.liu.se/ws/'; // Omni websocket
 
@@ -26,13 +27,18 @@ function Controller() {
         shouldReconnect: () => true,
       },
     )
-
+    function clearIDs(){
+      localStorage.clear()
+      console.log("IDs cleared", localStorage.getItem('on_load_counter'))
+    }
     function generateID(){
       var n = localStorage.getItem('on_load_counter');
-      if (n === null || n >= 100) {
-        n = 0;
+      
+      if (n === null || n >= 35) {
+        n = -1;
       }
-      n++;
+      n++
+      
       
       localStorage.setItem("on_load_counter", n);
       return n
@@ -253,12 +259,13 @@ function Controller() {
 
     return(
         <div className="Controller">
-            {/* Developer tools
+            {/* Developer tools*/}
                 <div className="devBox">
                     <p style={{color:'white'}}>UserID: {searchparams.get('userID')}</p>
                     <p style={{color:'white'}}>UserName: {searchparams.get('userName')}</p>
                     <p style={{color:'white'}}>Screen orientation: {scrOrientation.type}</p> {/*Does not update, needs to be fixed*/}
-            {/*</div>*/}
+                    <span id='devButton'  onClick={clearIDs}>Clear IDs</span>
+                 </div>
             <div className="cPanel"  id="controlPanel">
                 {joystickController(handleMove, handleStart, handleStop)}
                 <div className="board" id="board">

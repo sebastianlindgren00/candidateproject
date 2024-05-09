@@ -151,11 +151,23 @@ void preSync() {
     //we check if sgct is run on master machine 
     if (Engine::instance().isMaster() && tcpSocket->isConnected() &&
         Engine::instance().currentFrameNumber() % 100 == 0){
-        printf("Queue initial size : % d\n", _messageQueue.size());
-        std::lock_guard lock(_messageQueueMutex);
+
+        // OMNI
+
+        std::string messageString = "";
+        messageString.reserve(256);
+        if (tcpSocket->getMessage(messageString)) {
+            {
+                std::lock_guard lock(_messageQueueMutex);
+                _messageQueue.push(messageString);
+            }
+            std::cout << messageString << '\n';
+            messageString.clear();
+        }
+
+        //std::lock_guard lock(_messageQueueMutex);
         if (!_messageQueue.empty()) {
 
-            printf("Messagequeue size : % d\n", _messageQueue.size());
             const std::string& msg = _messageQueue.front();
             nlohmann::json j = nlohmann::json::parse(msg);
             Game::instance().handleJson(j);
@@ -390,20 +402,6 @@ void draw(const RenderData& data) {
     //utilityInstance.renderPlane(plainShaderProgram, 0, projectionMatrix,viewMatrix);
     utilityInstance.renderPlane(ShaderProgramTextTexture, textRenderer.getTexture(), projectionMatrix,viewMatrix);
 */
-
-// OMNI
-
-    std::string messageString = "";
-    messageString.reserve(256);
-        if (tcpSocket->getMessage(messageString)) {
-        {
-            std::lock_guard lock(_messageQueueMutex);
-            _messageQueue.push(messageString);
-        }
-        std::cout << messageString << '\n';
-        messageString.clear();
-    }
-
 }
 
 void draw2D(const RenderData& data) {
@@ -514,9 +512,11 @@ void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Windo
 
 int main(int argc, char** argv) {
 
-    Game::instance().addPlayer(0, "Tim");
+    tcpSocket->connect();
+
+    /*Game::instance().addPlayer(0, "Tim");
     Game::instance().addPlayer(1, "Viktor");
-    Game::instance().addPlayer(2, "Bas");
+    Game::instance().addPlayer(2, "Bas");*/
 
     std::vector<std::string> arg(argv + 1, argv + argc);
     Configuration config = sgct::parseArguments(arg);
@@ -533,8 +533,6 @@ int main(int argc, char** argv) {
     callbacks.cleanup = cleanup;
     callbacks.keyboard = globalKeyboardHandler;
 
-    tcpSocket->connect();
-
 
     try {
         Engine::create(cluster, callbacks, config);
@@ -545,7 +543,6 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
-    Log::Info("Application started");
     // Won't work if this is commented out
     if (Engine::instance().isMaster()) {
 
