@@ -37,7 +37,18 @@ struct syncData {
     ObjectData objectData;
     StarData starData;
     BulletData bulletData;
-    float gametime;
+};
+
+struct syncGameData {
+    float gameTimeLast;
+    float totalTime;
+    int redTeamStars;
+    int greenTeamStars;
+    int counterForBGObjects;
+    float zPosBgObjects;
+    int bulletID;
+
+    int64_t gameActive;
 };
 
 //Implemented as explicit singleton, handles pretty much everything
@@ -53,12 +64,15 @@ static Game& instance() {
 }
 
 std::vector<syncData> fetchSyncData();
+syncGameData fetchSyncGameData();
+void setSyncGameData(const syncGameData data);
 
 void setMatrixes(glm::mat4 pMatrix, glm::mat4 vMatrix, int width, int height) { 
     projectionMatrix = pMatrix;
     viewMatrix = vMatrix;
     windowHeight = height;
     windowWidth = width;
+
     } 
 
 bool hasPlayers() const { return !mPlayers.empty(); }
@@ -190,9 +204,9 @@ std::vector<std::unique_ptr<BackgroundObject>> mBGObjects;
 
 bool mGameActive = false;
 std::unordered_map<sgct::Key, bool> keyStates;
-float mLastFrameTime = sgct::time();
+float mLastFrameTime = -1;
 float mTotalTime = 0;
-float mMaxTime = 5; //seconds
+float mMaxTime = 30; //seconds
 //float mLastTime = 0;
 float mResetGame = 10;
 

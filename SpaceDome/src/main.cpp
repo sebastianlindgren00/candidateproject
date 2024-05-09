@@ -68,6 +68,7 @@ GLuint ShaderProgramTextTexture;
 GLuint framebuffer = 0;
 GLuint textureColorbuffer = 0;
 std::vector<syncData> states;
+syncGameData gameSyncStates;
 
 GLuint textureText;
 
@@ -75,6 +76,8 @@ GLuint textureText;
 float cameraZ = -4.0f;
 const int Port = 4685;
 const std::string Address = "localhost";
+
+bool isGameStarted = false;
 
 std::unique_ptr<tcpsocket::io::TcpSocket> tcpSocket = std::make_unique<tcpsocket::io::TcpSocket>(Address, Port);
 
@@ -156,6 +159,7 @@ void initializeText(Game& game, TextRenderer& text, std::vector<std::tuple<std::
 void preSync() {
     // Do the application simulation step on the server node in here and make sure that
     // the computed state is serialized and deserialized in the encode/decode calls
+
     std::vector<std::byte> data; // Store serialized data
 
     //we check if sgct is run on master machine 
@@ -168,6 +172,7 @@ void preSync() {
         //wsHandler->tick();
     }
     Game::instance().update();
+    
 }
 
 std::vector<std::byte> encode() {
@@ -178,7 +183,11 @@ std::vector<std::byte> encode() {
     //serializeObject(data, gameEnded);
 
     std::vector<syncData> gameStates = Game::instance().fetchSyncData();
+    syncGameData gameData = Game::instance().fetchSyncGameData();
+    
+    serializeObject(data, gameData);
     serializeObject(data, gameStates);
+
 
     return data;
 }
@@ -186,8 +195,11 @@ std::vector<std::byte> encode() {
 void decode(const std::vector<std::byte>& data) {
     // These are just two examples;  remove them and replace them with the logic of your
     // application that you need to synchronize
+   
     unsigned int pos = 0;
 
+    //deserializeObject(data, pos, isGameStarted);
+    deserializeObject(data, pos, gameSyncStates);
     deserializeObject(data, pos, states);
    
     
@@ -195,6 +207,7 @@ void decode(const std::vector<std::byte>& data) {
 }
 
 void postSyncPreDraw() {
+
     // Apply the (now synchronized) application state before the rendering will start
 
     //Sync gameobjects' state on clients only
@@ -202,13 +215,14 @@ void postSyncPreDraw() {
 	{
 		//Engine::instance().setStatsGraphVisibility(areStatsVisible);
 
-		
+            Game::instance().setSyncGameData(gameSyncStates);
 			Game::instance().setSyncData(states);
 		
     }
 }
 
 void draw(const RenderData& data) {
+    
     
     glm::mat4 projectionMatrix;
     std::memcpy(glm::value_ptr(projectionMatrix),data.projectionMatrix.values,sizeof(mat4));
@@ -259,6 +273,7 @@ void draw(const RenderData& data) {
     for (unsigned int p = 0; p < meshesSkyBox.size(); p++) {
             meshesSkyBox[p].Draw(); // Draw each mesh
         }
+
 
     //Render the background objects
     if (game.hasBGObjects()) { 
@@ -412,7 +427,6 @@ void draw2D(const RenderData& data) {
     std::memcpy(glm::value_ptr(modelMatrix),data.modelMatrix.values,sizeof(mat4));
 */
 
-
     const sgct::Window &sgctWindowRef = data.window;
     const sgct::Window *sgctWindowPtr = &sgctWindowRef;
 
@@ -532,6 +546,7 @@ void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Windo
     if (key == Key::P && action == Action::Press) {
         if (Game::instance().getPlayers().size() < 100) {
             int id = Game::instance().getLowestAvailablePlayerID();
+            /*
             std::string playerName; // Prompt the user to enter a name
             std::cout << "Enter player name: ";
             std::cin >> playerName;
@@ -549,8 +564,8 @@ void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Windo
             if (!success) {
                 std::cout << "Failed to send player data over TCP socket\n";
             }
-
-            Game::instance().addPlayer(id, playerName);
+            */
+            Game::instance().addPlayer(id, "TIIIIIIM");
         }
     }
     

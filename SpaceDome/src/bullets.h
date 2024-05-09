@@ -27,13 +27,13 @@ struct BulletData
     float bOrientation;
     int bTeam;
     int bID;	
+    int lifeTime;
+    float bSpeed;
 };
 
 //Implemented as explicit singleton, handles pretty much everything
 class Bullet
 {
-
-
 public:
     //default constructor
 	Bullet();
@@ -54,6 +54,30 @@ public:
 
 	//Destructor
 	~Bullet();
+
+
+    void getData(BulletData& data){
+
+        data.bID = bID;
+        data.bOrientation = bOrientation;
+        data.bPositionX = (float)bPosition.x;
+        data.bPositionY = (float)bPosition.y;
+        data.bPositionZ = (float)bPosition.z;
+        data.bSpeed = bSpeed;
+        data.bTeam = bTeam;
+        data.lifeTime = lifeTime;
+    }
+    void setData(BulletData data){
+
+        bID = data.bID;
+        bOrientation = data.bOrientation;
+        bPosition.x = data.bPositionX;
+        bPosition.y = data.bPositionY;
+        bPosition.z = data.bPositionZ;
+        bSpeed = data.bSpeed;
+        bTeam = data.bTeam;
+        lifeTime = data.lifeTime;
+    }
 
 	//Players should be unique
 	Bullet(const Bullet&) = default;
