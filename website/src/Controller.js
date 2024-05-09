@@ -94,6 +94,14 @@ function Controller() {
             }
           ))
         }
+        if(JSON.stringify(lastJsonMessage).includes('server_join') &&
+        JSON.stringify(lastJsonMessage).includes('host')){
+          localStorage.clear()
+          console.log("IDs cleared", localStorage.getItem('on_load_counter'))
+        }
+
+
+
         if(JSON.stringify(lastJsonMessage).includes('Points')){
           setPointsState(parseInt(lastJsonMessage.Points))
         }
