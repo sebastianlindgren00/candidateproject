@@ -42,8 +42,9 @@ void Game::handleJson(const nlohmann::json& j) {
 
     // player moves
     if (j["type"] == "action_move") {
-		float value = j["value"];
+		double value = j["value"];
         int id = j["id"];
+        std::cout << "Player: " << id << " moves with value: " << value << std::endl;
 		updateTurnSpeed(id, value);
 	}
 
@@ -234,9 +235,9 @@ void Game::handInStars(int id){
 }
 
 
-void Game::updateTurnSpeed(unsigned int id, float rotAngle) {
+void Game::updateTurnSpeed(unsigned int id, double rotAngle) {
     //is there a player with thid id?
-	assert(id < mPlayers.size() && "Player update turn speed desync (id out of bounds mPlayers");
+	//assert(id < mPlayers.size() && "Player update turn speed desync (id out of bounds mPlayers");
     //update rotation
 	mPlayers[id]->setTurnSpeed(rotAngle);
 }

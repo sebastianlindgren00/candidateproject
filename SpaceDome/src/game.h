@@ -112,7 +112,7 @@ void pickUpStars(int id);
 
 void handInStars(int id);
 
-void updateTurnSpeed(unsigned int id, float rotAngle);
+void updateTurnSpeed(unsigned int id, double rotAngle);
 
 void setChargeActive(unsigned int id, bool mode){ mPlayers[id]->setChargeMode(mode); }
 

@@ -135,9 +135,6 @@ int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets, float h
     {
         mPosition.y *= -1;
     }
-    
-
-    setTurnSpeed(0);
     return -1;
 }
 
