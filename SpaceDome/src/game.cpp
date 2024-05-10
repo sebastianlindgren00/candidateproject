@@ -42,7 +42,6 @@ void Game::handleJson(const nlohmann::json& j, std::shared_ptr<tcpsocket::io::Tc
        socket->putMessage(message);
     }
 
-
     // new player joins
     if (j["type"] == "game_join") {
         int id = j["id"];
@@ -104,10 +103,36 @@ if(mPlayers.size() == allShipsGreen.size() + allShipsRed.size()){
     std::cout << "Player: " << name << " joined with ID: " << id << " and color ID: " << colorID << std::endl;
 }
 
+void Game::removePlayer(int id) {
+    if (mPlayers.empty()) {
+        std::cerr << "No players to remove.\n";
+        return;
+    }
+
+    auto it = std::find_if(mPlayers.begin(), mPlayers.end(), [id](const std::unique_ptr<Player>& player) {
+        return player->getID() == id;
+    });
+
+    if (it != mPlayers.end()) {
+        if ((*it)->getTeam() == 1) {
+            if(id )
+            teamRed--;
+        } else {
+            teamGreen--;
+        }
+        mPlayers.erase(it);
+        std::cout << "Player with ID: " << id << " was removed.\n";
+    } else {
+        std::cerr << "Player with ID: " << id << " not found.\n";
+    }
+
+    // Remove id from usedIDs
+    usedIDs.erase(id);
+}
+
 //allowing new players to get the lowest available ID
 int Game::getLowestAvailablePlayerID() {
-    std::set<int> usedIDs;
-
+    
     // Collect all used IDs
     for (const auto& player : mPlayers) {
         usedIDs.insert(player->getID());
@@ -173,30 +198,6 @@ void Game::shotBullet(int id){
         mPlayers[id]->restoreTimer();
         bulletID++;
         printf("Bullet shot\n");
-    }
-}
-
-void Game::removePlayer(int id) {
-    if (mPlayers.empty()) {
-        std::cerr << "No players to remove.\n";
-        return;
-    }
-
-    auto it = std::find_if(mPlayers.begin(), mPlayers.end(), [id](const std::unique_ptr<Player>& player) {
-        return player->getID() == id;
-    });
-
-    if (it != mPlayers.end()) {
-        if ((*it)->getTeam() == 1) {
-            if(id )
-            teamRed--;
-        } else {
-            teamGreen--;
-        }
-        mPlayers.erase(it);
-        std::cout << "Player with ID: " << id << " was removed.\n";
-    } else {
-        std::cerr << "Player with ID: " << id << " not found.\n";
     }
 }
 

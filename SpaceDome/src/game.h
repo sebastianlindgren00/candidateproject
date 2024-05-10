@@ -170,6 +170,7 @@ Game()  {
 }
 
 
+std::set<int> usedIDs;
 
 std::vector<glm::vec3> redShades;
 std::vector<glm::vec3> greenShades;
