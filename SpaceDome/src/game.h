@@ -26,6 +26,7 @@
 #include "glm/packing.hpp"
 #include "glm/matrix.hpp"
 #include "nlohmann/json.hpp"
+#include "tcpsocket.h"
 
 #include "player.h"
 #include "utility.h"
@@ -53,7 +54,9 @@ static Game& instance() {
 
 std::vector<syncData> fetchSyncData();
 
-void handleJson(const nlohmann::json& j);
+void handleJson(const nlohmann::json& j, std::shared_ptr<tcpsocket::io::TcpSocket> socket);
+
+void sendJson(const nlohmann::json& j, std::shared_ptr<tcpsocket::io::TcpSocket> socket);
 
 void setMatrixes(glm::mat4 pMatrix, glm::mat4 vMatrix, int width, int height) { 
     projectionMatrix = pMatrix;

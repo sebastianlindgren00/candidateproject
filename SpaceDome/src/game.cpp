@@ -30,13 +30,23 @@ std::vector<syncData> Game::fetchSyncData() {
     return tmp;
 }
 
-void Game::handleJson(const nlohmann::json& j) {
+void Game::handleJson(const nlohmann::json& j, std::shared_ptr<tcpsocket::io::TcpSocket> socket) {
+    // request new id
+    if(j["type"] == "request_id") {
+       int id = getLowestAvailablePlayerID();
+       const nlohmann ::json j = {
+           {"type", "response_id"},
+           {"id", id}
+       };
+       const std::string message = j.dump();
+       socket->putMessage(message);
+    }
+
 
     // new player joins
     if (j["type"] == "game_join") {
         int id = j["id"];
         std::string name = j["userName"];
-        std::cout << "Player: " << name << " joined with ID: " << id << std::endl;
         addPlayer(id, name);
     }
 
@@ -44,7 +54,6 @@ void Game::handleJson(const nlohmann::json& j) {
     if (j["type"] == "action_move") {
 		double value = j["value"];
         int id = j["id"];
-        std::cout << "Player: " << id << " moves with value: " << value << std::endl;
 		updateTurnSpeed(id, value);
 	}
 
@@ -65,8 +74,12 @@ void Game::handleJson(const nlohmann::json& j) {
 		int id = j["id"];
 		removePlayer(id);
 	}
-	}
+}
 
+void Game::sendJson(const nlohmann::json& j, std::shared_ptr<tcpsocket::io::TcpSocket> socket) {
+    std::string message = j.dump();
+    socket->putMessage(message);
+}
 
 void Game::addPlayer(int id, const std::string& name) {
 if(mPlayers.size() == allShipsGreen.size() + allShipsRed.size()){

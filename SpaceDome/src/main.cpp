@@ -162,7 +162,7 @@ void preSync() {
 
             const std::string& msg = _messageQueue.front();
             nlohmann::json j = nlohmann::json::parse(msg);
-            Game::instance().handleJson(j);
+            Game::instance().handleJson(j, socket_);
             _messageQueue.pop();
         }
     }
