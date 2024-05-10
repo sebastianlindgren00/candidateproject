@@ -114,13 +114,13 @@ function Controller() {
           sendJsonMessage({
             type: 'game_join',
             userName: searchparams.get('userName'),
-            id: userID
+            id: lastJsonMessage.id
           })
           console.log(JSON.stringify(
             {
               type: 'game_join',
               userName: searchparams.get('userName'),
-              id: userID
+              id: lastJsonMessage.id
             }
           ))
         }
