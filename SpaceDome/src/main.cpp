@@ -586,5 +586,13 @@ int main(int argc, char** argv) {
         std::cout << "The Game ended in a draw! \n\n\n";
     }
 
+    // send message to server that game has ended
+    const nlohmann::json endMsg = {{"type", "game_ended"}, {"action", "end"}};
+    const std::string endString = endMsg.dump();
+    socket_->putMessage(endString);
+
+    // disconnect socket
+    socket_->disconnect();
+
     return EXIT_SUCCESS;
 }

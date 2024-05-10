@@ -61,10 +61,10 @@ void Game::handleJson(const nlohmann::json& j) {
 	}
 
 	// player leaves
-	/*if (j["type"] == "game_leave") {
+	if (j["type"] == "game_leave") {
 		int id = j["id"];
 		removePlayer(id);
-	}*/
+	}
 	}
 
 
