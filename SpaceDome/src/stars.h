@@ -69,6 +69,13 @@ public:
         sId = id;
     }
 
+    //constructor for sync
+    Star(StarData data){
+
+        setData(data);
+        sColor = {0.5f, 0.5f, 0.0f};
+    }
+
 	//Destructor
 	~Star();
 

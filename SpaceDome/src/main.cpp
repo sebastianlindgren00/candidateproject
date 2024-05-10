@@ -31,8 +31,8 @@ std::filesystem::path baseDir;
 
 namespace {
     //std::unique_ptr<WebSocketHandler> wsHandler;
-    int64_t gameOn = 0;
-    int64_t gameEnded = 0;
+    //int64_t gameOn = 0;
+    //sint64_t gameEnded = 0;
     std::string exampleString;
     
 } // namespace
@@ -67,9 +67,10 @@ GLuint ShaderProgramTextTexture;
 //buffers and textures
 GLuint framebuffer = 0;
 GLuint textureColorbuffer = 0;
-std::vector<syncData> states;
+syncData states;
 syncGameData gameSyncStates;
 
+size_t playersize;
 GLuint textureText;
 
 //float for camera movement
@@ -91,13 +92,6 @@ void verifyFontPath(const std::string& fontPath) {
 }
 
 void initOGL(GLFWwindow*) {
-
-    // I don't want to hard code the path to the models, so I'll use a macro
-    // to get the path to the models directory
-
-    //std::filesystem::path p = std::filesystem::current_path();
-
-    //std::string filepath2 
 
     std::string filePath2 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[4] + ".fbx";
     std::string filePath3 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[5] + ".fbx";
@@ -148,8 +142,6 @@ void initOGL(GLFWwindow*) {
     std::cout << "after assimpLoader \n";
 }
 
-
-
 void initializeText(Game& game, TextRenderer& text, std::vector<std::tuple<std::string, float, float, float, glm::vec3>> printsPlayers) {
     // Assume `game` is the Game object with the latest text data
     text.updateText(game);
@@ -165,11 +157,6 @@ void preSync() {
     //we check if sgct is run on master machine 
     if (Engine::instance().isMaster() && //wsHandler->isConnected() &&
         Engine::instance().currentFrameNumber() % 100 == 0){
-
-            
-
-        
-        //wsHandler->tick();
     }
     Game::instance().update();
     
@@ -178,46 +165,34 @@ void preSync() {
 std::vector<std::byte> encode() {
     std::vector<std::byte> data;
 
-    // Serialize exampleInt
-    //serializeObject(data, gameOn);
-    //serializeObject(data, gameEnded);
-
-    std::vector<syncData> gameStates = Game::instance().fetchSyncData();
+    syncData gameStates = Game::instance().fetchSyncData();
     syncGameData gameData = Game::instance().fetchSyncGameData();
     
     serializeObject(data, gameData);
-    serializeObject(data, gameStates);
-
+    serializeObject(data, gameStates.playerData);
+    serializeObject(data, gameStates.objectData);
+    serializeObject(data, gameStates.bulletData);
+    serializeObject(data, gameStates.starData);
+    serializeObject(data, gameStates.playerName);
+    
 
     return data;
 }
 
 void decode(const std::vector<std::byte>& data) {
-    // These are just two examples;  remove them and replace them with the logic of your
-    // application that you need to synchronize
-   
     unsigned int pos = 0;
-
-    //deserializeObject(data, pos, isGameStarted);
     deserializeObject(data, pos, gameSyncStates);
-    deserializeObject(data, pos, states);
-   
-    
-    
+    deserializeObject(data, pos, states.playerData);
+    deserializeObject(data, pos, states.objectData);
+    deserializeObject(data, pos, states.bulletData);
+    deserializeObject(data, pos, states.starData);
+    deserializeObject(data, pos, states.playerName);
 }
 
 void postSyncPreDraw() {
-
-    // Apply the (now synchronized) application state before the rendering will start
-
-    //Sync gameobjects' state on clients only
-	if (!Engine::instance().isMaster())
-	{
-		//Engine::instance().setStatsGraphVisibility(areStatsVisible);
-
-            Game::instance().setSyncGameData(gameSyncStates);
-			Game::instance().setSyncData(states);
-		
+	if (!Engine::instance().isMaster()) {
+        Game::instance().setSyncGameData(gameSyncStates);
+		Game::instance().setSyncData(states);
     }
 }
 
@@ -444,35 +419,20 @@ void draw2D(const RenderData& data) {
     const sgct::vec4 color = sgct::vec4(0.8f, 0.8f, 0.8f, 1.0f);
     float line = windowHeightOut/1.5;
     float count = 0;
-/*
-    GLint prevViewport[4];
-    glGetIntegerv(GL_VIEWPORT, prevViewport);
 
-    glm::vec3 translation(0.0f, 0.0f, cameraZ); 
-    viewMatrix = glm::translate(viewMatrix, translation);
-    viewMatrix = modelMatrix * viewMatrix;
-    */
     Game& game = Game::instance();
-    /*
-    game.setMatrixes(projectionMatrix, viewMatrix, windowWidthOut, windowHeightOut);
-    game.addSpawnRot();
-
-    Utility utilityInstance;
-    utilityInstance.setScaleConst((float)windowHeightOut/1440);
-
-    //Utility::CalculateScreenPositions(projectionMatrix, viewMatrix, windowWidthOut, windowHeightOut);
-
-    glEnable(GL_DEPTH_TEST);
-   */
+    
     
     std::vector<std::tuple<std::string, float, float, float, glm::vec3>> printsPlayers;
     for(auto& player : game.getPlayers()){
             if(player->isAlive())
-            printsPlayers.push_back(std::make_tuple(player->getName(), player->getTextX(), player->getTextY(),textScaleX/1.5, glm::vec3(0.8f, 0.8f, 0.8f)));
+            printsPlayers.push_back(std::make_tuple(player->getName(), player->getTextX(), player->getTextY(),textScaleX/2, glm::vec3(0.8f, 0.8f, 0.8f)));
         }
 
     std::vector<TextItem> texts;
     game.getTexts(texts);
+    std::vector<float> rows = game.getRows();
+    //float xVal = game.getHeight();
     
     for (auto& text : texts){
     text::print( 
@@ -490,41 +450,6 @@ void draw2D(const RenderData& data) {
         count += 0.5;
     }
     }
-    
-
-    // Initialize TextRenderer
-    //TextRenderer textRenderer(shaderProgramText, windowWidthOut, windowHeightOut);
-    //initializeText(game, textRenderer, printsPlayers);
-    //textureText = textRenderer.getTexture();
-    
-
-   //----- Texture check
-   /*
-   GLuint texture = textRenderer.getTexture();
-    if (glIsTexture(texture)) {
-        std::cout << "Texture " << texture << " is a valid OpenGL texture." << std::endl;
-    } else {
-        std::cerr << "Texture " << texture << " is not valid." << std::endl;
-    }
-
-    // Optionally, read pixels from the texture (for debugging purposes)
-    glBindTexture(GL_TEXTURE_2D, texture);
-    std::vector<unsigned char> pixels(windowWidthOut * windowHeightOut * 4); // Assuming RGBA
-    glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
-
-    // Check the pixel data (example)
-    bool hasNonZeroPixels = std::any_of(pixels.begin(), pixels.end(), [](unsigned char p) { return p != 0; });
-    if (hasNonZeroPixels) {
-        std::cout << "The texture contains non-zero pixels." << std::endl;
-    } else {
-        std::cout << "The texture seems empty or contains only zero pixels." << std::endl;
-    }
-    */
-
-    //utilityInstance.renderPlane(plainShaderProgram, 0, projectionMatrix, viewMatrix);
-    //utilityInstance.renderPlane(ShaderProgramTextTexture, textRenderer.getTexture(), projectionMatrix, viewMatrix);
-
-    //glDisable(GL_DEPTH_TEST);
 }
 
 void cleanup() {
@@ -565,7 +490,7 @@ void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Windo
                 std::cout << "Failed to send player data over TCP socket\n";
             }
             */
-            Game::instance().addPlayer(id, "TIIIIIIM");
+            Game::instance().addPlayer(id, "ZZZZZZZZZ");
         }
     }
     
@@ -574,6 +499,8 @@ void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Windo
         if(players.size() > 0) {
             int lastPlayerId = players.back()->getID();
             Game::instance().removePlayer(lastPlayerId); // Can only remove the last player
+        } else{
+            std::cout << "Server is empty. Unable to remove any player. \n";
         }
     } 
     
@@ -581,11 +508,15 @@ void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Windo
 
 int main(int argc, char** argv) {
 
-    states.reserve(99*18); 
+    states.playerData.reserve(99); 
+    states.objectData.reserve(99); 
+    states.bulletData.reserve(99); 
+    states.starData.reserve(99); 
+    states.playerData.reserve(99);
 
-    Game::instance().addPlayer(0, "Tim");
-    Game::instance().addPlayer(1, "Viktor");
-    Game::instance().addPlayer(2, "Bas");
+    Game::instance().addPlayer(0, "TIM");
+    Game::instance().addPlayer(1, "VIKTOR");
+    Game::instance().addPlayer(2, "BAS");
 
     std::vector<std::string> arg(argv + 1, argv + argc);
     Configuration config = sgct::parseArguments(arg);

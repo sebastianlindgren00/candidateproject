@@ -29,6 +29,7 @@ Player::Player(const int id, const std::string& name, int team, int colorID, glm
 
 }
 
+
 Player::~Player()
 {
 	//sgct::Log::Info("Player with name=\"%s\" removed", mName.c_str());
@@ -117,16 +118,6 @@ int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets, float h
 
     setOrientation(mTurnSpeed);
     setPosition(glm::vec3( cos(getOrientation()) * mSpeed,sin(getOrientation()) * mSpeed, 0.0));
-    
-    //circle game filed
-    /*
-    float distToOrigo = glm::distance(glm::vec3(0.0,0.0,0.0), mPosition);
-    if(distToOrigo > boundryX) {
-        mPosition.y *= -1;
-        mPosition.z *= -1;
-    }
-*/
-    //square game field
 
     if (mPosition.x > boundryX || mPosition.x < -boundryX){
         mPosition.x *= -1;

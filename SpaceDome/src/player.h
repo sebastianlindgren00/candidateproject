@@ -1,6 +1,7 @@
 #pragma once
 
 #include "globals.h"
+#include <unordered_map>
 #include <string>
 #include <vector>
 #include <iostream>
@@ -56,6 +57,12 @@ struct PlayerData
 	int bulletTimer;
 };
 
+struct PlayerName{
+	unsigned long long playerName;
+};
+
+
+
 class Player
 {
 public:
@@ -65,12 +72,73 @@ public:
 	//Constructor
 	Player(const int id, const std::string& name, int team, int colorID, glm::vec3 color, glm::mat4 pMatrix, glm::mat4 vMatrix, int width, int height);
 
+	//Constructor for sync
+	Player(PlayerData data, PlayerName name, glm::mat4 pMatrix, glm::mat4 vMatrix, int width, int height){
+    setData(data);
+	setName(name.playerName);
+
+    textPosition = Utility::CalculateScreenPositionsPlayers( mPosition * glm::vec3(1,-1,1) - glm::vec3(0,-0.5f,0), pMatrix, vMatrix, width, height);
+	}
+
+	//Constructor for sync
+	Player(PlayerData data, glm::mat4 pMatrix, glm::mat4 vMatrix, int width, int height){
+    setData(data);
+
+    textPosition = Utility::CalculateScreenPositionsPlayers( mPosition * glm::vec3(1,-1,1) - glm::vec3(0,-0.5f,0), pMatrix, vMatrix, width, height);
+	}
 	//Destructor
 	~Player();
 
 	//Players should be unique
 	Player(const Player&) = default;
 	Player& operator=(const Player&) = delete;
+
+	// Converts a single uppercase letter to a corresponding numeric value (1-based index)
+	int charToNumber(char c) {
+    return (c - 'A' + 1); // 'A' is 65 in ASCII
+	}
+
+	// Converts a numeric value back to the corresponding uppercase letter
+	char numberToChar(int n) {
+		return static_cast<char>(n + 'A' - 1);
+	}
+
+	// Encodes an uppercase string into a numeric representation using unsigned long long
+	unsigned long long encodeULL(const std::string& input) {
+		std::string encodedString;
+		for (char c : input) {
+			int number = charToNumber(c);
+			if (number < 10) {
+				encodedString += "0"; // Add leading zero to maintain two-digit formatting
+			}
+			encodedString += std::to_string(number);
+		}
+		return std::stoull(encodedString);
+	}
+
+	// Decodes a numeric representation back to an uppercase string
+	std::string decodeULL(unsigned long long value) {
+		std::string encodedString = std::to_string(value);
+		std::string result;
+
+		// Process the digits two at a time
+		for (size_t i = 0; i < encodedString.length(); i += 2) {
+			int number = std::stoi(encodedString.substr(i, 2));
+			result += numberToChar(number);
+		}
+		return result;
+	}
+
+	void getName(unsigned long long& n){
+		n = encodeULL(mName);
+	}
+	void setName(unsigned long long n){
+		mName = decodeULL(n);
+	}
+
+	void setNameData(PlayerName data){
+		mName = decodeULL(data.playerName);
+	}
 
 	void getData(PlayerData& data){
 		//stars data
@@ -244,6 +312,8 @@ public:
     void increaseTimer() {bulletTimer++;}
 
     void restoreTimer() {bulletTimer = 0;}
+
+	std::string getName() {return mName;}
 
 	bool getDropStars() {return dropStars;}
 

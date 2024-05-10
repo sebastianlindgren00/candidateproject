@@ -70,6 +70,12 @@ public:
     bPosition = glm::vec3(x, y, zPos);
     }
 
+    //Constructor for sync
+    BackgroundObject(ObjectData data){
+        setData(data);
+    }
+
+
 	//Destructor
 	~BackgroundObject();
 

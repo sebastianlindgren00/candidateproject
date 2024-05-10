@@ -33,11 +33,13 @@
 
 // Contains all necessary game object data that is used for the sync
 struct syncData {
-    PlayerData playerData;
-    ObjectData objectData;
-    StarData starData;
-    BulletData bulletData;
+    std::vector<PlayerData> playerData;
+    std::vector<ObjectData> objectData;
+    std::vector<StarData> starData;
+    std::vector<BulletData> bulletData;
+    std::vector<PlayerName> playerName;
 };
+
 
 struct syncGameData {
     float gameTimeLast;
@@ -57,6 +59,17 @@ struct syncGameData {
     int greenWins;
     float spawnRotation;
     int64_t gameActive;
+    /*
+    float height;
+    float row1;
+    float row2;
+    float row3;
+    float row4;
+    float row5;
+    float row6;
+    float row7;
+    float row8;
+    */
 };
 
 //Implemented as explicit singleton, handles pretty much everything
@@ -71,15 +84,21 @@ static Game& instance() {
     return instance;
 }
 
-std::vector<syncData> fetchSyncData();
+syncData fetchSyncData();
 syncGameData fetchSyncGameData();
 void setSyncGameData(const syncGameData data);
+void setSyncData(const syncData data);
 
-void setMatrixes(glm::mat4 pMatrix, glm::mat4 vMatrix, int width, int height) { 
+std::string charVectorToString(std::vector<char32_t> charVector) {
+		// Create a string from the vector of characters
+		return std::string(charVector.begin(), charVector.end());
+	}
+
+void setMatrixes(glm::mat4 pMatrix, glm::mat4 vMatrix, int inwidth, int inheight) { 
     projectionMatrix = pMatrix;
     viewMatrix = vMatrix;
-    windowHeight = height;
-    windowWidth = width;
+    windowHeight = inheight;
+    windowWidth = inwidth;
 
     } 
 
@@ -109,7 +128,20 @@ const std::vector<std::unique_ptr<Star>>& getStars() const { return mStars; }
 
 const std::vector<std::unique_ptr<BackgroundObject>>& getBGObjects() const { return mBGObjects; }
 
-void setSyncData(const std::vector<syncData> data);
+float getHeight(){return height;}
+
+std::vector<float> getRows(){
+    std::vector<float> rows;
+    rows.push_back(row1);
+    rows.push_back(row2);
+    rows.push_back(row3);
+    rows.push_back(row4);
+    rows.push_back(row5);
+    rows.push_back(row6);
+    rows.push_back(row7);
+    rows.push_back(row8);
+    return rows;
+}
 
 //Copying forbidden
 Game(Game const&) = delete;
@@ -236,6 +268,16 @@ float spawnRotation = 0;
 int bulletID = 0;
 
 int counterForBGObjects = 0;
+
+float height = 1280;
+float row1 = 900;
+float row2 = 800;
+float row3 = 720;
+float row4 = 640;
+float row5 = 540;
+float row6 = 460;
+float row7 = 380;
+float row8 = 300;
 
 //int redColorID = 0;
 //int greenColorID = 0;

@@ -1,47 +1,36 @@
 #include "game.h"
 
 // Sync
-std::vector<syncData> Game::fetchSyncData() {
-    std::vector<syncData> tmp;
+syncData Game::fetchSyncData() {
+    syncData tmp;
     
-    
-    for (const auto& player : mPlayers) {
-       
-        syncData data;
-        player->getData(data.playerData);
 
-        tmp.push_back(data);
+    for (size_t i = 0; i < mPlayers.size(); i++) {
+        PlayerData data;
+        PlayerName name;
+        mPlayers[i]->getData(data);
+        mPlayers[i]->getName(name.playerName);
+        tmp.playerData.push_back(data);
+        tmp.playerName.push_back(name);
     }
 
     for (size_t i = 0; i < mBGObjects.size(); i++) {
-        syncData data;
-        mBGObjects[i]->getData(data.objectData);
+        ObjectData data;
+        mBGObjects[i]->getData(data);
 
-       if(tmp.size()-1 > i){
-        tmp[i].objectData = data.objectData;
-       } else {
-        tmp.push_back(data);
-        } 
+        tmp.objectData.push_back(data);
     }
     for (size_t i = 0; i < mBullets.size(); i++) {
-        syncData data;
-        mBullets[i]->getData(data.bulletData);
+        BulletData data;
+        mBullets[i]->getData(data);
         
-        if(tmp.size()-1 > i){
-        tmp[i].bulletData = data.bulletData;
-       } else {
-        tmp.push_back(data);
-        } 
+        tmp.bulletData.push_back(data);
     }
     for (size_t i = 0; i < mStars.size(); i++) {
-        syncData data;
-        mStars[i]->getData(data.starData);
+        StarData data;
+        mStars[i]->getData(data);
         
-        if(tmp.size()-1 > i){
-        tmp[i].starData = data.starData;
-       } else {
-        tmp.push_back(data);
-        } 
+        tmp.starData.push_back(data);
     }
 
     return tmp;
@@ -72,6 +61,17 @@ syncGameData Game::fetchSyncGameData() {
         data.gameActive = 0;
     }
     return data;
+/*
+    data.height = (float)windowHeight/2;
+    data.row1 = ((float)windowHeight/2) - 100;
+    data.row2 = ((float)windowHeight/2) - 150;
+    data.row3 = ((float)windowHeight/2) - 200;
+    data.row4 = ((float)windowHeight/2) - 250;
+    data.row5 = ((float)windowHeight/2) - 300;
+    data.row6 = ((float)windowHeight/2) - 350;
+    data.row7 = ((float)windowHeight/2) - 400;
+    data.row8 = ((float)windowHeight/2) - 450;
+    */
 }
 void Game::setSyncGameData(const syncGameData data){
     mLastFrameTime = data.gameTimeLast;
@@ -90,6 +90,17 @@ void Game::setSyncGameData(const syncGameData data){
     redWins = data.redWins;
     greenWins = data.greenWins;
     spawnRotation = data.spawnRotation;
+/*
+    height = data.height;
+    row1 = data.row1;
+    row2 = data.row2;
+    row3 = data.row3;
+    row4 = data.row4;
+    row5 = data.row5;
+    row6 = data.row6;
+    row7 = data.row7;
+    row8 = data.row8;
+    */
 
     if(data.gameActive == 0){
         mGameActive = false;
@@ -98,35 +109,39 @@ void Game::setSyncGameData(const syncGameData data){
     }
 }
 
-void Game::setSyncData(const std::vector<syncData> data){
-    if(data.size() >= mPlayers.size()){
-    for(size_t i = 0; i < mPlayers.size(); i++) {
-        if (i < data.size()) {
-        mPlayers[i]->setData(data[i].playerData);
-        }
-        }
-}
-    if(data.size() >= mBGObjects.size()){
-    for (size_t i = 0; i < mBGObjects.size(); i++) {
-        if (i < data.size()) {
-        mBGObjects[i]->setData(data[i].objectData);
-        }
-        }
-    if(data.size() >= mBullets.size()){
-    for (size_t i = 0; i < mBullets.size(); i++) {
-        if (i < data.size()) {
-        mBullets[i]->setData(data[i].bulletData);
-        }
-        }
+void Game::setSyncData(const syncData data){
+    
+    mPlayers.clear();
+    mPlayers.reserve(data.playerData.size());
+    for(size_t i = 0; i < data.playerData.size(); i++) {
+        if(data.playerName.size() > i){
+        mPlayers.push_back(std::make_unique<Player>(data.playerData[i], data.playerName[i], projectionMatrix, viewMatrix, windowWidth, windowHeight));
+        }else
+        mPlayers.push_back(std::make_unique<Player>(data.playerData[i], projectionMatrix, viewMatrix, windowWidth, windowHeight));
     }
+
+
+    for (size_t i = 0; i < data.objectData.size(); i++) {
+        if(mBGObjects.size() > i) {
+        mBGObjects[i]->setData(data.objectData[i]);
+        } else
+        mBGObjects.push_back(std::make_unique<BackgroundObject>(data.objectData[i]));
     }
-    if(data.size() >= mStars.size()){
-    for (size_t i = 0; i < mStars.size(); i++) {
-        if (i < data.size()){
-        mStars[i]->setData(data[i].starData);
-        }
-        }
+
+    for (size_t i = 0; i < data.bulletData.size(); i++) {
+        if(mBullets.size() > i) {
+        mBullets[i]->setData(data.bulletData[i]);
+        } else
+        mBullets.push_back(std::make_unique<Bullet>(data.bulletData[i]));
     }
+    
+    for (size_t i = 0; i < data.starData.size(); i++) {
+        if(mStars.size() > i) {
+        mStars[i]->setData(data.starData[i]);
+        } else
+        mStars.push_back(std::make_unique<Star>(data.starData[i]));
+    }
+    
 }
 
 void Game::addPlayer(int id, const std::string& name) {

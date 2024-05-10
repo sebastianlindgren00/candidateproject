@@ -52,6 +52,16 @@ public:
         bID = id;
     }
 
+    //Constructor for sync
+    Bullet(BulletData data){
+        setData(data);
+        if(bTeam == 1){
+            bColor = {1.0f, 0.2f, 0.2f};	
+        } else {
+            bColor = {0.4f, 1.f, 0.2f};
+        };
+    }
+
 	//Destructor
 	~Bullet();
 
