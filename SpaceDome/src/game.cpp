@@ -34,9 +34,12 @@ void Game::handleJson(const nlohmann::json& j, std::shared_ptr<tcpsocket::io::Tc
     // request new id
     if(j["type"] == "request_id") {
        int id = getLowestAvailablePlayerID();
+       int team = teamRed <= teamGreen ? 1 : 2;
+       int colourID = findNextAvailableColorID(team);
        const nlohmann ::json j = {
            {"type", "response_id"},
-           {"id", id}
+           {"id", id},
+           {"team", colourID}
        };
        const std::string message = j.dump();
        socket->putMessage(message);
@@ -121,13 +124,11 @@ void Game::removePlayer(int id) {
             teamGreen--;
         }
         mPlayers.erase(it);
+        usedIDs.erase(id);
         std::cout << "Player with ID: " << id << " was removed.\n";
     } else {
         std::cerr << "Player with ID: " << id << " not found.\n";
     }
-
-    // Remove id from usedIDs
-    usedIDs.erase(id);
 }
 
 //allowing new players to get the lowest available ID

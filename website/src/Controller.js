@@ -110,7 +110,12 @@ function Controller() {
           requestID(userID)
         }
         if(JSON.stringify(lastJsonMessage).includes('response_id') &&  noID){
-          setUserID(lastJsonMessage.id);
+          setUserID(lastJsonMessage.id)
+          if(parseInt(lastJsonMessage.team) === 1){
+            setTeamState("Grön")
+          }else{
+            setTeamState("Röd")
+          }
           setNoID(false)
           sendJsonMessage({
             type: 'game_join',
@@ -138,19 +143,11 @@ function Controller() {
 
 
 
-        if(JSON.stringify(lastJsonMessage).includes('Points')){
+        if(JSON.stringify(lastJsonMessage).includes('points')){
           setPointsState(parseInt(lastJsonMessage.Points))
         }
-        if(JSON.stringify(lastJsonMessage).includes('Boost')){
+        if(JSON.stringify(lastJsonMessage).includes('boost')){
           setBoostState(parseInt(lastJsonMessage.Boost))
-        }
-
-        if(JSON.stringify(lastJsonMessage).includes('Team')){
-          if(parseInt(lastJsonMessage.Team) == 1){
-            setTeamState("Röd")
-          }else{
-            setTeamState("Grön")
-          }
         }
       }, [lastJsonMessage])
 
