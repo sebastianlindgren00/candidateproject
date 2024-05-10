@@ -26,10 +26,12 @@ function Controller() {
         shouldReconnect: () => true,
       },
     )
+
     function clearIDs(){
       localStorage.clear()
       console.log("IDs cleared", localStorage.getItem('on_load_counter'))
     }
+
     function generateID(){
       var n = localStorage.getItem('on_load_counter');
       
@@ -41,6 +43,20 @@ function Controller() {
       
       localStorage.setItem("on_load_counter", n);
       return n
+    }
+
+    function requestID(n){
+      sendJsonMessage({
+        type: 'requst_id',
+        id: n
+      })
+      console.log(JSON.stringify(
+          {
+            type: 'request_id',
+            id: n
+          }
+       )
+      )
     }
 
     function leaveHandler(){
@@ -89,19 +105,25 @@ function Controller() {
         console.log(`Got a new message: ${JSON.stringify(lastJsonMessage)}`)
         if(JSON.stringify(lastJsonMessage).includes('Authorized')){
           setSrvAuth('authorized')
-          sendJsonMessage({
-            //userID: searchparams.get('userID')
-            type: 'game_join',
-            userName: searchparams.get('userName'),
-            id: userID
-          })
-          console.log(JSON.stringify(
-            {//userID: searchparams.get('userID')
+
+          requestID(userID)
+
+          if(JSON.stringify(lastJsonMessage).includes('response_id')){
+            setUserID(lastJsonMessage.id);
+
+            sendJsonMessage({
               type: 'game_join',
               userName: searchparams.get('userName'),
               id: userID
-            }
-          ))
+            })
+            console.log(JSON.stringify(
+              {
+                type: 'game_join',
+                userName: searchparams.get('userName'),
+                id: userID
+              }
+            ))
+          }
         }
         if(JSON.stringify(lastJsonMessage).includes('game_started')){
           localStorage.clear()
