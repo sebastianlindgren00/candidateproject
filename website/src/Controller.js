@@ -87,7 +87,7 @@ function Controller() {
       // Run when a new WebSocket message is received (lastJsonMessage)
       useEffect(() => {
         console.log(`Got a new message: ${JSON.stringify(lastJsonMessage)}`)
-        if(JSON.stringify(lastJsonMessage).includes('Authorized') || srvAuth === 'authorized'){
+        if(JSON.stringify(lastJsonMessage).includes('Authorized')){
           setSrvAuth('authorized')
           sendJsonMessage({
             //userID: searchparams.get('userID')
@@ -102,9 +102,10 @@ function Controller() {
               id: userID
             }
           ))
-          if(JSON.stringify(lastJsonMessage).includes('game_started')){
-            
-          }
+        }
+        if(JSON.stringify(lastJsonMessage).includes('game_started')){
+          localStorage.clear()
+          setUserID(generateID())
         }
         if(JSON.stringify(lastJsonMessage).includes('server_join') &&
         JSON.stringify(lastJsonMessage).includes('host')){
@@ -168,21 +169,11 @@ function Controller() {
         }
     })
   useEffect(()=>{
-      window.addEventListener("pagehide", leaveHandler);
+      window.addEventListener("beforeunload", leaveHandler);
       return () => {
-        window.removeEventListener("pagehide", leaveHandler);
+        window.removeEventListener("beforeunload", leaveHandler);
       }
   })
-
-  window.addEventListener("pagehide", () => 
-  {  
-    sendJsonMessage({
-      //userID: searchparams.get('userID')
-      type: 'game_leave',
-      userName: searchparams.get('userName'),
-      id: userID
-    })
-  });
 
     
     
@@ -309,7 +300,7 @@ function Controller() {
                 <div className="devBox">
                     <p style={{color:'white'}}>UserID: {searchparams.get('userID')}</p>
                     <p style={{color:'white'}}>UserName: {searchparams.get('userName')}</p>
-                    <p style={{color:'white'}}>Screen orientation: {scrOrientation.type}</p> {/*Does not update, needs to be fixed*/}
+                    <p style={{color:'white'}}>Screen orientation: {scrOrientation.type}</p> {/*Does not update, needs to be fixed
                     <span id='devButton'  onClick={clearIDs}>Clear IDs</span>
                  {/*</div>*/}
             <div className="cPanel"  id="controlPanel">
