@@ -1,17 +1,14 @@
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
-#
-#
-# @TODO: Change this project to the name of your project
-#
-#
 project("SpaceDome")
 
 #-----------FOR MAC APPLE SILICON------------------------------------------------------
+if(APPLE)
 set(CMAKE_OSX_ARCHITECTURES "arm64" CACHE STRING "Build architectures for Mac OS X" FORCE)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-macro-redefined")
 
 set(CMAKE_PREFIX_PATH "/opt/homebrew")
+endif()
 #--------------END OF MAC--------------------------------------------------------------
 
 # Add the libraries that this application depends on,
@@ -19,19 +16,12 @@ set(CMAKE_PREFIX_PATH "/opt/homebrew")
 #  2. libwebsockets (https://libwebsockets.org) for support for WebSockets
 
 # Disable SSL requirement as it requires another library
-set(LWS_WITH_SSL OFF CACHE BOOL "" FORCE)
-set(LWS_WITHOUT_TESTAPPS ON CACHE BOOL "" FORCE)
-add_subdirectory(ext/libwebsockets)
-set_property(TARGET dist PROPERTY FOLDER "Dependencies")
-set_property(TARGET websockets PROPERTY FOLDER "Dependencies")
-set_property(TARGET websockets_shared PROPERTY FOLDER "Dependencies")
-
-# Testing out WebSocket++ library (didn't work yet)
-
-# find_package(websocketpp REQUIRED)
-# target_link_libraries(your_project_name PRIVATE WebSocketpp::websocketpp)
-# add_subdirectory(ext/websocketpp)
-# set_property(TARGET websocketpp PROPERTY FOLDER "Dependencies")
+#set(LWS_WITH_SSL OFF CACHE BOOL "" FORCE)
+#set(LWS_WITHOUT_TESTAPPS ON CACHE BOOL "" FORCE)
+#add_subdirectory(ext/libwebsockets)
+#set_property(TARGET dist PROPERTY FOLDER "Dependencies")
+#set_property(TARGET websockets PROPERTY FOLDER "Dependencies")
+#set_property(TARGET websockets_shared PROPERTY FOLDER "Dependencies")
 
 add_subdirectory(ext/sgct)
 set_property(TARGET sgct PROPERTY FOLDER "Dependencies")
@@ -43,11 +33,13 @@ set_property(TARGET assimp PROPERTY CXX_STANDARD_REQUIRED ON)
 
 # Models folder path fix!
 set(MODELS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/models")
+#set(MODELS_DIRECTORY "./")
 
 find_package(glm REQUIRED)
 #MAC
+if(APPLE)
 find_package(PNG REQUIRED)
-
+endif()
 # Debug messages
 message(STATUS "PNG include dir: ${PNG_INCLUDE_DIR}") # Fixed variable name
 message(STATUS "PNG libraries: ${PNG_LIBRARIES}") # Correct variable name
@@ -58,8 +50,17 @@ message(STATUS "PNG libraries: ${PNG_LIBRARIES}") # Correct variable name
 #
 add_executable(${PROJECT_NAME}
   src/main.cpp
-  src/websockethandler.h
-  src/websockethandler.cpp
+  ###NEW FILES FOR OMNI
+  src/exception.cpp
+  src/exception.h
+  src/socket.cpp
+  src/socket.h
+  src/tcpsocket.cpp
+  src/tcpsocket.h
+  src/tcpsocket.inl
+  ###
+  #src/websockethandler.h
+  #src/websockethandler.cpp
   src/AssimpLoader.h 
   src/AssimpLoader.cpp 
   src/mesh.cpp
@@ -79,6 +80,9 @@ add_executable(${PROJECT_NAME}
   src/shaderManager.h
   src/backgroundObjects.cpp
   src/backgroundObjects.h
+  src/text.cpp
+  src/text.h
+  src/TextItem.h
 )
 #---------- MAC
 #include_directories(/opt/homebrew/Cellar/libpng/1.6.43/include)
@@ -90,9 +94,10 @@ add_executable(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME} PRIVATE
   src
   ext/sgct/include
-  ext/libwebsockets/include
+  ext/sgct/ext/json/include
+  #ext/libwebsockets/include
   ext/assimp/include
-  ${LIBWEBSOCKETS_INCLUDE_DIRS}
+ # ${LIBWEBSOCKETS_INCLUDE_DIRS}
   #MAC
   ${PNG_INCLUDE_DIR} # Use the variable set by find_package
   #ENDMAC
@@ -101,7 +106,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 #target_link_libraries(${PROJECT_NAME} PRIVATE sgct websockets glm::glm assimp)
 
 #----------MAC
-target_link_libraries(${PROJECT_NAME} PRIVATE sgct websockets glm::glm assimp ${PNG_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PRIVATE sgct glm::glm assimp ${PNG_LIBRARIES}) # Was "websockets" between sgct and glm but removed for testing
 #-----------END MAC
 
 # Models folder path fix! 

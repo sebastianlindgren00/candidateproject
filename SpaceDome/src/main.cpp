@@ -1,9 +1,8 @@
 //
 //  Main.cpp provided under CC0 license
 //
-
+//#include "websockethandler.h"
 #include "sgct/sgct.h"
-#include "websockethandler.h"
 #include <glm/glm.hpp>
 #include <glad/glad.h>
 #include <memory>
@@ -22,18 +21,28 @@
 #include <GLFW/glfw3.h>
 #include "game.h"
 #include "shaderManager.h"
-#include "/Users/sebastianlindgren/Documents/GitHub/candidateproject/SpaceDome/ext/rapidjson/document.h"
-#include "/Users/sebastianlindgren/Documents/GitHub/candidateproject/SpaceDome/ext/rapidjson/error/en.h"
-
+#include "text.h"
+#include <queue>
+#include "tcpsocket.h" // For TCPSocket (New testing)
+#include <filesystem> // For Models dir
+#include <nlohmann/json.hpp> // For JSON nlohmann - Why is it in sgct though??
+#include <fstream> // For file reading
+std::filesystem::path baseDir;
 
 namespace {
-    std::unique_ptr<WebSocketHandler> wsHandler;
+    //std::unique_ptr<WebSocketHandler> wsHandler;
     int64_t exampleInt = 0;
     std::string exampleString;
 } // namespace
 
 using namespace sgct;
 
+// OMNI
+std::mutex _messageQueueMutex;
+std::queue<std::string> _messageQueue;
+using json = nlohmann::json;
+
+//different model-containers
 std::unique_ptr<AssimpLoader> modelsAssimp;
 std::unique_ptr<AssimpLoader> bulletsAssimp;
 std::unique_ptr<AssimpLoader> starsAssimp;
@@ -48,19 +57,41 @@ std::vector<std::string> hiscoreList(3);
 std::vector<std::unique_ptr<AssimpLoader>> playerModelsRed;
 std::vector<std::unique_ptr<AssimpLoader>> playerModelsGreen;
 
+//ShaderPrograms
 GLuint shaderProgram;
 GLuint shaderProgramTexture;
 GLuint shaderProgramMaterial;
 GLuint shaderProgramText;
 GLuint shaderProgramFisheye;
+GLuint plainShaderProgram;
+GLuint ShaderProgramTextTexture;
 
+//buffers and textures
 GLuint framebuffer = 0;
 GLuint textureColorbuffer = 0;
-
 std::vector<syncData> states; 
+GLuint textureText;
 
+//float for camera movement
+float cameraZ = -4.0f;
+const int Port = 4685;
+const std::string Address = "localhost";
+
+//std::shared_ptr<tcpsocket::io::TcpSocket> _socket;
+std::thread _thread;
+
+const nlohmann::json startMsg = {{"type", "game_started"}, {"action", "start"}}; // send to server
+std::shared_ptr<tcpsocket::io::TcpSocket> socket_ = std::make_shared<tcpsocket::io::TcpSocket>(Address, Port);
+//std::unique_ptr<tcpsocket::io::TcpSocket> tcpSocket = std::make_unique<tcpsocket::io::TcpSocket>(Address, Port);
 
 void initOGL(GLFWwindow*) {
+
+    // I don't want to hard code the path to the models, so I'll use a macro
+    // to get the path to the models directory
+
+    //std::filesystem::path p = std::filesystem::current_path();
+
+    //std::string filepath2 
 
     std::string filePath2 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[4] + ".fbx";
     std::string filePath3 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[5] + ".fbx";
@@ -77,7 +108,9 @@ void initOGL(GLFWwindow*) {
     shaderProgramTexture = Utility::createShaderProgram(vertexShaderSourceTexture, fragmentShaderSourceTexture);
     shaderProgramMaterial = Utility::createShaderProgram(vertexShaderSourceMaterial, fragmentShaderSourceMaterial);
     shaderProgramText = Utility::createShaderProgram(vertexShaderSourceText, fragmentShaderSourceText);
-    
+    plainShaderProgram = Utility::createShaderProgram(vertexShaderSourcePlain, fragmentShaderSourcePlain);
+    ShaderProgramTextTexture = Utility::createShaderProgram(vertexShaderSourceTextTexture, fragmentShaderSourceTextTexture);
+
     //std::string baseDirectory = "../../models/";
     //bulletsAssimp = std::make_unique<AssimpLoader>(filePath4);
     
@@ -90,7 +123,6 @@ void initOGL(GLFWwindow*) {
     redBulletAssimp= std::make_unique<AssimpLoader>(filePath8);
     greenBulletAssimp = std::make_unique<AssimpLoader>(filePath9);
 
-
     //load all models for team Red and than team Green
     for( int i = 0; i < 18; i++){
         std::string path = std::string(MODELS_DIRECTORY) + "/red/" + allShipsRed[i] + ".fbx";
@@ -101,11 +133,18 @@ void initOGL(GLFWwindow*) {
         std::string path = std::string(MODELS_DIRECTORY) + "/green/" + allShipsGreen[i] + ".fbx";
         playerModelsGreen.push_back(std::make_unique<AssimpLoader>(path));
     }
-
     //std::cout << "Attempting to load font from: " << fontPath << std::endl;
     Utility::LoadFontAtlas(fontPath);
 
+    
+
     std::cout << "after assimpLoader \n";
+}
+
+void initializeText(Game& game, TextRenderer& text, std::vector<std::tuple<std::string, float, float, float, glm::vec3>> printsPlayers) {
+    // Assume `game` is the Game object with the latest text data
+    text.updateText(game);
+    text.renderTextToTexture(printsPlayers);
 }
 
 void preSync() {
@@ -115,31 +154,36 @@ void preSync() {
     std::vector<std::byte> data; // Store serialized data
 
     //we check if sgct is run on master machine 
-    if (Engine::instance().isMaster() && wsHandler->isConnected() &&
+    if (Engine::instance().isMaster() &&
         Engine::instance().currentFrameNumber() % 100 == 0){
-
-            wsHandler->queueMessage("ping");
-            //if game instance is active 
-            if(Game::instance().isGameActive()){
-                //send time through ws handler to
-
-               std::string timeLeft = std::to_string(Game::instance().getEndTime());
-                wsHandler->queueMessage("Time left: " + timeLeft);
-            }
-
-            if(!Game::instance().isGameActive()){
-                std::string restartTime = to_string(Game::instance().getRestartTime());
-                wsHandler->queueMessage("New round starts in" + restartTime);
-            }
         
-        wsHandler->tick();
+        //std::lock_guard lock(_messageQueueMutex);
+        if (!_messageQueue.empty()) {
+
+            const std::string& msg = _messageQueue.front();
+            nlohmann::json j = nlohmann::json::parse(msg);
+            Game::instance().handleJson(j);
+            _messageQueue.pop();
+        }
     }
 
     if(Engine::instance().isMaster()){
         Game::instance().update();
     }
 }
-
+// NEW - added to engine.h as a callback
+void handleOmni() {
+    std::string messageString;
+    messageString.reserve(256);
+    if (socket_->getMessage(messageString)) {
+        {
+            std::lock_guard lock(_messageQueueMutex);
+            _messageQueue.push(messageString);
+        }
+        std::cout << messageString << '\n';
+        messageString.clear();
+    }
+}
 std::vector<std::byte> encode() {
     std::vector<std::byte> data;
 
@@ -156,13 +200,10 @@ std::vector<std::byte> encode() {
     return data;
 }
 
-
 void decode(const std::vector<std::byte>& data) {
     // These are just two examples;  remove them and replace them with the logic of your
     // application that you need to synchronize
     unsigned pos = 0;
-    deserializeObject(data, pos, exampleInt);
-    deserializeObject(data, pos, exampleString);
     deserializeObject(data, pos, states);
 }
 
@@ -187,89 +228,48 @@ void postSyncPreDraw() {
 	}
 }
 
-std::vector<std::string> getHiscoreList(const std::vector<std::unique_ptr<Player>>& players) {
-
-    int first = 0, second = 0, third = 0;
-
-    for (const auto& player : players) {
-        int stars = player->getHandedInStars();
-        std::string nameAndStars = player->getName() + " " + std::to_string(stars);
-
-        if (stars >= first) {
-            hiscoreList[2] = hiscoreList[1];
-            hiscoreList[1] = hiscoreList[0];
-            hiscoreList[0] = nameAndStars;
-            third = second;
-            second = first;
-            first = stars;
-        } else if (stars >= second) {
-            hiscoreList[2] = hiscoreList[1];
-            hiscoreList[1] = nameAndStars;
-            third = second;
-            second = stars;
-        } else if (stars >= third) {
-            hiscoreList[2] = nameAndStars;
-            third = stars;
-        }
-    }
-    return hiscoreList;
-}
-
 void draw(const RenderData& data) {
     
     glm::mat4 projectionMatrix;
-    std::memcpy(
-        glm::value_ptr(projectionMatrix),
-        data.projectionMatrix.values,
-        sizeof(mat4)
-    );
+    std::memcpy(glm::value_ptr(projectionMatrix),data.projectionMatrix.values,sizeof(mat4));
 
     glm::mat4 viewMatrix;
-    std::memcpy(
-        glm::value_ptr(viewMatrix),
-        data.viewMatrix.values,
-        sizeof(mat4)
-    );
+    std::memcpy( glm::value_ptr(viewMatrix),data.viewMatrix.values,sizeof(mat4));
 
-    //const sgct::RenderData &data;
-    const sgct::Window &sgctWindowRef = data.window; // Assume data.window is a reference to sgct::Window
+    glm::mat4 modelMatrix;
+    std::memcpy(glm::value_ptr(modelMatrix),data.modelMatrix.values,sizeof(mat4));
+
+    const sgct::Window &sgctWindowRef = data.window;
     const sgct::Window *sgctWindowPtr = &sgctWindowRef;
 
     GLFWwindow* glfwWindow = sgctWindowPtr->windowHandle();
     int windowWidthOut = 2560;
     int windowHeightOut = 1440;
-    glfwGetFramebufferSize(glfwWindow, &windowWidthOut, &windowHeightOut);
 
+    glfwGetFramebufferSize(glfwWindow, &windowWidthOut, &windowHeightOut);
     if (!glfwWindow) {
         std::cerr << "Failed to get GLFWwindow pointer from sgct::Window." << std::endl;
         return;
     }
 
-    glm::vec3 translation(0.0f, 0.0f, -4.0f); 
+    glm::vec3 translation(0.0f, 0.0f, cameraZ); 
     viewMatrix = glm::translate(viewMatrix, translation);
 
     //std::cout << "Draw called\n";
     Game& game = Game::instance();
-    game.setMatrixes(projectionMatrix, viewMatrix, windowWidthOut, windowHeightOut);
+    game.setMatrixes(projectionMatrix, modelMatrix*viewMatrix, windowWidthOut, windowHeightOut);
     game.addSpawnRot();
 
-    float textScaleX = windowWidthOut/1500;
-    //float textScaleY = windowWidthOut/1500;
+    viewMatrix = modelMatrix * viewMatrix;
     
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glEnable(GL_DEPTH_TEST);
     
-    std::string textRed = "RED TEAM: " + std::to_string(game.getStars(1));
-    std::string textGreen = "GREEN TEAM: " + std::to_string(game.getStars(2));
-
-    //render Text
     Utility utilityInstance;
     utilityInstance.setScaleConst((float)windowHeightOut/1440);
-   
-    int timer = game.getEndTime();
-
+    
     glEnable(GL_DEPTH_TEST);
+
     //render Background
     Utility::setupShaderForDrawing(shaderProgramTexture, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f), 0, 20, 1, projectionMatrix, viewMatrix);
     auto& meshesSkyBox = skyboxAssimp->getMeshes();
@@ -277,51 +277,20 @@ void draw(const RenderData& data) {
             meshesSkyBox[p].Draw(); // Draw each mesh
         }
 
+    //Render the background objects
     if (game.hasBGObjects()) { 
         for (const auto& object : game.getBGObjects()) {
-            object->draw(backgroundObjectsAssimp, shaderProgram, projectionMatrix, viewMatrix); 
+            object->draw(backgroundObjectsAssimp, shaderProgram, projectionMatrix, modelMatrix*viewMatrix); 
         }
     }
-    Utility::CalculateScreenPositions(projectionMatrix, viewMatrix, windowWidthOut, windowHeightOut);
-
-    glDisable(GL_DEPTH_TEST);
-     //dont draw players, stars and objects if game is at hold
-    if(!game.isGameActive()){
     
-        timer = game.getRestartTime();
-        std::string textTime = "NEW GAME STARTS IN: " + std::to_string(timer);
-        utilityInstance.RenderText(shaderProgramText, textTime, 7, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
-        if(game.getStars(1) > game.getStars(2)){
-            utilityInstance.RenderText(shaderProgramText, "Red Team Won!", 6, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
-        } else if(game.getStars(1) < game.getStars(2)){
-            utilityInstance.RenderText(shaderProgramText, "Green Team Won!", 6, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
-        } else {
-            utilityInstance.RenderText(shaderProgramText, "The Game Ended In A Draw!", 6, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
-        }
-
-        hiscoreList = getHiscoreList(game.getPlayers());
-
-        utilityInstance.RenderText(shaderProgramText, textRed, 5, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
-        utilityInstance.RenderText(shaderProgramText, textGreen, 4, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
-        utilityInstance.RenderText(shaderProgramText, "Player Hiscore:", 3, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
-        if(game.getPlayers().size() > 0){
-        utilityInstance.RenderText(shaderProgramText, hiscoreList[0], 2, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
-        }
-        if(game.getPlayers().size() > 1){
-        utilityInstance.RenderText(shaderProgramText, hiscoreList[1], 1, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
-        }if(game.getPlayers().size() > 2){
-        utilityInstance.RenderText(shaderProgramText, hiscoreList[2], 0, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
-        }
+    //dont render the rest if game is not active
+    if(!game.isGameActive()){
         return;
     } 
 
-    std::string textTime = "GAME ENDS IN: " + std::to_string(timer);
-
-    utilityInstance.RenderText(shaderProgramText, textTime, 6, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
-    utilityInstance.RenderText(shaderProgramText, textRed, 5, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
-    utilityInstance.RenderText(shaderProgramText, textGreen, 4, textScaleX, glm::vec3(0.8f, 0.8f, 0.8f), glfwWindow);
-
-    glEnable(GL_DEPTH_TEST);
+    //Render Players
+    //And controll/check bullets if any are to be removed
     if (game.hasPlayers()) {
     std::vector<int> bulletsToRemove; // This will store the IDs of bullets to remove
     auto& bullets = game.getBullets();
@@ -339,8 +308,10 @@ void draw(const RenderData& data) {
         if (hitBulletId != -1) {
             bulletsToRemove.push_back(hitBulletId); // Collect bullet IDs to remove
         }
-        player->draw(playerModelsRed, playerModelsGreen, shaderProgramTexture, projectionMatrix, viewMatrix);
+        player->draw(playerModelsRed, playerModelsGreen, shaderProgramTexture, projectionMatrix, modelMatrix*viewMatrix);
     }
+
+
 
     // Now remove the bullets that were marked for removal
     if (!bulletsToRemove.empty()) {
@@ -356,18 +327,21 @@ void draw(const RenderData& data) {
     }
 }
 
+    //Render bullets
     if (game.hasBullets()) { 
         for (const auto& bullet : game.getBullets()) {
-            bullet->draw(greenBulletAssimp,redBulletAssimp, shaderProgramTexture, projectionMatrix, viewMatrix); 
+            bullet->draw(greenBulletAssimp,redBulletAssimp, shaderProgramTexture, projectionMatrix, modelMatrix*viewMatrix); 
         }
     }
 
+    //Render Stars
     if(game.hasStars()) {
         for (const auto& stars : game.getStars()){
-            stars->draw(starsAssimp, shaderProgram, projectionMatrix, viewMatrix);
+            stars->draw(starsAssimp, shaderProgram, projectionMatrix, modelMatrix*viewMatrix);
         }
     }
 
+    //Render spawn planets
     for(size_t i = 0; i < objectsAssimp.size(); i++ ){
 
         glm::vec3 objectColor = glm::vec3(0.4f, 1.f, 0.2f);
@@ -378,15 +352,12 @@ void draw(const RenderData& data) {
             pos = glm::vec3(-windowHeightOut/300, 0.0f, -3.0);
         }
 
-        Utility::setupShaderForDrawing(shaderProgram, pos, objectColor, game.getSpawnRot(), 0.7, 1, projectionMatrix, viewMatrix);
+        Utility::setupShaderForDrawing(shaderProgram, pos, objectColor, game.getSpawnRot(), 0.7, 1, projectionMatrix, modelMatrix*viewMatrix);
     
         //draw
         auto& meshes = objectsAssimp[i]->getMeshes(); // Using getMeshes() method to access the meshes
 
         for (unsigned int p = 0; p < meshes.size(); p++) {
-
-            
-
             meshes[p].Draw(); // Draw each mesh
         }
         //check for errors
@@ -395,21 +366,127 @@ void draw(const RenderData& data) {
             std::cerr << "OpenGL error after linking shader program: " << err << std::endl;
         }
 } 
-    //Player names should be above all else
-    glDisable(GL_DEPTH_TEST);
+   
+    /*
+    std::vector<std::tuple<std::string, float, float, float, glm::vec3>> printsPlayers;
+    for(auto& player : game.getPlayers()){
+            if(player->isAlive())
+            printsPlayers.push_back(std::make_tuple(player->getName(), player->getTextX(), player->getTextY(),textScaleX/1.5, glm::vec3(0.8f, 0.8f, 0.8f)));
+        }
+
+    // Initialize TextRenderer
+    TextRenderer textRenderer(shaderProgramText, windowWidthOut, windowHeightOut);
+
+    // Clear any existing errors
+    while (glGetError() != GL_NO_ERROR) {}
+    GLenum err;
+    while ((err = glGetError()) != GL_NO_ERROR) {
+        std::cerr << "OpenGL error after TextRenderer initialization: " << err << std::endl;
+    }
+    initializeText(game, textRenderer, printsPlayers);
+    textureText = textRenderer.getTexture();
+       
+    //Prints for frameBuffer checks
+    
+    GLint currentFramebuffer;
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFramebuffer);
+    
+    // Print the currently bound framebuffer to the console
+    std::cout << "Currently bound framebuffer: " << currentFramebuffer << std::endl;
+
+    
+    // If the default framebuffer is expected (which usually has an ID of 0)
+    if (currentFramebuffer == 0) {
+        std::cout << "The default framebuffer is currently bound." << std::endl;
+    } else {
+        std::cout << "Framebuffer " << currentFramebuffer << " is currently bound." << std::endl;
+    }
+    
+    
+    //utilityInstance.renderPlane(plainShaderProgram, 0, projectionMatrix,viewMatrix);
+    utilityInstance.renderPlane(ShaderProgramTextTexture, textRenderer.getTexture(), projectionMatrix,viewMatrix);
+*/
+}
+
+void draw2D(const RenderData& data) {
+    
+    glm::mat4 projectionMatrix;
+    std::memcpy(glm::value_ptr(projectionMatrix),data.projectionMatrix.values,sizeof(mat4));
+
+    glm::mat4 viewMatrix;
+    std::memcpy( glm::value_ptr(viewMatrix),data.viewMatrix.values,sizeof(mat4));
+
+    glm::mat4 modelMatrix;
+    std::memcpy(glm::value_ptr(modelMatrix),data.modelMatrix.values,sizeof(mat4));
+
+    const sgct::Window &sgctWindowRef = data.window;
+    const sgct::Window *sgctWindowPtr = &sgctWindowRef;
+
+    GLFWwindow* glfwWindow = sgctWindowPtr->windowHandle();
+    int windowWidthOut = 2560;
+    int windowHeightOut = 1440;
+
+    glfwGetFramebufferSize(glfwWindow, &windowWidthOut, &windowHeightOut);
+    if (!glfwWindow) {
+        std::cerr << "Failed to get GLFWwindow pointer from sgct::Window." << std::endl;
+        return;
+    }
+
+    glm::vec3 translation(0.0f, 0.0f, cameraZ); 
+    viewMatrix = glm::translate(viewMatrix, translation);
+    viewMatrix = modelMatrix * viewMatrix;
+    float textScaleX = windowWidthOut/1500;
+    
+    Game& game = Game::instance();
+    game.setMatrixes(projectionMatrix, viewMatrix, windowWidthOut, windowHeightOut);
+    game.addSpawnRot();
+
+    Utility utilityInstance;
+    utilityInstance.setScaleConst((float)windowHeightOut/1440);
+
+    Utility::CalculateScreenPositions(projectionMatrix, viewMatrix, windowWidthOut, windowHeightOut);
+
+    glEnable(GL_DEPTH_TEST);
 
     std::vector<std::tuple<std::string, float, float, float, glm::vec3>> printsPlayers;
     for(auto& player : game.getPlayers()){
-        if(player->isAlive())
-        printsPlayers.push_back(std::make_tuple(player->getName(), player->getTextX(), player->getTextY(),textScaleX/1.5, glm::vec3(0.8f, 0.8f, 0.8f)));
-    }
-    utilityInstance.RenderTextPlayers(shaderProgramText, printsPlayers, glfwWindow);
+            if(player->isAlive())
+            printsPlayers.push_back(std::make_tuple(player->getName(), player->getTextX(), player->getTextY(),textScaleX/1.5, glm::vec3(0.8f, 0.8f, 0.8f)));
+        }
 
-}
-
-void draw2D(const RenderData& data)
-{
+    // Initialize TextRenderer
+    TextRenderer textRenderer(shaderProgramText, windowWidthOut, windowHeightOut);
+    initializeText(game, textRenderer, printsPlayers);
+    textureText = textRenderer.getTexture();
     
+
+   //----- Texture check
+   /*
+   GLuint texture = textRenderer.getTexture();
+    if (glIsTexture(texture)) {
+        std::cout << "Texture " << texture << " is a valid OpenGL texture." << std::endl;
+    } else {
+        std::cerr << "Texture " << texture << " is not valid." << std::endl;
+    }
+
+    // Optionally, read pixels from the texture (for debugging purposes)
+    glBindTexture(GL_TEXTURE_2D, texture);
+    std::vector<unsigned char> pixels(windowWidthOut * windowHeightOut * 4); // Assuming RGBA
+    glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
+
+    // Check the pixel data (example)
+    bool hasNonZeroPixels = std::any_of(pixels.begin(), pixels.end(), [](unsigned char p) { return p != 0; });
+    if (hasNonZeroPixels) {
+        std::cout << "The texture contains non-zero pixels." << std::endl;
+    } else {
+        std::cout << "The texture seems empty or contains only zero pixels." << std::endl;
+    }
+    */
+
+    //utilityInstance.renderPlane(plainShaderProgram, 0, projectionMatrix, viewMatrix);
+    utilityInstance.renderPlane(ShaderProgramTextTexture, textRenderer.getTexture(), projectionMatrix, viewMatrix);
+
+    glDisable(GL_DEPTH_TEST);
 }
 
 void cleanup() {
@@ -419,21 +496,6 @@ void cleanup() {
     glDeleteTextures(1, &textureColorbuffer);
 
 }
-/*
-void keyboard(Key key, Modifier modifier, Action action, int, Window*) {
-    Game& game = Game::instance();
-
-    if (key == Key::Esc && action == Action::Press) {
-        Engine::instance().terminate();
-    }
-
-    if (key == Key::Space && modifier == Modifier::Shift && action == Action::Release) {
-        Log::Info("Released space key");
-        wsHandler->disconnect();
-    }
-}
-*/
-
 
 void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Window* window) {
     // Forward the event to your game's keyboard handler
@@ -442,72 +504,12 @@ void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Windo
     if (key == Key::Esc && action == Action::Press) {
         Engine::instance().terminate();
     }
-
-    if (key == Key::P && action == Action::Press) {
-    if(Game::instance().getPlayers().size() < 100) {
-        int id = Game::instance().getLowestAvailablePlayerID();
-        Game::instance().addPlayer(id, "o"); // TODO: Add a name from user input, should not be "o"
-    }
-}
     
-    if (key == Key::O && action == Action::Press) {
-        auto& players = Game::instance().getPlayers();
-        if(players.size() > 2) {
-            int lastPlayerId = players.back()->getID();
-            Game::instance().removePlayer(lastPlayerId); // Can only remove the last player
-        }
-    } 
-}
-
-void connectionEstablished() {
-    Log::Info("Connection established");
-}
-
-void connectionClosed() {
-    Log::Info("Connection closed");
-}
-
-
-// Define your message handling functions
-void handleServerJoin(const std::string& userData) {
-    // Handle server join message
-    // Example: Log the user data
-    std::cout << "User joined: " << userData << std::endl;
-}
-
-void messageReceived(const void* data, size_t length) {
-    // Message received from WebSocket server
-    std::string msg(reinterpret_cast<const char*>(data), length);
-    
-    // Parse the JSON message and handle it accordingly
-    // For simplicity, let's assume it's a JSON message containing 'type' and 'user'
-    // Example: {"type": "server_join", "user": "random_user_id"}
-    // Parse the message and extract 'type' and 'user'
-    // You can use your preferred JSON parsing library for this
-    // Here, we'll just demonstrate with simple string manipulation
-    size_t typePos = msg.find("type");
-    if (typePos != std::string::npos) {
-        // Extract the message type
-        size_t userPos = msg.find("user");
-        if (userPos != std::string::npos) {
-            std::string type = msg.substr(typePos + 7, userPos - typePos - 10);
-            std::string userData = msg.substr(userPos + 7);
-            
-            // Handle the message based on its type
-            if (type == "server_join") {
-                // Call the corresponding message handling function
-                handleServerJoin(userData);
-            }
-            // Add other message types as needed
-        }
-    }
 }
 
 int main(int argc, char** argv) {
-    
-    Game::instance().addPlayer(0,"Tim");
-    Game::instance().addPlayer(1,"Viktor");
-    Game::instance().addPlayer(2,"Bas");
+    std::unique_ptr<tcpsocket::io::TcpSocket> tcpSocket = std::make_unique<tcpsocket::io::TcpSocket>(Address, Port);
+    tcpSocket->connect();
 
     std::vector<std::string> arg(argv + 1, argv + argc);
     Configuration config = sgct::parseArguments(arg);
@@ -516,15 +518,16 @@ int main(int argc, char** argv) {
     Engine::Callbacks callbacks;
     callbacks.initOpenGL = initOGL;
     callbacks.preSync = preSync;
+    callbacks.handleOmni = handleOmni;
     callbacks.encode = encode;
     callbacks.decode = decode;
     callbacks.postSyncPreDraw = postSyncPreDraw;
     callbacks.draw = draw;
+    callbacks.draw2D = draw2D;
     callbacks.cleanup = cleanup;
-    //callbacks.keyboard = keyboard;
-    //new Keyboard function
     callbacks.keyboard = globalKeyboardHandler;
-    
+
+
     try {
         Engine::create(cluster, callbacks, config);
     }
@@ -537,21 +540,35 @@ int main(int argc, char** argv) {
     // Won't work if this is commented out
     if (Engine::instance().isMaster()) {
 
-        wsHandler = std::make_unique<WebSocketHandler>("localhost", 4685, connectionEstablished, connectionClosed, messageReceived);
-        constexpr const int MessageSize = 1024;
+        if (!tcpSocket) {
+            std::cout << "Error creating tcp socket";
+            return -1;
+        }
 
-        if (wsHandler->connect("wss", MessageSize)) {
-            Log::Info("WebSocket connection initiated!");
-            /* TESTS
-            wsHandler->queueMessage("test test1");
-            wsHandler->queueMessage("test test2");
-            Log::Info(fmt::format("Messages in queue: {} ", wsHandler->queueSize()));
-            wsHandler->tick();
-            */
-        } else {
-            Log::Error("Failed to initiate WebSocket connection!");
+        if (tcpSocket->isConnected()) {
+            std::cout << "Tcp socket connected \n";
+        }
+        else if (tcpSocket->isConnecting()) {
+            std::cout << "Tcp socket connecting...";
+        }
+        else {
+            std::cout << "Tcp socket could not connect";
         }
     }
+
+    // Send message to server that a new game has started
+    const std::string startString = startMsg.dump();
+    tcpSocket->putMessage(startString);
+
+    socket_ = std::move(tcpSocket);
+    _thread = std::thread([]() {
+        while (true) {
+            handleOmni(); // Continuously handle messages
+            std::this_thread::sleep_for(std::chrono::milliseconds(10)); // Introduce a 10ms delay between iterations
+        }
+        });
+    //std::move(std::thread([]() {handleOmni(); }));
+
 
     Engine::instance().exec();
 
@@ -559,13 +576,23 @@ int main(int argc, char** argv) {
 
     std::cout << "\n\n\nRed Team had: " << Game::instance().getWins(1) << " Wins. \n";
     std::cout << "Green Team had: " << Game::instance().getWins(2) << " Wins. \n\n";
-    if(Game::instance().getWins(1) < Game::instance().getWins(2)){
+    if (Game::instance().getWins(1) < Game::instance().getWins(2)) {
         std::cout << "Team Green Won! \n\n\n";
-    }else if(Game::instance().getWins(1) > Game::instance().getWins(2)){
+    }
+    else if (Game::instance().getWins(1) > Game::instance().getWins(2)) {
         std::cout << "Team Red Won! \n\n\n";
-    }else{
+    }
+    else {
         std::cout << "The Game ended in a draw! \n\n\n";
     }
+
+    // send message to server that game has ended
+    const nlohmann::json endMsg = {{"type", "game_ended"}, {"action", "end"}};
+    const std::string endString = endMsg.dump();
+    socket_->putMessage(endString);
+
+    // disconnect socket
+    socket_->disconnect();
 
     return EXIT_SUCCESS;
 }

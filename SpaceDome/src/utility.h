@@ -7,6 +7,7 @@
 #include <sstream>
 #include <map>
 
+
 #include "sgct/sgct.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -18,30 +19,30 @@
 #include "AssimpLoader.h"
 #include "globals.h"
 
+class Game;
+
 class Utility
 {
 public:
 
 	//constructor
 	Utility(){
-	glGenVertexArrays(1, &textVAO);
-    glGenBuffers(1, &textVBO);
-    glBindVertexArray(textVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, textVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+		setupPlane();
+    	setupText();
 	}
+
+	static Utility& getInstance() {
+        static Utility instance;
+        return instance;
+    }
 
 	//load fonts
 	static void LoadFontAtlas(const std::string& fontPath);
 	//rendering text
-	void RenderText(GLuint shaderProgram, std::string text, int row, float scale, glm::vec3 color, GLFWwindow* glfwWindow);
-	//void RenderTextPlayers(GLuint shaderProgram, std::string text, float x, float y, float scale, glm::vec3 color);
-	void RenderTextPlayers(GLuint shaderProgram, const std::vector<std::tuple<std::string, float, float, float, glm::vec3>>& texts, GLFWwindow* glfwWindow);
+	void RenderText(GLuint shaderProgram, std::string text, int row, float scale, glm::vec3 color,  float width, float height);
+	void RenderTextPlayers(GLuint shaderProgram, const std::vector<std::tuple<std::string, float, float, float, glm::vec3>>& texts, int width, int height);
 	void RenderSingleText(GLuint shaderProgram, const std::string& text, float x, float y, float scale, const glm::vec3& color);
+	void renderPlane(GLuint shaderProgram, GLuint textureId, const glm::mat4& projection, const glm::mat4& view);
 	
 	void setScaleConst(float s) {scale = s;}
 
@@ -57,13 +58,25 @@ public:
 	//calculate positions for texts
 	static glm::vec2 screenPositions[8];
 	static const glm::vec3 worldPositions[8];
-	static glm::vec2 CalculateScreenPositionsPlayers(glm::vec3 playerpos, glm::mat4 pMatrix, glm::mat4 vMatrix, int width, int height);
-	static void CalculateScreenPositions(glm::mat4 pMatrix, glm::mat4 vMatrix, int width, int height);
+	static glm::vec2 CalculateScreenPositionsPlayers(glm::vec3 playerpos, glm::mat4 pMatrix, glm::mat4 vMatrix, float width, float height);
+	static void CalculateScreenPositions(glm::mat4 pMatrix, glm::mat4 vMatrix, float width, float height);
 
 	static float scale;
 
 private:
 
+	Utility(const Utility&) = delete; // Prevent copying
+    void operator=(const Utility&) = delete;
 
-	GLuint textVAO, textVBO;
+	std::vector<float> planeVertices;   // Using vector to handle dynamic size
+    std::vector<unsigned int> planeIndices;
+    GLuint textVAO, textVBO;
+
+	static GLuint planeVAO;
+    static GLuint planeVBO;
+    static GLuint planeEBO;
+    static bool planeInitialized;
+
+    static void setupPlane();
+    void setupText();
 };

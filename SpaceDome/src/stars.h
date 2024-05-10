@@ -19,7 +19,7 @@
 #include "mesh.h"
 #include "utility.h"
 
-#define M_PI 3.14159265358979323846
+//#define M_PI 3.14159265358979323846
 
 
 //Implemented as explicit singleton, handles pretty much everything

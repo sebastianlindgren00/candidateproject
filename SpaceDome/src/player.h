@@ -16,7 +16,7 @@
 #include "shader.h"
 #include "bullets.h"
 
-#define M_PI 3.14159265358979323846
+//#define M_PI 3.14159265358979323846
 
 struct playerData {
 	int ID;
@@ -40,7 +40,7 @@ struct PlayerData
 	int mStarsHolding;
 	int mSuperCharge;
 	int shotAvailable;
-	float mTurnSpeed;
+	double mTurnSpeed;
 	int mBulletTimer;
 	float mSpeed;
 };
@@ -61,7 +61,7 @@ public:
 	Player(const Player&) = default;
 	Player& operator=(const Player&) = delete;
 
-	void setTurnSpeed(float turnSpeed) { mTurnSpeed = turnSpeed; };
+	void setTurnSpeed(double turnSpeed) { mTurnSpeed = turnSpeed; };
 
 	//Update position
 	int update(const std::vector<std::unique_ptr<Bullet>>& mBullets, float height);
@@ -73,7 +73,7 @@ public:
 
 	//Accessors
 	float getSpeed() const { return mSpeed; };
-	float getTurnSpeed() const { return mTurnSpeed; }
+	double getTurnSpeed() const { return mTurnSpeed; }
     int getID() const { return mPlayerID; }
 	const std::string& getName() const { return mName; };
     
@@ -168,7 +168,7 @@ private:
 
     glm::vec3 mPosition;
     float mOrientation = 0.0f;
-	float mTurnSpeed = 0.0f;
+	double mTurnSpeed = 0.0f;
 	float mSpeed     = 0.0001f;
 	glm::vec3 mPlayerColor;	
 	int mColorID;

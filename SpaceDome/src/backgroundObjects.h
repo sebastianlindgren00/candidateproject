@@ -27,25 +27,24 @@ public:
     //Constructor
 	BackgroundObject(float z){
 
-        //spawn at random locations with random velocitys and orientations
-        int random = rand() % 100;  
-      
-        zPos = z;
-        bSpeed *= (float)random/10;
-        bOrientationSpeed = (float)random/10000;
-        bOrientation = (float)random/10;
-        bDirection = bOrientation;
+    //spawn at random locations with random velocitys and orientations
+    int random = rand() % 100;  
+    zPos = z;
+    bSpeed *= (float)random/10;
+    bOrientationSpeed = (float)random/10000;
+    bOrientation = (float)random/10;
+    bDirection = bOrientation;
 
-        std::random_device rd;
-        std::mt19937 gen(rd());
+    std::random_device rd;
+    std::mt19937 gen(rd());
 
-        // Define the range for x and y
-        std::uniform_real_distribution<float> x_dist(-boundryX, boundryX);
-        std::uniform_real_distribution<float> y_dist(-boundryY, boundryY);
+    // Define the range for x and y
+    std::uniform_real_distribution<float> x_dist(-6, 6);
+    std::uniform_real_distribution<float> y_dist(-4, 4);
 
-        // Generate random x and y positions
-        float x = x_dist(gen);
-        float y = y_dist(gen);
+    // Generate random x and y positions
+    float x = x_dist(gen);
+    float y = y_dist(gen);
 
 /*
         double rand_angle = 2 * M_PI * rand() / (double)RAND_MAX; // Random angle
@@ -54,8 +53,9 @@ public:
         r *= (boundryX*2);
 */
 
-        bPosition = glm::vec3(x, y, zPos);
+    bPosition = glm::vec3(x, y, zPos);
     }
+    
 	//Destructor
 	~BackgroundObject();
 
@@ -80,14 +80,15 @@ public:
     void draw(const std::unique_ptr<AssimpLoader>& assimpLoader, const GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const;
 
 private:
-float size = 0.4;
-int axis = rand() % 3;
-float bOrientationSpeed;
-float zPos;
-float bSpeed = 0.001f;
-glm::vec3 bPosition;
-float bDirection;
-float bOrientation;
-glm::vec3 bColor = {0.3f, 0.3f, 0.3f};	
-//GLint sColLoc = -1;
+
+    float size = 0.4;
+    int axis = rand() % 3;
+    float bOrientationSpeed;
+    float zPos;
+    float bSpeed = 0.001f;
+    glm::vec3 bPosition;
+    float bDirection;
+    float bOrientation;
+    glm::vec3 bColor = {0.3f, 0.3f, 0.3f};	
+    //GLint sColLoc = -1;
 };

@@ -174,6 +174,16 @@ function Controller() {
       }
   })
 
+  window.addEventListener("pagehide", () => 
+  {  
+    sendJsonMessage({
+      //userID: searchparams.get('userID')
+      type: 'game_leave',
+      userName: searchparams.get('userName'),
+      id: userID
+    })
+  });
+
     
     
     function joystickController({ // Constructs a joystick based on given parameters

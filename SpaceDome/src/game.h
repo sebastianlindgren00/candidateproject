@@ -6,6 +6,7 @@
 #include <iostream>
 #include <map>
 #include <utility>
+
 #include <tuple>
 #include <cmath>
 #include <random>
@@ -13,6 +14,7 @@
 #include <chrono>
 #include <sgct/sgct.h>
 #include <set>
+#include "TextItem.h"
 
 #include "sgct/shareddata.h"
 #include "sgct/log.h"
@@ -23,6 +25,7 @@
 #include "glad/glad.h"
 #include "glm/packing.hpp"
 #include "glm/matrix.hpp"
+#include "nlohmann/json.hpp"
 
 #include "player.h"
 #include "utility.h"
@@ -50,6 +53,8 @@ static Game& instance() {
 
 std::vector<syncData> fetchSyncData();
 
+void handleJson(const nlohmann::json& j);
+
 void setMatrixes(glm::mat4 pMatrix, glm::mat4 vMatrix, int width, int height) { 
     projectionMatrix = pMatrix;
     viewMatrix = vMatrix;
@@ -58,6 +63,16 @@ void setMatrixes(glm::mat4 pMatrix, glm::mat4 vMatrix, int width, int height) {
     } 
 
 bool hasPlayers() const { return !mPlayers.empty(); }
+
+void getTexts(std::vector<TextItem>& texts);
+
+std::vector<std::string> hiscoreList[3];
+
+std::vector<std::string> getHiscoreList(const std::vector<std::unique_ptr<Player>>& players);
+
+void renderAllTextOnce(GLuint shaderProgramText, GLuint textFramebuffer,float textWidth, float textHeight, GLFWwindow* glfwWindow, Utility utilityInstance );
+
+void renderText(GLuint shaderProgram, float scale, float width, float height, Utility utilityInstance);
 
 bool hasBullets() const { return !mBullets.empty(); }
 
@@ -97,7 +112,7 @@ void pickUpStars(int id);
 
 void handInStars(int id);
 
-void updateTurnSpeed(unsigned int id, float rotAngle);
+void updateTurnSpeed(unsigned int id, double rotAngle);
 
 void setChargeActive(unsigned int id, bool mode){ mPlayers[id]->setChargeMode(mode); }
 
@@ -172,7 +187,7 @@ float mMaxTime = 25; //seconds
 //float mLastTime = 0;
 float mResetGame = 10;
 
-float zPosBgObjects = -3;
+float zPosBgObjects = -4.5;
 int starDelayCounter = 0;
 int starDelay = (rand() % 100) + 1;
 //int amountOfPlayers;

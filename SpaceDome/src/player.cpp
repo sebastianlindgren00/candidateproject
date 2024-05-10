@@ -1,9 +1,10 @@
-#include "player.h"
+#include "player.h" 
+const float M_PI = 3.14159265358979323846;
 
 Player::Player(const int id, const std::string& name, int team, int colorID, glm::vec3 color, glm::mat4 pMatrix, glm::mat4 vMatrix, int width, int height){
     mIsAlive = true;
     mName = name;
-    mPlayerID = id;
+    mPlayerID = id; // quickfix, kinda dirty
     mColorID = colorID;
     mPlayerColor = color;
     int randx = rand() %50;
@@ -65,7 +66,11 @@ int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets, float h
             respawnTimer = 0;
             int randx = rand() %100;
             int randy = rand() %100;
-            mOrientation = 0.5 - (float)randx/100;
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_real_distribution<float> dist(0.0f, 2.0f * M_PI);
+            float random_angle = dist(gen);
+            mOrientation = random_angle;
             superCharge = 200;
             
             if(mTeam == 1){
@@ -130,9 +135,6 @@ int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets, float h
     {
         mPosition.y *= -1;
     }
-    
-
-    setTurnSpeed(0);
     return -1;
 }
 
