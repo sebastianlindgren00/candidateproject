@@ -340,7 +340,7 @@ void draw(const RenderData& data) {
         }
 } 
 
-std::vector<std::tuple<std::string, float, float, float, glm::vec3>> printsPlayers;
+    std::vector<std::tuple<std::string, float, float, float, glm::vec3>> printsPlayers;
     for(auto& player : game.getPlayers()){
             if(player->isAlive())
             printsPlayers.push_back(std::make_tuple(player->getName(), player->getTextX(), player->getTextY(),textScaleX/1.5, glm::vec3(0.8f, 0.8f, 0.8f)));
@@ -357,7 +357,7 @@ std::vector<std::tuple<std::string, float, float, float, glm::vec3>> printsPlaye
         y,
         color1,
         text
-    );
+        );
     }
    
     /*
@@ -448,7 +448,7 @@ void draw2D(const RenderData& data) {
     count++;
     if(count == 1){
         count += 0.5;
-    }
+        }
     }
 }
 
