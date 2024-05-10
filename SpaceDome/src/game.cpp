@@ -121,24 +121,21 @@ void Game::setSyncData(const syncData data){
     }
 
 
+    mBGObjects.clear();
+    mBGObjects.reserve(data.objectData.size());
     for (size_t i = 0; i < data.objectData.size(); i++) {
-        if(mBGObjects.size() > i) {
-        mBGObjects[i]->setData(data.objectData[i]);
-        } else
         mBGObjects.push_back(std::make_unique<BackgroundObject>(data.objectData[i]));
     }
 
+    mBullets.clear();
+    mBullets.reserve(data.bulletData.size());
     for (size_t i = 0; i < data.bulletData.size(); i++) {
-        if(mBullets.size() > i) {
-        mBullets[i]->setData(data.bulletData[i]);
-        } else
         mBullets.push_back(std::make_unique<Bullet>(data.bulletData[i]));
     }
     
+    mStars.clear();
+    mStars.reserve(data.starData.size());
     for (size_t i = 0; i < data.starData.size(); i++) {
-        if(mStars.size() > i) {
-        mStars[i]->setData(data.starData[i]);
-        } else
         mStars.push_back(std::make_unique<Star>(data.starData[i]));
     }
     

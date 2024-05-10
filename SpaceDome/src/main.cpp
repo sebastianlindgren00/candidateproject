@@ -175,18 +175,26 @@ std::vector<std::byte> encode() {
     serializeObject(data, gameStates.starData);
     serializeObject(data, gameStates.playerName);
     
-
     return data;
 }
 
 void decode(const std::vector<std::byte>& data) {
     unsigned int pos = 0;
+
+    states.playerData.clear();
+    states.playerName.clear();
+    states.objectData.clear();
+    states.bulletData.clear();
+    states.starData.clear();
+
     deserializeObject(data, pos, gameSyncStates);
     deserializeObject(data, pos, states.playerData);
     deserializeObject(data, pos, states.objectData);
     deserializeObject(data, pos, states.bulletData);
     deserializeObject(data, pos, states.starData);
     deserializeObject(data, pos, states.playerName);
+
+
 }
 
 void postSyncPreDraw() {
