@@ -39,7 +39,7 @@ void Game::handleJson(const nlohmann::json& j, std::shared_ptr<tcpsocket::io::Tc
        const nlohmann ::json j = {
            {"type", "response_id"},
            {"id", id},
-           {"team", colourID}
+           {"team", colourID} // Möjligt att detta är brutal spaghetti kod
        };
        const std::string message = j.dump();
        socket->putMessage(message);
