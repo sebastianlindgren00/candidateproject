@@ -111,7 +111,7 @@ function Controller() {
         }
         if(JSON.stringify(lastJsonMessage).includes('response_id') &&  noID){
           setUserID(lastJsonMessage.id);
-          noID = false;
+          setNoID(false)
           sendJsonMessage({
             type: 'game_join',
             userName: searchparams.get('userName'),
