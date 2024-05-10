@@ -43,6 +43,15 @@ function Controller() {
       return n
     }
 
+    function leaveHandler(){
+      sendJsonMessage({
+        //userID: searchparams.get('userID')
+        type: 'game_leave',
+        userName: searchparams.get('userName'),
+        id: userID
+      })
+      localStorage.clear()
+    }
     // Incremental increase of the boost bar every 500ms, will become redundant
     useEffect(() => {
       const interval = setInterval(() => {if(boostState<=100){
@@ -159,16 +168,10 @@ function Controller() {
         }
     })
   useEffect(()=>{
-    window.addEventListener("pagehide", () => 
-      { 
-        sendJsonMessage({
-          //userID: searchparams.get('userID')
-          type: 'game_leave',
-          userName: searchparams.get('userName'),
-          id: userID
-        })
-        localStorage.clear()
-      });
+      window.addEventListener("pagehide", leaveHandler);
+      return () => {
+        window.removeEventListener("pagehide", leaveHandler);
+      }
   })
 
     
