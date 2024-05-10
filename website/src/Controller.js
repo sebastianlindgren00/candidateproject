@@ -47,7 +47,7 @@ function Controller() {
 
     function requestID(n){
       sendJsonMessage({
-        type: 'requst_id',
+        type: 'request_id',
         id: n
       })
       console.log(JSON.stringify(
