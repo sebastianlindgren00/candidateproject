@@ -107,23 +107,22 @@ function Controller() {
           setSrvAuth('authorized')
 
           requestID(userID)
+        }
+        if(JSON.stringify(lastJsonMessage).includes('response_id')){
+          setUserID(lastJsonMessage.id);
 
-          if(JSON.stringify(lastJsonMessage).includes('response_id')){
-            setUserID(lastJsonMessage.id);
-
-            sendJsonMessage({
+          sendJsonMessage({
+            type: 'game_join',
+            userName: searchparams.get('userName'),
+            id: userID
+          })
+          console.log(JSON.stringify(
+            {
               type: 'game_join',
               userName: searchparams.get('userName'),
               id: userID
-            })
-            console.log(JSON.stringify(
-              {
-                type: 'game_join',
-                userName: searchparams.get('userName'),
-                id: userID
-              }
-            ))
-          }
+            }
+          ))
         }
         if(JSON.stringify(lastJsonMessage).includes('game_started')){
           localStorage.clear()
