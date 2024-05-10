@@ -80,25 +80,27 @@ function Controller() {
         console.log(`Got a new message: ${JSON.stringify(lastJsonMessage)}`)
         if(JSON.stringify(lastJsonMessage).includes('Authorized') || srvAuth === 'authorized'){
           setSrvAuth('authorized')
-          if(JSON.stringify(lastJsonMessage).includes('game_started')){
-            sendJsonMessage({
-              //userID: searchparams.get('userID')
+          sendJsonMessage({
+            //userID: searchparams.get('userID')
+            type: 'game_join',
+            userName: searchparams.get('userName'),
+            id: userID
+          })
+          console.log(JSON.stringify(
+            {//userID: searchparams.get('userID')
               type: 'game_join',
               userName: searchparams.get('userName'),
               id: userID
-            })
-            console.log(JSON.stringify(
-              {//userID: searchparams.get('userID')
-                type: 'game_join',
-                userName: searchparams.get('userName'),
-                id: userID
-              }
-            ))
+            }
+          ))
+          if(JSON.stringify(lastJsonMessage).includes('game_started')){
+            
           }
         }
         if(JSON.stringify(lastJsonMessage).includes('server_join') &&
         JSON.stringify(lastJsonMessage).includes('host')){
           localStorage.clear()
+          setUserID(generateID())
           console.log("IDs cleared", localStorage.getItem('on_load_counter'))
         }
 
@@ -156,16 +158,18 @@ function Controller() {
             document.getElementById('controlPanel').style.display = 'none'
         }
     })
-
-  window.addEventListener("pagehide", () => 
-  {  
-    sendJsonMessage({
-      //userID: searchparams.get('userID')
-      type: 'game_leave',
-      userName: searchparams.get('userName'),
-      id: userID
-    })
-  });
+  useEffect(()=>{
+    window.addEventListener("pagehide", () => 
+      { 
+        sendJsonMessage({
+          //userID: searchparams.get('userID')
+          type: 'game_leave',
+          userName: searchparams.get('userName'),
+          id: userID
+        })
+        localStorage.clear()
+      });
+  })
 
     
     
