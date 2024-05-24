@@ -16,6 +16,7 @@
 #include "utility.h"
 #include "shader.h"
 #include "bullets.h"
+#include "booster.h"
 
 //#define M_PI 3.14159265358979323846
 
@@ -249,7 +250,7 @@ public:
 	int update(const std::vector<std::unique_ptr<Bullet>>& mBullets, float height);
 
 	//Draw the player
-	void draw(const std::vector<std::unique_ptr<AssimpLoader>>& modelsRed ,const std::vector<std::unique_ptr<AssimpLoader>>& modelsGreen, const GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const;
+	void draw(const std::vector<std::unique_ptr<AssimpLoader>>& modelsRed ,const std::vector<std::unique_ptr<AssimpLoader>>& modelsGreen, const GLuint shaderProgram, const GLuint shaderProgramBooster,glm::mat4 pMatrix, glm::mat4 vMatrix) const;
 
 	void updatePlayerData(playerData& data);
 
@@ -334,6 +335,25 @@ public:
 
 	bool getShotBullet() { return shotBullet;}
 
+	// boosters
+	
+	void activateShield() {mHasShield = true;}
+
+	void deActivateBooster(int type);
+	bool hasShield() {return mHasShield;}
+
+	//void setSpeed(float newSpeed) { bSpeed = newSpeed;}
+	void setSpeed(float newSpeed) {mSpeed = newSpeed;}
+
+	void activateSpeedBooster(double speedBoosterActivated){
+		mHasSpeedBooster = true;
+		mStartSpeedBooster = speedBoosterActivated;
+	};
+
+	bool hasSpeedBooster(){
+		return mHasSpeedBooster;
+	}
+
 
 private:
 	//Player information/data
@@ -367,11 +387,21 @@ private:
 	int respawnTimer = 0;
 
 	//info for bullets/shooting
+	
 	bool shotBullet = false;
 	int shotAvailable = 75;
 	int bulletTimer = 0;
 
 	glm::vec2 textPosition;
 	GLint mColLoc = -1;
+
+	// booster
+	bool mHasShield = false;
+	int hitByBulletCounter = 0;
+
+	bool mHasSpeedBooster = false;
+	double mStartSpeedBooster = 0.0;
+	double maxSpeedBosterTime = 8.0;
+	
 	
 };

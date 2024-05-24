@@ -83,6 +83,8 @@ add_executable(${PROJECT_NAME}
   src/text.cpp
   src/text.h
   src/TextItem.h
+  src/booster.h
+  src/booster.cpp
 )
 #---------- MAC
 #include_directories(/opt/homebrew/Cellar/libpng/1.6.43/include)

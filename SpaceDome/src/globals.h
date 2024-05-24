@@ -8,9 +8,10 @@
 #include <vector>
 #include <string>
 
+// lägg bara in dem efter allModelNames
 extern GLuint shaderProgram; // Define it exactly once in the whole pro
 
-const std::vector<std::string> allModelNames{ "planet1", "planet2", "SpaceShip", "asteroid1", "SpawnPlanetGreenTest", "SpawnPlanetRed", "backgroundFirstTest", "bullet", "star", "GreenBullet", "RedBullet"};
+const std::vector<std::string> allModelNames{ "planet1", "planet2", "SpaceShip", "asteroid1", "SpawnPlanetGreenTest", "SpawnPlanetRed", "backgroundFirstTest", "bullet", "star", "GreenBullet", "RedBullet","speedBooster","shieldBooster"};
 
 const std::vector<std::string> allShipsRed{ "RedShip11","RedShip12","RedShip13","RedShip21","RedShip22","RedShip23", "RedShip31", "RedShip32","RedShip33", "RedShip41","RedShip42","RedShip43","RedShip51","RedShip52","RedShip53", "RedShip61", "RedShip62","RedShip63"};
 

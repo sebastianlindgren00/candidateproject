@@ -55,6 +55,10 @@ std::vector<std::string> hiscoreList(3);
 std::vector<std::unique_ptr<AssimpLoader>> playerModelsRed;
 std::vector<std::unique_ptr<AssimpLoader>> playerModelsGreen;
 
+
+std::unique_ptr<AssimpLoader> shieldBooster;
+std::unique_ptr<AssimpLoader> speedBooster;
+
 //ShaderPrograms
 GLuint shaderProgram;
 GLuint shaderProgramTexture;
@@ -63,6 +67,8 @@ GLuint shaderProgramText;
 GLuint shaderProgramFisheye;
 GLuint plainShaderProgram;
 GLuint ShaderProgramTextTexture;
+
+GLuint shaderProgramTextureBooster;
 
 //buffers and textures
 GLuint framebuffer = 0;
@@ -81,6 +87,8 @@ const std::string Address = "localhost";
 bool isGameStarted = false;
 
 std::unique_ptr<tcpsocket::io::TcpSocket> tcpSocket = std::make_unique<tcpsocket::io::TcpSocket>(Address, Port);
+
+
 
 void verifyFontPath(const std::string& fontPath) {
     std::ifstream file(fontPath);
@@ -103,6 +111,9 @@ void initOGL(GLFWwindow*) {
     std::string filePath9 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[10] + ".fbx";
     std::string fontPath = std::string(MODELS_DIRECTORY) + "/font/Michroma-Regular.ttf";
 
+    std::string shieldPath = std::string(MODELS_DIRECTORY) + "/" + allModelNames[12] + ".fbx";
+    std::string speedBoosterPath =  std::string(MODELS_DIRECTORY) + "/" +allModelNames[11] + ".fbx";
+
     //verifyFontPath(fontPath);
 
     //Utility utility;
@@ -112,6 +123,7 @@ void initOGL(GLFWwindow*) {
     shaderProgramText = Utility::createShaderProgram(vertexShaderSourceText, fragmentShaderSourceText);
     plainShaderProgram = Utility::createShaderProgram(vertexShaderSourcePlain, fragmentShaderSourcePlain);
     ShaderProgramTextTexture = Utility::createShaderProgram(vertexShaderSourceTextTexture, fragmentShaderSourceTextTexture);
+    shaderProgramTextureBooster = Utility::createShaderProgram(vertexShaderSourceTexture, fragmentShaderSourceTextureBooster);
 
     //std::string baseDirectory = "../../models/";
     //bulletsAssimp = std::make_unique<AssimpLoader>(filePath4);
@@ -122,11 +134,14 @@ void initOGL(GLFWwindow*) {
     objectsAssimp.push_back(std::make_unique<AssimpLoader>(filePath2));
     objectsAssimp.push_back(std::make_unique<AssimpLoader>(filePath3));
 
+    shieldBooster = std::make_unique<AssimpLoader>(shieldPath);
+    speedBooster = std::make_unique<AssimpLoader>(speedBoosterPath);
+    
     redBulletAssimp= std::make_unique<AssimpLoader>(filePath8);
     greenBulletAssimp = std::make_unique<AssimpLoader>(filePath9);
 
     //load all models for team Red and than team Green
-    for( int i = 0; i < 18; i++){
+    for( int i = 0; i <18; i++){
         std::string path = std::string(MODELS_DIRECTORY) + "/red/" + allShipsRed[i] + ".fbx";
         playerModelsRed.push_back(std::make_unique<AssimpLoader>(path));
     }
@@ -197,6 +212,8 @@ void decode(const std::vector<std::byte>& data) {
 
 }
 
+
+
 void postSyncPreDraw() {
 	if (!Engine::instance().isMaster()) {
         Game::instance().setSyncGameData(gameSyncStates);
@@ -264,7 +281,7 @@ void draw(const RenderData& data) {
             object->draw(backgroundObjectsAssimp, shaderProgram, projectionMatrix, modelMatrix*viewMatrix); 
         }
     }
-    
+
     //dont render the rest if game is not active
     if(!game.isGameActive()){
         return;
@@ -284,13 +301,29 @@ void draw(const RenderData& data) {
                 player->restoreTimer();
                 game.addBulletID();
             }
-
+        
         int hitBulletId = player->update(bullets, windowHeightOut);
         if (hitBulletId != -1) {
             bulletsToRemove.push_back(hitBulletId); // Collect bullet IDs to remove
         }
-        player->draw(playerModelsRed, playerModelsGreen, shaderProgramTexture, projectionMatrix, modelMatrix*viewMatrix);
+        player->draw(playerModelsRed, playerModelsGreen, shaderProgramTexture, shaderProgramTextureBooster,projectionMatrix, modelMatrix*viewMatrix);
     }
+
+
+
+// if(game.hasStars()) {
+//         for (const auto& stars : game.getStars()){
+//             stars->draw(starsAssimp, shaderProgram, projectionMatrix, modelMatrix*viewMatrix);
+//         }
+//     }
+   
+
+    for(const auto& booster : game.getBoosters()) {
+
+        booster->draw(shieldBooster,speedBooster,shaderProgramTexture,projectionMatrix,modelMatrix*viewMatrix);
+
+    }
+    
 
 
 
@@ -322,6 +355,10 @@ void draw(const RenderData& data) {
         }
     }
 
+    //player->draw(playerModelsRed, playerModelsGreen, shaderProgramTexture, projectionMatrix, modelMatrix*viewMatrix);
+
+    
+
     //Render spawn planets
     for(size_t i = 0; i < objectsAssimp.size(); i++ ){
 
@@ -349,14 +386,20 @@ void draw(const RenderData& data) {
 } 
 
     std::vector<std::tuple<std::string, float, float, float, glm::vec3>> printsPlayers;
+    glm::vec3 color = glm::vec3(1.0f,1.0f,1.0f);
+    
     for(auto& player : game.getPlayers()){
-            if(player->isAlive())
-            printsPlayers.push_back(std::make_tuple(player->getName(), player->getTextX(), player->getTextY(),textScaleX/1.5, glm::vec3(0.8f, 0.8f, 0.8f)));
-        }
+        
+        printsPlayers.push_back(std::make_tuple(player->getName(), player->getTextX(), player->getTextY(),textScaleX/1.5, glm::vec3(0.8f, 0.8f, 0.8f)));
+    }
+    
+    sgct::vec4 color1 = sgct::vec4(0.8f, 0.8f, 0.8f, 1.0f);
 
-    const sgct::vec4 color1 = sgct::vec4(0.8f, 0.8f, 0.8f, 1.0f);
+   
+
+    // vill inte ha color1 utan vill istället ha color
     for (auto& [text, x, y, scale, color] : printsPlayers){
-    text::print( 
+        text::print( 
         data.window,
         data.viewport,
         *text::FontManager::instance().font("CustomFont",20),
@@ -365,9 +408,8 @@ void draw(const RenderData& data) {
         y,
         color1,
         text
-        );
+        );}
     }
-   
     /*
     std::vector<std::tuple<std::string, float, float, float, glm::vec3>> printsPlayers;
     for(auto& player : game.getPlayers()){
@@ -396,7 +438,6 @@ void draw(const RenderData& data) {
     utilityInstance.renderPlane(plainShaderProgram, 0, projectionMatrix,viewMatrix);
     //utilityInstance.renderPlane(ShaderProgramTextTexture, textRenderer.getTexture(), projectionMatrix,viewMatrix);
 */
-}
 
 void draw2D(const RenderData& data) {
     /*
@@ -498,7 +539,7 @@ void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Windo
                 std::cout << "Failed to send player data over TCP socket\n";
             }
             */
-            Game::instance().addPlayer(id, "ZZZZZZZZZ");
+            Game::instance().addPlayer(id, "Z");
         }
     }
     
@@ -525,6 +566,8 @@ int main(int argc, char** argv) {
     Game::instance().addPlayer(0, "TIM");
     Game::instance().addPlayer(1, "VIKTOR");
     Game::instance().addPlayer(2, "BAS");
+
+    
 
     std::vector<std::string> arg(argv + 1, argv + argc);
     Configuration config = sgct::parseArguments(arg);

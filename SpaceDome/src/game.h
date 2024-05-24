@@ -30,6 +30,7 @@
 #include "bullets.h"
 #include "stars.h"
 #include "backgroundObjects.h"
+#include "booster.h"
 
 // Contains all necessary game object data that is used for the sync
 struct syncData {
@@ -192,6 +193,7 @@ int getWins(int team) {
         return -1;
 }
 
+
 bool isGameActive() { return mGameActive; }
 
 bool shouldReturnTime(){
@@ -222,6 +224,14 @@ static glm::mat4 viewMatrix;
 static int windowHeight, windowWidth;
 
 void update();
+
+// booster stuff
+
+bool boostersActive();
+const std::vector<std::unique_ptr<Booster>>& getBoosters() const { return boosters; }
+void pickUpBoosters(int playerId);
+
+
 private:
 //Constructor
 Game()  {
@@ -246,9 +256,9 @@ bool mGameActive = false;
 std::unordered_map<sgct::Key, bool> keyStates;
 float mLastFrameTime = -1;
 float mTotalTime = 0;
-float mMaxTime = 30; //seconds
+float mMaxTime = 200; //seconds
 //float mLastTime = 0;
-float mResetGame = 10;
+float mResetGame = 3;
 
 float zPosBgObjects = -4.5;
 int starDelayCounter = 0;
@@ -278,6 +288,15 @@ float row5 = 540;
 float row6 = 460;
 float row7 = 380;
 float row8 = 300;
+
+//booster stuff
+
+std::vector<std::unique_ptr<Booster>> boosters;
+int boosterID;
+void generateBoosters(int id, int type);
+
+int boosterSpawnInterval = 1;
+int lastBoosterSpawnTime = 0;
 
 //int redColorID = 0;
 //int greenColorID = 0;
