@@ -1,6 +1,16 @@
 #pragma once
 
+
 #include <vector>
+#include <string>
+#include <fstream>
+#include <iostream>
+#include <map>
+#include <utility>
+#include <tuple>
+#include <cmath>
+#include <random>
+
 
 #include "mesh.h"
 #include "utility.h"
@@ -21,7 +31,11 @@ class Booster {
         //virtual void activate(Player& player) = 0;
         virtual void deActivate(Player& player) = 0;
         virtual void activate(Player& player) = 0;
-        //virtual bool isActive() = 0;
+        // virtual bool isActive() = 0;
+        // bool isShieldBooster(Booster* booster) {
+    // Returnera false om booster inte är en ShieldBooster
+//     return false;
+// }
 
         glm::vec3 getPosition() {return position;}
 
@@ -36,24 +50,15 @@ protected:
 class ShieldBooster : public Booster {
 public:
     ShieldBooster(glm::vec3 pos)
-        : Booster(pos), hitByBulletCounter(0), hasShield(true) {}
+        : Booster(pos) {}
+
+    void hitByBullet(Player& player); 
 
     void activate(Player& player);
     void deActivate(Player& player) override;
-
-    void hitByBullet(Player& player); 
-    bool isActive(){
-        return hasShield;
-    };
     void draw(const std::unique_ptr<AssimpLoader>& shieldModel, const std::unique_ptr<AssimpLoader>& speedBoosterModel, GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const override;
 
-
-private:
-    int hitByBulletCounter;
-    bool hasShield = false;
 };
-
-
 
 class SpeedBooster : public Booster {
 public:
@@ -62,9 +67,6 @@ public:
 
     void activate(Player& player);
     void deActivate(Player& player) override;
-    bool isActive(){
-        return hasSpeedBooster;
-    }
     void draw(const std::unique_ptr<AssimpLoader>& shieldModel, const std::unique_ptr<AssimpLoader>& speedBoosterModel, GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const override;
 
 private:

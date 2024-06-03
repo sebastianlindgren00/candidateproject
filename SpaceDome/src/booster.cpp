@@ -10,7 +10,6 @@ void Booster::updateBooster() {
 void ShieldBooster::draw(const std::unique_ptr<AssimpLoader>& shieldModel, const std::unique_ptr<AssimpLoader>& speedBoosterModel, const GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const {
     Utility::setupShaderForDrawingMaterial(shaderProgram, position, orientation, 0.25, 1, pMatrix, vMatrix);
 
-    // Draw
     auto& meshes = shieldModel->getMeshes(); // Using getMeshes() method to access the meshes
     for (unsigned int i = 0; i < meshes.size(); i++) {
         meshes[i].Draw(); // Draw each mesh
@@ -21,8 +20,6 @@ void ShieldBooster::draw(const std::unique_ptr<AssimpLoader>& shieldModel, const
 void SpeedBooster::draw(const std::unique_ptr<AssimpLoader>& shieldModel, const std::unique_ptr<AssimpLoader>& speedBoosterModel, const GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const{
     Utility::setupShaderForDrawingMaterial(shaderProgram, position, orientation, 0.25, 1, pMatrix, vMatrix);
 
-
-    // Draw
     auto& meshes = speedBoosterModel->getMeshes(); // Using getMeshes() method to access the meshes
     for (unsigned int i = 0; i < meshes.size(); i++) {
         meshes[i].Draw(); // Draw each mesh
@@ -33,7 +30,6 @@ void SpeedBooster::draw(const std::unique_ptr<AssimpLoader>& shieldModel, const 
 
 void ShieldBooster::activate(Player& player){
         player.setHasShield(true);
-        hasShield = true;
 }
 
 void SpeedBooster::activate(Player& player){
@@ -47,23 +43,21 @@ void SpeedBooster::activate(Player& player){
 }
 
 void ShieldBooster::hitByBullet(Player& player) {
-        player.increaseBulletCounter();
+    player.increaseBulletCounter();
 }
 
 void ShieldBooster::deActivate(Player& player){
-    
     if(player.getBulletCounter() > 0) {
+        player.resetBulletCounter();
         player.setHasShield(false);
-        hitByBulletCounter = 0;
+        player.emptyActiveBoosters();
     }
 }
 
 void SpeedBooster::deActivate(Player& player){
-
     float currentTime = sgct::time();
-
     if(currentTime - startSpeedBooster >= maxSpeedBoosterTime){
         player.setSpeed(0.01f);
+        player.emptyActiveBoosters();
     }
-
 }

@@ -339,13 +339,13 @@ public:
 
 	// boosters
 	void setSpeed(float speed) {mSpeed = speed;}
-    void setHasShield(bool hasShield) { mHasShield = hasShield;}
-    void setHasSpeedBooster(bool hasSpeedBooster) { mHasSpeedBooster = hasSpeedBooster; }
+    void setHasShield(bool hasShield) { 
+		mHasShield = hasShield;
+	}
 
-	//void deActivateBooster(int type);
-	bool hasShield() {return mHasShield;}
-
-	void startSpeedBoosterTime(double currentTime){mStartSpeedBooster= currentTime;}
+	void emptyActiveBoosters() {
+		activeBoosters.clear();
+	}
 
 	void addBooster(std::unique_ptr<Booster> booster) {
     	activeBoosters.push_back(std::move(booster));
@@ -354,8 +354,8 @@ public:
 	void increaseBulletCounter(){
 		hitByBulletCounter++;
 	};
-
 	int getBulletCounter(){return hitByBulletCounter;}
+	void resetBulletCounter() {hitByBulletCounter = 0;}
 
 private:
 	//Player information/data
@@ -406,5 +406,5 @@ private:
 	std::vector<std::unique_ptr<Booster>> activeBoosters;
 
 	bool mHasShield = false;
-    bool mHasSpeedBooster = false;
+    //bool mHasSpeedBooster = false;
 };

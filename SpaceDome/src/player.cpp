@@ -54,22 +54,9 @@ void Player::updatePlayerData(playerData& data) {
     mTurnSpeed = data.turnSpeed;
 }
 
-void handleBoosters(Player& player, std::unique_ptr<Booster> booster){
-    std::cout << "hello";
-
-}
-
 int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets, float height) {
 
     double currentTime = sgct::time();
-
-    // if(currentTime - mStartSpeedBooster >= maxSpeedBosterTime){
-    //     deActivateBooster(1);
-    // }
-
-    // if(hitByBulletCounter > 0){
-    //     deActivateBooster(2);     
-    // }
 
     if(bulletTimer < shotAvailable){
         bulletTimer++;
@@ -112,9 +99,8 @@ int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets, float h
                         for(auto& booster : activeBoosters){
                             if (auto shieldBooster = dynamic_cast<ShieldBooster*>(booster.get())){
                                 shieldBooster->hitByBullet(*this);
-                                shieldBooster->deActivate(*this);
-                                return bullet->getID();
-                            }
+                                return bullet->getID();   
+                            }                         
                         }
                     }else{     
                         mIsAlive = false;
@@ -124,14 +110,7 @@ int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets, float h
                 }
             }
         }
-    }
-            
-    
-
-
-// Returnera något här om det behövs efter att alla boosters har aktiverats och avaktiverats
-
-    
+    }            
 
     if(superCharge <= 0){
         chargeActive = false;
@@ -162,17 +141,6 @@ int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets, float h
 
     setTurnSpeed(0);
     return -1;}
-
-
-// void Player::deActivateBooster(int type){
-//     if(type % 2 == 0){
-//         mHasShield = false;
-//         hitByBulletCounter = 0;
-//     }else{
-//         mSpeed = 0.01;
-//         mHasSpeedBooster = false;
-//     }
-// }
 
 void Player::draw(const std::vector<std::unique_ptr<AssimpLoader>>& modelsRed ,const std::vector<std::unique_ptr<AssimpLoader>>& modelsGreen, const GLuint shaderProgramOriginal, const GLuint shaderProgramBooster, glm::mat4 pMatrix, glm::mat4 vMatrix) const {
 	if (!mIsAlive)
