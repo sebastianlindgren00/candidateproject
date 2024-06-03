@@ -328,6 +328,8 @@ void Game::update() {
 	return;
 	}
 
+    generateBoosters();
+
     if(mBGObjects.size() < windowHeight/(size_t)100) {
         mBGObjects.push_back(std::make_unique<BackgroundObject>(zPosBgObjects));
         if(counterForBGObjects == 3)
@@ -390,9 +392,7 @@ void Game::update() {
         it = mBullets.erase(it);
     }
 
-    for(auto it = boosters.begin(); it != boosters.end();) {
-        it = boosters.erase(it);
-    }
+    boosters.clear();
 
     for (auto& player : mPlayers) {
         player->resetAllStars();
@@ -455,13 +455,13 @@ void Game::update() {
         maxStarsID++;
     }
 
-   int type = boosterID % 2;
+//    int type = boosterID % 2;
    
-    if((int)boosters.size() < 25 && currentFrameTime - lastBoosterSpawnTime >= boosterSpawnInterval){
-        boosters.push_back(std::make_unique<Booster>(type));  
-        lastBoosterSpawnTime = currentFrameTime;
-        boosterID++;
-    }
+//     if((int)boosters.size() < 25 && currentFrameTime - lastBoosterSpawnTime >= boosterSpawnInterval){
+//         boosters.push_back(std::make_unique<Booster>(type));  
+//         lastBoosterSpawnTime = currentFrameTime;
+//         boosterID++;
+//     }
 
     //remove bullets that have expired - Move to Bullets class instead?
     mBullets.erase(std::remove_if(mBullets.begin(), mBullets.end(),
@@ -477,15 +477,10 @@ void Game::update() {
     for (auto& star : mStars)
 		star->update(mStars);
 
-    //update the players
-    for(auto& booster : boosters){
-        booster->update();
-
-    }
     
     
     for (auto& player : mPlayers) {
-        pickUpBoosters(player->getID());
+        //pickUpBoosters(player->getID());
 
         if(player->getDropStars()){
             for(int j = 0; j < player->getStars(); j ++){
@@ -502,34 +497,43 @@ void Game::update() {
         //hand in stars
         handInStars(player->getID());
 		//player->update(mBullets);
-        //pickUpBoosters(player->getID());
+        pickUpBoosters(player->getID());
+    }
+     for(auto& booster : boosters){
+        booster->updateBooster();
+
     }
     //update the bullets
     for (auto& bullet : mBullets)
         bullet->update();
 }
 
+glm::vec3 Game::generateBoosterPos() {
+
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<float> x_dist(-boundryX, boundryX);
+    std::uniform_real_distribution<float> y_dist(-boundryY, boundryY);
+
+
+    float x = x_dist(gen);
+    float y = y_dist(gen);
+
+
+    return glm::vec3(x, y, -1.5);
+
+
+}
+
 void Game::pickUpBoosters(int playerId) {
-    for (auto it = boosters.begin(); it != boosters.end();) {
-
-        float distance = glm::distance(mPlayers[playerId]->getPosition(), (*it)->getPosition());
-        
+    auto& player = mPlayers[playerId];
+    for (auto it = boosters.begin(); it != boosters.end(); ) {
+        float distance = glm::distance(player->getPosition(), (*it)->getPosition());
         if (distance < 0.25) {
-            
-            int boosterType = (*it)->getType();
-            it = boosters.erase(it); 
-
-            if (!mPlayers[playerId]->hasShield() && !mPlayers[playerId]->hasSpeedBooster()) {
-                if (boosterType % 2 == 0) {
-                    mPlayers[playerId]->activateShield();
-
-                } else {
-
-                    double currentTime = sgct::time();
-                    mPlayers[playerId]->activateSpeedBooster(currentTime);
-
-                }
-            }
+            //(*it)->update(*player);
+            player->addBooster(std::move(*it));
+            it = boosters.erase(it);
         } else {
             ++it;
         }
@@ -537,6 +541,21 @@ void Game::pickUpBoosters(int playerId) {
 }
 
 
+void Game::generateBoosters() {
+    currentFrameTime = sgct::time();
+    if (boosters.size() < 25 && currentFrameTime - lastBoosterSpawnTime >= boosterSpawnInterval) {
+        boosterPosition = generateBoosterPos();
+        int index = boosterID % 2;
+        if (index == 0) {
+            boosters.push_back(std::make_unique<ShieldBooster>(boosterPosition));
+        } else {
+            boosters.push_back(std::make_unique<SpeedBooster>(boosterPosition));
+        }
+        
+        lastBoosterSpawnTime = currentFrameTime;
+        boosterID++;
+    }
+}
 
 
 std::vector<std::string> Game::getHiscoreList(const std::vector<std::unique_ptr<Player>>& players) {

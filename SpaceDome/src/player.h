@@ -1,5 +1,6 @@
 #pragma once
 
+#include "booster.h"
 #include "globals.h"
 #include <unordered_map>
 #include <string>
@@ -19,6 +20,8 @@
 #include "booster.h"
 
 //#define M_PI 3.14159265358979323846
+
+class Booster;
 
 struct playerData {
 	int ID;
@@ -69,7 +72,6 @@ class Player
 public:
 	//Default constructor
 	Player();
-
 	//Constructor
 	Player(const int id, const std::string& name, int team, int colorID, glm::vec3 color, glm::mat4 pMatrix, glm::mat4 vMatrix, int width, int height);
 
@@ -336,24 +338,24 @@ public:
 	bool getShotBullet() { return shotBullet;}
 
 	// boosters
-	
-	void activateShield() {mHasShield = true;}
+	void setSpeed(float speed) {mSpeed = speed;}
+    void setHasShield(bool hasShield) { mHasShield = hasShield;}
+    void setHasSpeedBooster(bool hasSpeedBooster) { mHasSpeedBooster = hasSpeedBooster; }
 
-	void deActivateBooster(int type);
+	//void deActivateBooster(int type);
 	bool hasShield() {return mHasShield;}
 
-	//void setSpeed(float newSpeed) { bSpeed = newSpeed;}
-	void setSpeed(float newSpeed) {mSpeed = newSpeed;}
+	void startSpeedBoosterTime(double currentTime){mStartSpeedBooster= currentTime;}
 
-	void activateSpeedBooster(double speedBoosterActivated){
-		mHasSpeedBooster = true;
-		mStartSpeedBooster = speedBoosterActivated;
-	};
-
-	bool hasSpeedBooster(){
-		return mHasSpeedBooster;
+	void addBooster(std::unique_ptr<Booster> booster) {
+    	activeBoosters.push_back(std::move(booster));
 	}
 
+	void increaseBulletCounter(){
+		hitByBulletCounter++;
+	};
+
+	int getBulletCounter(){return hitByBulletCounter;}
 
 private:
 	//Player information/data
@@ -377,7 +379,7 @@ private:
     glm::vec3 mPosition;
     float mOrientation = 0.0f;
 	float mTurnSpeed = 0.0f;
-	float mSpeed     = 0.0001f;
+	float mSpeed     = 0.01f;
 	glm::vec3 mPlayerColor;	
 	int mColorID;
 	float hitRadius = 0.2f;
@@ -396,12 +398,13 @@ private:
 	GLint mColLoc = -1;
 
 	// booster
-	bool mHasShield = false;
 	int hitByBulletCounter = 0;
 
-	bool mHasSpeedBooster = false;
 	double mStartSpeedBooster = 0.0;
-	double maxSpeedBosterTime = 8.0;
-	
-	
+	double maxSpeedBosterTime = 5.0;
+
+	std::vector<std::unique_ptr<Booster>> activeBoosters;
+
+	bool mHasShield = false;
+    bool mHasSpeedBooster = false;
 };

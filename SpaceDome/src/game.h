@@ -25,12 +25,13 @@
 #include "glm/packing.hpp"
 #include "glm/matrix.hpp"
 
+#include "booster.h"
 #include "player.h"
 #include "utility.h"
 #include "bullets.h"
 #include "stars.h"
 #include "backgroundObjects.h"
-#include "booster.h"
+
 
 // Contains all necessary game object data that is used for the sync
 struct syncData {
@@ -228,8 +229,19 @@ void update();
 // booster stuff
 
 bool boostersActive();
+std::vector<std::unique_ptr<Booster>> boosters;
 const std::vector<std::unique_ptr<Booster>>& getBoosters() const { return boosters; }
 void pickUpBoosters(int playerId);
+
+void generateBoosters();
+glm::vec3 generateBoosterPos();
+glm::vec3 boosterPosition;
+
+float currentFrameTime;
+float lastBoosterSpawnTime;
+float boosterSpawnInterval = 1;
+int boosterID;
+//std::vector<std::unique_ptr<Booster>> boosters;
 
 
 private:
@@ -291,12 +303,12 @@ float row8 = 300;
 
 //booster stuff
 
-std::vector<std::unique_ptr<Booster>> boosters;
-int boosterID;
-void generateBoosters(int id, int type);
+// std::vector<std::unique_ptr<Booster>> boosters;
+// int boosterID;
+// void generateBoosters(int id, int type);
 
-int boosterSpawnInterval = 1;
-int lastBoosterSpawnTime = 0;
+// int boosterSpawnInterval = 1;
+// int lastBoosterSpawnTime = 0;
 
 //int redColorID = 0;
 //int greenColorID = 0;

@@ -141,12 +141,12 @@ void initOGL(GLFWwindow*) {
     greenBulletAssimp = std::make_unique<AssimpLoader>(filePath9);
 
     //load all models for team Red and than team Green
-    for( int i = 0; i <18; i++){
+    for( int i = 17; i > 0 ;i--){
         std::string path = std::string(MODELS_DIRECTORY) + "/red/" + allShipsRed[i] + ".fbx";
         playerModelsRed.push_back(std::make_unique<AssimpLoader>(path));
     }
 
-    for( int i = 0; i < 18; i++){
+    for( int i = 17; i > 0 ;i--){
         std::string path = std::string(MODELS_DIRECTORY) + "/green/" + allShipsGreen[i] + ".fbx";
         playerModelsGreen.push_back(std::make_unique<AssimpLoader>(path));
     }
@@ -321,7 +321,6 @@ void draw(const RenderData& data) {
     for(const auto& booster : game.getBoosters()) {
 
         booster->draw(shieldBooster,speedBooster,shaderProgramTexture,projectionMatrix,modelMatrix*viewMatrix);
-
     }
     
 
@@ -354,10 +353,6 @@ void draw(const RenderData& data) {
             stars->draw(starsAssimp, shaderProgram, projectionMatrix, modelMatrix*viewMatrix);
         }
     }
-
-    //player->draw(playerModelsRed, playerModelsGreen, shaderProgramTexture, projectionMatrix, modelMatrix*viewMatrix);
-
-    
 
     //Render spawn planets
     for(size_t i = 0; i < objectsAssimp.size(); i++ ){
@@ -539,7 +534,7 @@ void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Windo
                 std::cout << "Failed to send player data over TCP socket\n";
             }
             */
-            Game::instance().addPlayer(id, "Z");
+            //Game::instance().addPlayer(id, "Z");
         }
     }
     

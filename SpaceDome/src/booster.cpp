@@ -1,38 +1,69 @@
 #include "booster.h"
 
-void Booster::update() {
-    float deltaTime = 0.016f; // Frame time assuming 60 FPS
-
+void Booster::updateBooster() {
+    float framesPerSecond = 60.0f;
+    float deltaTime = 1/framesPerSecond; // Frame time assuming 60 FPS
     orientation += 0.2f * deltaTime;
-    setOrientation(orientation);
-
 
 }
 
+void ShieldBooster::draw(const std::unique_ptr<AssimpLoader>& shieldModel, const std::unique_ptr<AssimpLoader>& speedBoosterModel, const GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const {
+    Utility::setupShaderForDrawingMaterial(shaderProgram, position, orientation, 0.25, 1, pMatrix, vMatrix);
 
-void Booster::draw(const std::unique_ptr<AssimpLoader>& shieldModel, const std::unique_ptr<AssimpLoader>& speedBoosterModel, const GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const{
-   
-    double scale = type % 2 == 0 ? 0.18 : 0.23;
-    Utility::setupShaderForDrawingMaterial(shaderProgram, pos, orientation, scale, 1, pMatrix, vMatrix);
- 
-     
-    //draw
-    if(type % 2 == 0){
-         auto& meshes = shieldModel->getMeshes();
-
+    // Draw
+    auto& meshes = shieldModel->getMeshes(); // Using getMeshes() method to access the meshes
     for (unsigned int i = 0; i < meshes.size(); i++) {
-            meshes[i].Draw(); // Draw each mesh
-    }}else {
-         auto& meshes = speedBoosterModel->getMeshes();
-          for (unsigned int i = 0; i < meshes.size(); i++) {
-            meshes[i].Draw(); // Draw each mesh
+        meshes[i].Draw(); // Draw each mesh
     }
-
-    }
+}
 
 
-    GLenum err;
-    while ((err = glGetError()) != GL_NO_ERROR) {
-        std::cerr << "OpenGL error after linking shader program: " << err << std::endl;
+void SpeedBooster::draw(const std::unique_ptr<AssimpLoader>& shieldModel, const std::unique_ptr<AssimpLoader>& speedBoosterModel, const GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const{
+    Utility::setupShaderForDrawingMaterial(shaderProgram, position, orientation, 0.25, 1, pMatrix, vMatrix);
+
+
+    // Draw
+    auto& meshes = speedBoosterModel->getMeshes(); // Using getMeshes() method to access the meshes
+    for (unsigned int i = 0; i < meshes.size(); i++) {
+        meshes[i].Draw(); // Draw each mesh
     }
+}
+
+
+
+void ShieldBooster::activate(Player& player){
+        player.setHasShield(true);
+        hasShield = true;
+}
+
+void SpeedBooster::activate(Player& player){
+
+    if(!hasSpeedBooster){
+        startSpeedBooster = sgct::time();
+    }
+
+    player.setSpeed(0.025f);
+    hasSpeedBooster = true;
+}
+
+void ShieldBooster::hitByBullet(Player& player) {
+        player.increaseBulletCounter();
+}
+
+void ShieldBooster::deActivate(Player& player){
+    
+    if(player.getBulletCounter() > 0) {
+        player.setHasShield(false);
+        hitByBulletCounter = 0;
+    }
+}
+
+void SpeedBooster::deActivate(Player& player){
+
+    float currentTime = sgct::time();
+
+    if(currentTime - startSpeedBooster >= maxSpeedBoosterTime){
+        player.setSpeed(0.01f);
+    }
+
 }

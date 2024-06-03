@@ -54,22 +54,27 @@ void Player::updatePlayerData(playerData& data) {
     mTurnSpeed = data.turnSpeed;
 }
 
+void handleBoosters(Player& player, std::unique_ptr<Booster> booster){
+    std::cout << "hello";
+
+}
+
 int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets, float height) {
 
     double currentTime = sgct::time();
 
-    if(currentTime - mStartSpeedBooster >= maxSpeedBosterTime){
-        deActivateBooster(1);
-    }
+    // if(currentTime - mStartSpeedBooster >= maxSpeedBosterTime){
+    //     deActivateBooster(1);
+    // }
 
-    if(hitByBulletCounter > 0){
-        deActivateBooster(2);     
-    }
+    // if(hitByBulletCounter > 0){
+    //     deActivateBooster(2);     
+    // }
 
     if(bulletTimer < shotAvailable){
         bulletTimer++;
     }
-    
+
     //check if alive, if not, how long untill spawning? spawning at spawn points
     if (!mIsAlive) {
         if(respawnTimer == 500){
@@ -93,33 +98,40 @@ int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets, float h
         return -1; 
     }
 
-    
+    for(auto& booster : activeBoosters){
+        booster->activate(*this);
+        booster->deActivate(*this);
+    }
+
     for (const auto& bullet : mBullets) {
         if (bullet->getTeam() != mTeam) {
             glm::vec3 bulletPos = bullet->getPosition();
             float distance = glm::distance(bulletPos, mPosition);
-
-            if (distance <= hitRadius) {
-                if(mHasShield){
-                        hitByBulletCounter++; 
-                        std::cout << hitByBulletCounter;
+                if (distance <= hitRadius) {
+                    if(mHasShield){
+                        for(auto& booster : activeBoosters){
+                            if (auto shieldBooster = dynamic_cast<ShieldBooster*>(booster.get())){
+                                shieldBooster->hitByBullet(*this);
+                                shieldBooster->deActivate(*this);
+                                return bullet->getID();
+                            }
+                        }
+                    }else{     
+                        mIsAlive = false;
+                        dropStars = true; 
+                        std::cout << "Player with ID: " << mPlayerID << " Was Eliminated. \n";
                         return bullet->getID();
-                        break;
-                }else{
-                    mIsAlive = false;
-                    dropStars = true; 
-                    std::cout << "Player with ID: " << mPlayerID << " Was Eliminated. \n";
-                    return bullet->getID();
+                }
             }
-         }
         }
-    } 
-    //handeling super charge, using? empty? filling? full?
+    }
+            
     
-    if(mHasSpeedBooster){
-        mSpeed = 0.025;
-    }else{
-        mSpeed = 0.01;}
+
+
+// Returnera något här om det behövs efter att alla boosters har aktiverats och avaktiverats
+
+    
 
     if(superCharge <= 0){
         chargeActive = false;
@@ -152,15 +164,15 @@ int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets, float h
     return -1;}
 
 
-void Player::deActivateBooster(int type){
-    if(type % 2 == 0){
-        mHasShield = false;
-        hitByBulletCounter = 0;
-    }else{
-        mSpeed = 0.01;
-        mHasSpeedBooster = false;
-    }
-}
+// void Player::deActivateBooster(int type){
+//     if(type % 2 == 0){
+//         mHasShield = false;
+//         hitByBulletCounter = 0;
+//     }else{
+//         mSpeed = 0.01;
+//         mHasSpeedBooster = false;
+//     }
+// }
 
 void Player::draw(const std::vector<std::unique_ptr<AssimpLoader>>& modelsRed ,const std::vector<std::unique_ptr<AssimpLoader>>& modelsGreen, const GLuint shaderProgramOriginal, const GLuint shaderProgramBooster, glm::mat4 pMatrix, glm::mat4 vMatrix) const {
 	if (!mIsAlive)
