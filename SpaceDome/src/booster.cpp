@@ -7,7 +7,7 @@ void Booster::updateBooster() {
 
 }
 
-void ShieldBooster::draw(const std::unique_ptr<AssimpLoader>& shieldModel, const std::unique_ptr<AssimpLoader>& speedBoosterModel, const GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const {
+void ShieldBooster::draw(const GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const {
     Utility::setupShaderForDrawingMaterial(shaderProgram, position, orientation, 0.25, 1, pMatrix, vMatrix);
 
     auto& meshes = shieldModel->getMeshes(); // Using getMeshes() method to access the meshes
@@ -17,10 +17,10 @@ void ShieldBooster::draw(const std::unique_ptr<AssimpLoader>& shieldModel, const
 }
 
 
-void SpeedBooster::draw(const std::unique_ptr<AssimpLoader>& shieldModel, const std::unique_ptr<AssimpLoader>& speedBoosterModel, const GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const{
+void SpeedBooster::draw(const GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const{
     Utility::setupShaderForDrawingMaterial(shaderProgram, position, orientation, 0.25, 1, pMatrix, vMatrix);
 
-    auto& meshes = speedBoosterModel->getMeshes(); // Using getMeshes() method to access the meshes
+    auto& meshes = speedModel->getMeshes(); // Using getMeshes() method to access the meshes
     for (unsigned int i = 0; i < meshes.size(); i++) {
         meshes[i].Draw(); // Draw each mesh
     }

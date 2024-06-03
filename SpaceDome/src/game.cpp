@@ -531,7 +531,6 @@ void Game::pickUpBoosters(int playerId) {
     for (auto it = boosters.begin(); it != boosters.end(); ) {
         float distance = glm::distance(player->getPosition(), (*it)->getPosition());
         if (distance < 0.25) {
-            //(*it)->update(*player);
             player->addBooster(std::move(*it));
             it = boosters.erase(it);
         } else {
@@ -539,7 +538,6 @@ void Game::pickUpBoosters(int playerId) {
         }
     }
 }
-
 
 void Game::generateBoosters() {
     currentFrameTime = sgct::time();
@@ -551,12 +549,10 @@ void Game::generateBoosters() {
         } else {
             boosters.push_back(std::make_unique<SpeedBooster>(boosterPosition));
         }
-        
         lastBoosterSpawnTime = currentFrameTime;
         boosterID++;
     }
 }
-
 
 std::vector<std::string> Game::getHiscoreList(const std::vector<std::unique_ptr<Player>>& players) {
 

@@ -1,15 +1,11 @@
 #pragma once
 
-
+#include <iostream>
 #include <vector>
 #include <string>
-#include <fstream>
-#include <iostream>
-#include <map>
-#include <utility>
-#include <tuple>
-#include <cmath>
-#include <random>
+#include <memory>
+#include <AssimpLoader.h>
+#include "assimp/Importer.hpp"
 
 
 #include "mesh.h"
@@ -25,17 +21,11 @@ class Booster {
 
         Booster(glm::vec3 pos) : position(pos) {}
     
-        virtual void draw(const std::unique_ptr<AssimpLoader>& shieldModel, const std::unique_ptr<AssimpLoader>& speedBoosterModel, const GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const = 0;
+        virtual void draw(const GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const = 0;
         void updateBooster();
 
-        //virtual void activate(Player& player) = 0;
         virtual void deActivate(Player& player) = 0;
         virtual void activate(Player& player) = 0;
-        // virtual bool isActive() = 0;
-        // bool isShieldBooster(Booster* booster) {
-    // Returnera false om booster inte är en ShieldBooster
-//     return false;
-// }
 
         glm::vec3 getPosition() {return position;}
 
@@ -49,25 +39,35 @@ protected:
 
 class ShieldBooster : public Booster {
 public:
-    ShieldBooster(glm::vec3 pos)
-        : Booster(pos) {}
+    ShieldBooster(glm::vec3 pos) : Booster(pos) {
+            std::string shieldModelPath = std::string("C:/Users/corne/Kanditatprojekt/candidateproject/SpaceDome/src/models") + "/" + allModelNames[12] + ".fbx";
+            shieldModel = std::make_unique<AssimpLoader>(shieldModelPath);
+        }
 
     void hitByBullet(Player& player); 
 
     void activate(Player& player);
     void deActivate(Player& player) override;
-    void draw(const std::unique_ptr<AssimpLoader>& shieldModel, const std::unique_ptr<AssimpLoader>& speedBoosterModel, GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const override;
+    void draw(GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const override;
+
+    private:
+
+        std::unique_ptr<AssimpLoader> shieldModel;
+
 
 };
 
 class SpeedBooster : public Booster {
 public:
-    SpeedBooster(glm::vec3 pos) : Booster(pos), boosterSpeed(0.025f), hasSpeedBooster(false), startSpeedBooster(0.0f) {}
+    SpeedBooster(glm::vec3 pos) : Booster(pos), boosterSpeed(0.025f), hasSpeedBooster(false), startSpeedBooster(0.0f) {
+        std::string speedModelPath = std::string("C:/Users/corne/Kanditatprojekt/candidateproject/SpaceDome/src/models") + "/" + allModelNames[11] + ".fbx";
+        speedModel = std::make_unique<AssimpLoader>(speedModelPath);
+    }
 
 
     void activate(Player& player);
     void deActivate(Player& player) override;
-    void draw(const std::unique_ptr<AssimpLoader>& shieldModel, const std::unique_ptr<AssimpLoader>& speedBoosterModel, GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const override;
+    void draw(GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const override;
 
 private:
 
@@ -75,6 +75,7 @@ private:
     float startSpeedBooster;
     float maxSpeedBoosterTime = 3;
     bool hasSpeedBooster;
+    std::unique_ptr<AssimpLoader> speedModel;
 };
 
 

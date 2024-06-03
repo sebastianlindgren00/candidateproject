@@ -131,6 +131,7 @@ void initOGL(GLFWwindow*) {
     starsAssimp = std::make_unique<AssimpLoader>(filePath5);
     skyboxAssimp = std::make_unique<AssimpLoader>(filePath6);
     backgroundObjectsAssimp = std::make_unique<AssimpLoader>(filePath7);
+
     objectsAssimp.push_back(std::make_unique<AssimpLoader>(filePath2));
     objectsAssimp.push_back(std::make_unique<AssimpLoader>(filePath3));
 
@@ -319,14 +320,9 @@ void draw(const RenderData& data) {
    
 
     for(const auto& booster : game.getBoosters()) {
-
-        booster->draw(shieldBooster,speedBooster,shaderProgramTexture,projectionMatrix,modelMatrix*viewMatrix);
+        booster->draw(shaderProgramTexture,projectionMatrix,modelMatrix*viewMatrix);
     }
     
-
-
-
-    // Now remove the bullets that were marked for removal
     if (!bulletsToRemove.empty()) {
         game.getBullets().erase(
             std::remove_if(
