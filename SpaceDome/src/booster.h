@@ -19,30 +19,29 @@ class Booster {
 
     public:
 
-        Booster(glm::vec3 pos) : position(pos) {}
+        Booster(){position = generateBoosterPos();}
     
-        virtual void draw(const GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const = 0;
-        void updateBooster();
-
+        virtual void draw(const GLuint shaderBooster, glm::mat4 pMatrix, glm::mat4 vMatrix) const = 0;
         virtual void deActivate(Player& player) = 0;
         virtual void activate(Player& player) = 0;
 
+        void updateBooster();
+        glm::vec3 generateBoosterPos();
         glm::vec3 getPosition() {return position;}
 
+    protected:
 
-protected:
-
-    glm::vec3 position;
-    float orientation = 1.0f;
+        glm::vec3 position;
+        float orientation = 1.0f;
 
 };
 
 class ShieldBooster : public Booster {
 public:
-    ShieldBooster(glm::vec3 pos) : Booster(pos) {
-            std::string shieldModelPath = std::string("C:/Users/corne/Kanditatprojekt/candidateproject/SpaceDome/src/models") + "/" + allModelNames[12] + ".fbx";
-            shieldModel = std::make_unique<AssimpLoader>(shieldModelPath);
-        }
+    ShieldBooster() : Booster(){
+        std::string shieldModelPath = std::string("C:/Users/corne/Kanditatprojekt/candidateproject/SpaceDome/src/models") + "/" + allModelNames[12] + ".fbx";
+        shieldModel = std::make_unique<AssimpLoader>(shieldModelPath);
+    }
 
     void hitByBullet(Player& player); 
 
@@ -51,19 +50,15 @@ public:
     void draw(GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const override;
 
     private:
-
         std::unique_ptr<AssimpLoader> shieldModel;
-
-
 };
 
 class SpeedBooster : public Booster {
 public:
-    SpeedBooster(glm::vec3 pos) : Booster(pos), boosterSpeed(0.025f), hasSpeedBooster(false), startSpeedBooster(0.0f) {
+    SpeedBooster() : Booster(), boosterSpeed(0.025f), hasSpeedBooster(false), startSpeedBooster(0.0f) {
         std::string speedModelPath = std::string("C:/Users/corne/Kanditatprojekt/candidateproject/SpaceDome/src/models") + "/" + allModelNames[11] + ".fbx";
         speedModel = std::make_unique<AssimpLoader>(speedModelPath);
     }
-
 
     void activate(Player& player);
     void deActivate(Player& player) override;
@@ -77,62 +72,3 @@ private:
     bool hasSpeedBooster;
     std::unique_ptr<AssimpLoader> speedModel;
 };
-
-
-
-
-
-
-// class Booster {
-
-//     public:
-
-//         Booster(int sType) {
-//             int random = rand() % 100;  
-// /*
-//             double rand_angle = 2 * M_PI * rand() / (double)RAND_MAX; // Random angle
-//             double rand_radius = rand() / (double)RAND_MAX + rand() / (double)RAND_MAX; // Random radius
-//             double r = (rand_radius > 1) ? 2 - rand_radius : rand_radius;
-//             r *= (boundryX);
-//     */
-//             std::random_device rd;
-//             std::mt19937 gen(rd());
-
-//             //Define the range for x and y
-//             std::uniform_real_distribution<float> x_dist(-boundryX, boundryX);
-//             std::uniform_real_distribution<float> y_dist(-boundryY, boundryY);
-
-//             //Generate random x and y positions
-//             float x = x_dist(gen);
-//             float y = y_dist(gen);
-
-//             orientation = (float)random/10;
-//             pos = glm::vec3(x, y, -1.5);
-
-//             type = sType;
-
-//         }
-
-//         void draw(const std::unique_ptr<AssimpLoader>& shieldModel, const std::unique_ptr<AssimpLoader>& speedBoosterModel, const GLuint shaderProgram ,glm::mat4 pMatrix, glm::mat4 vMatrix) const;
-//         void update();
-
-//         glm::vec3 getPosition() {return pos;}
-//         int getType() {return type;}
-
-//         void setOrientation(float newOrientation){orientation = newOrientation;}
-
-//         Booster(const Booster&) = default;
-//         Booster& operator=(const Booster&) = delete;
-        
-
-//     private:
-
-//         int type; 
-//         glm::vec3 pos = glm::vec3(1.0f, 0.3f, 0.8f);
-
-//         float orientation;
-
-
-//         int hitCounter;
-
-// };

@@ -228,21 +228,10 @@ void update();
 
 // booster stuff
 
-bool boostersActive();
 std::vector<std::unique_ptr<Booster>> boosters;
 const std::vector<std::unique_ptr<Booster>>& getBoosters() const { return boosters; }
 void pickUpBoosters(int playerId);
-
 void generateBoosters();
-glm::vec3 generateBoosterPos();
-glm::vec3 boosterPosition;
-
-float currentFrameTime;
-float lastBoosterSpawnTime;
-float boosterSpawnInterval = 1;
-int boosterID;
-//std::vector<std::unique_ptr<Booster>> boosters;
-
 
 private:
 //Constructor
@@ -301,15 +290,12 @@ float row6 = 460;
 float row7 = 380;
 float row8 = 300;
 
-//booster stuff
+// boosters
 
-// std::vector<std::unique_ptr<Booster>> boosters;
-// int boosterID;
-// void generateBoosters(int id, int type);
+double currentFrameTime;
+double lastBoosterSpawnTime;
+double boosterSpawnInterval = 3;
+int maxAmountOfBoosters = 15;
+int boosterID;
 
-// int boosterSpawnInterval = 1;
-// int lastBoosterSpawnTime = 0;
-
-//int redColorID = 0;
-//int greenColorID = 0;
 };

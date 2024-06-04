@@ -508,24 +508,6 @@ void Game::update() {
         bullet->update();
 }
 
-glm::vec3 Game::generateBoosterPos() {
-
-
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<float> x_dist(-boundryX, boundryX);
-    std::uniform_real_distribution<float> y_dist(-boundryY, boundryY);
-
-
-    float x = x_dist(gen);
-    float y = y_dist(gen);
-
-
-    return glm::vec3(x, y, -1.5);
-
-
-}
-
 void Game::pickUpBoosters(int playerId) {
     auto& player = mPlayers[playerId];
     for (auto it = boosters.begin(); it != boosters.end(); ) {
@@ -541,13 +523,12 @@ void Game::pickUpBoosters(int playerId) {
 
 void Game::generateBoosters() {
     currentFrameTime = sgct::time();
-    if (boosters.size() < 25 && currentFrameTime - lastBoosterSpawnTime >= boosterSpawnInterval) {
-        boosterPosition = generateBoosterPos();
+    if (boosters.size() < maxAmountOfBoosters && currentFrameTime - lastBoosterSpawnTime >= boosterSpawnInterval) {
         int index = boosterID % 2;
         if (index == 0) {
-            boosters.push_back(std::make_unique<ShieldBooster>(boosterPosition));
+            boosters.push_back(std::make_unique<ShieldBooster>());
         } else {
-            boosters.push_back(std::make_unique<SpeedBooster>(boosterPosition));
+            boosters.push_back(std::make_unique<SpeedBooster>());
         }
         lastBoosterSpawnTime = currentFrameTime;
         boosterID++;

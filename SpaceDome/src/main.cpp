@@ -55,10 +55,6 @@ std::vector<std::string> hiscoreList(3);
 std::vector<std::unique_ptr<AssimpLoader>> playerModelsRed;
 std::vector<std::unique_ptr<AssimpLoader>> playerModelsGreen;
 
-
-std::unique_ptr<AssimpLoader> shieldBooster;
-std::unique_ptr<AssimpLoader> speedBooster;
-
 //ShaderPrograms
 GLuint shaderProgram;
 GLuint shaderProgramTexture;
@@ -111,9 +107,6 @@ void initOGL(GLFWwindow*) {
     std::string filePath9 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[10] + ".fbx";
     std::string fontPath = std::string(MODELS_DIRECTORY) + "/font/Michroma-Regular.ttf";
 
-    std::string shieldPath = std::string(MODELS_DIRECTORY) + "/" + allModelNames[12] + ".fbx";
-    std::string speedBoosterPath =  std::string(MODELS_DIRECTORY) + "/" +allModelNames[11] + ".fbx";
-
     //verifyFontPath(fontPath);
 
     //Utility utility;
@@ -124,9 +117,6 @@ void initOGL(GLFWwindow*) {
     plainShaderProgram = Utility::createShaderProgram(vertexShaderSourcePlain, fragmentShaderSourcePlain);
     ShaderProgramTextTexture = Utility::createShaderProgram(vertexShaderSourceTextTexture, fragmentShaderSourceTextTexture);
     shaderProgramTextureBooster = Utility::createShaderProgram(vertexShaderSourceTexture, fragmentShaderSourceTextureBooster);
-
-    //std::string baseDirectory = "../../models/";
-    //bulletsAssimp = std::make_unique<AssimpLoader>(filePath4);
     
     starsAssimp = std::make_unique<AssimpLoader>(filePath5);
     skyboxAssimp = std::make_unique<AssimpLoader>(filePath6);
@@ -134,9 +124,6 @@ void initOGL(GLFWwindow*) {
 
     objectsAssimp.push_back(std::make_unique<AssimpLoader>(filePath2));
     objectsAssimp.push_back(std::make_unique<AssimpLoader>(filePath3));
-
-    shieldBooster = std::make_unique<AssimpLoader>(shieldPath);
-    speedBooster = std::make_unique<AssimpLoader>(speedBoosterPath);
     
     redBulletAssimp= std::make_unique<AssimpLoader>(filePath8);
     greenBulletAssimp = std::make_unique<AssimpLoader>(filePath9);
@@ -309,15 +296,6 @@ void draw(const RenderData& data) {
         }
         player->draw(playerModelsRed, playerModelsGreen, shaderProgramTexture, shaderProgramTextureBooster,projectionMatrix, modelMatrix*viewMatrix);
     }
-
-
-
-// if(game.hasStars()) {
-//         for (const auto& stars : game.getStars()){
-//             stars->draw(starsAssimp, shaderProgram, projectionMatrix, modelMatrix*viewMatrix);
-//         }
-//     }
-   
 
     for(const auto& booster : game.getBoosters()) {
         booster->draw(shaderProgramTexture,projectionMatrix,modelMatrix*viewMatrix);
