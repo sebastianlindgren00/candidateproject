@@ -28,11 +28,13 @@ class Booster {
         void updateBooster();
         glm::vec3 generateBoosterPos();
         glm::vec3 getPosition() {return position;}
+        bool getIsDeactived(){ return isDeactived;}
 
     protected:
 
         glm::vec3 position;
         float orientation = 1.0f;
+        bool isDeactived = false;
 
 };
 

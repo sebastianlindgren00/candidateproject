@@ -85,10 +85,17 @@ int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets, float h
         return -1; 
     }
 
-    for(auto& booster : activeBoosters){
-        booster->activate(*this);
-        booster->deActivate(*this);
+    for (auto it = activeBoosters.begin(); it != activeBoosters.end();) {
+        (*it)->activate(*this);
+        (*it)->deActivate(*this);
+
+        if ((*it)->getIsDeactived()) {
+            it = activeBoosters.erase(it); 
+        } else {
+            ++it;
+        }
     }
+
 
     for (const auto& bullet : mBullets) {
         if (bullet->getTeam() != mTeam) {

@@ -350,7 +350,7 @@ public:
 	void addBooster(std::unique_ptr<Booster> booster) {
     	activeBoosters.push_back(std::move(booster));
 	}
-
+	
 	void increaseBulletCounter(){
 		hitByBulletCounter++;
 	};

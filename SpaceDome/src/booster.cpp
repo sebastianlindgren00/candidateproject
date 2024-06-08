@@ -60,7 +60,7 @@ void ShieldBooster::deActivate(Player& player){
     if(player.getBulletCounter() > 0) {
         player.resetBulletCounter();
         player.setHasShield(false);
-        player.emptyActiveBoosters();
+        isDeactived = true;
     }
 }
 
@@ -68,6 +68,6 @@ void SpeedBooster::deActivate(Player& player){
     float currentTime = sgct::time();
     if(currentTime - startSpeedBooster >= maxSpeedBoosterTime){
         player.setSpeed(0.01f);
-        player.emptyActiveBoosters();
+        isDeactived = true;
     }
 }
