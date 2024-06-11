@@ -10,24 +10,27 @@
 #include "mesh.h"
 #include "utility.h"
 #include "player.h"
-#include "bullets.h"
 
 class Player;
 
 /**
  * @class Booster 
+ * 
+ * @brief This class provides two booster, one speed booster which makes the player go faster and a shield booster that makes the player
+ * not die if hit by a bullet. The different boosters are subclasses derived from the abstract class Booster. There are three virtual functions:
+ * activate, deactivate and draw.  
  */
 class Booster {
 
 public:
     /**
-     * @brief Constructor for Booster class. 
+     * @brief Constructor for Booster class. New boosters generate every third second and the maximum amount of boosters on the 
+     * field at the same time is 15. 
      */
-    Booster() { position = generateBoosterPos(); 
-        
-    }
+    Booster() { position = generateBoosterPos(); }
     /**
-     * @brief Activates booster, is done in game.cpp when a player is close enough to a booster. 
+     * @brief Activates booster and is implenteted in the derived classes. The booster is activated by modifying the properties of the 
+     * player provided as input. 
      * 
      * @param Player Player object
      */
@@ -35,7 +38,7 @@ public:
     virtual void activate(Player& player) = 0;
 
     /**
-     * @brief Dectivates booster, is called by in player.cpp. 
+     * @brief Dectivates booster and is implented in the derived classes, is called by in players update function. 
      * 
      * @param Player Player object
      */
@@ -43,7 +46,8 @@ public:
     virtual void deactivate(Player& player) = 0;
 
     /**
-     * @brief Virtual function to draw the booster.
+     * @brief Virtual function to draw the booster. The meshes are loaded in the subclasses and shaderProgramTexture is used, which is a global
+     * variable.
      * 
      * @param pMatrix The projection matrix.
      * @param vMatrix The view matrix.
@@ -51,19 +55,19 @@ public:
     virtual void draw(glm::mat4 pMatrix, glm::mat4 vMatrix) const = 0;
 
     /**
-     * @brief Rotates the booster.
+     * @brief Rotates the booster. 
      */
-    void updateBooster();
+    void rotate();
 
     /**
-     * @brief Generate random position for the booster.
+     * @brief Generate random position for new booster, limited to the boundry of the game field.
      * 
      * @return The position of the booster.
      */
     glm::vec3 generateBoosterPos() const;
 
     /**
-     * @brief Gets the position of the booster. Is used in game.cpp to see if the player is close enough to get the booster.
+     * @brief Gets the position of the booster.
      * 
      * @return The position of the booster.
      */
@@ -71,7 +75,7 @@ public:
 
     /**
      * @brief Checks if the booster is deactivated. The purpose of this function is to be able to remove deactivated boosters from the booster 
-     * vector in player.
+     * vector in player. deActivated is set to true in derived classes when it's deactivation function has been called. 
      * 
      * @return Is set to true if the deactive function has been called for a booster. 
      * 
@@ -83,6 +87,5 @@ protected:
     glm::vec3 position; /**< The position of the booster. */
     float orientation = 1.0f; /**< The orientation of the booster. */
     bool deActviated = false; /**< Whether the booster has been deactivated. */
-    // annan gruppmedlem hade gjort en path i cmakelist för dem andra modellerna så använde den
     std::string path = std::string(MODELS_DIRECTORY); /** Path to the models for the boosters */
 };

@@ -489,7 +489,7 @@ void Game::update() {
         pickUpBoosters(player->getID());
     }
      for(auto& booster : boosters){
-        booster->updateBooster();
+        booster->rotate();
 
     }
     //update the bullets

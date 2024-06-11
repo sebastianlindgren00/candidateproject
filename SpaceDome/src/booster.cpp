@@ -1,6 +1,6 @@
 #include "booster.h"
 
-void Booster::updateBooster() {
+void Booster::rotate() {
     float framesPerSecond = 60.0f;
     float deltaTime = 1/framesPerSecond; // Frame time assuming 60 FPS
     orientation += 0.2f * deltaTime;

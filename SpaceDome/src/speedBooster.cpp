@@ -21,21 +21,3 @@ void SpeedBooster::deactivate(Player& player){
         deActviated = true;
     }
 }
-
-
-
-
-
-// void SpeedBooster::update(Player& player) {
-//     if (!activated) {// to make startTime only when first activated
-//         player.setSpeed(boosterSpeed);
-//         activated = true;
-//         startTime = sgct::time();
-//     }
-
-//     if (activated && sgct::time() - startTime > maxDuration) {
-//         player.setSpeed(boosterBaseSpeed);
-//         activated = false;
-//         deActviated = true;
-//     }
-// }

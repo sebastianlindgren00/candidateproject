@@ -2,7 +2,7 @@
 
 /**
  * @class SpeedBooster
- * @brief Class representing a speed booster.
+ * @brief The player will go faster for 5 seconds if activated.
  */
 class SpeedBooster : public Booster {
 public:
@@ -13,15 +13,20 @@ public:
         speedModel = std::make_unique<AssimpLoader>(path + "/speedBooster.fbx");
     }
     /**
-     * @brief Handles the logic for the speedBooster. Will increase the speed for the player, with players setSpeed function, 
-     * and will then reset the speed to the the base speed when timer is up.
+     * @brief Activiates speed booster by setting the speed of the player to 0.025f.
+     * 
+     * @param Player Player object.
+     * 
+     */
+    void activate(Player& player) override;
+
+    /**
+     * @brief Dectiviates speed booster by resetting the speed of the player. It will deactivate after the time limit for the booster is up. 
      * 
      * @param Player Player object.
      * 
      */
     void deactivate(Player& player) override;
-
-    void activate(Player& player) override;
 
     /**
      * @brief Draws the speed booster.
@@ -36,6 +41,5 @@ private:
     float boosterBaseSpeed = 0.01f;/** < The normal speed of the player */
     double startTime; /**< The start time of the booster. */
     double maxDuration = 5; /**< The maximum duration of the speed booster. */
-    bool activated = false; /**< A bool to check if already activated */
     std::unique_ptr<AssimpLoader> speedModel; /**< The mesh for the speed booster model */
 };

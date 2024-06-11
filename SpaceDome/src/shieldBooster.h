@@ -11,7 +11,8 @@ class Player;
 
 /**
  * @class ShieldBooster
- * @brief Class representing a shield booster.
+ * @brief Class representing a shield booster. When active, the players rocket ship will blink. If hit by a bullet while having an active shield,
+ * the player will not die but the shield will deactivate. 
  */
 class ShieldBooster : public Booster {
 public:
