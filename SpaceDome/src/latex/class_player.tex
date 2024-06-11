@@ -1,0 +1,199 @@
+\doxysection{Player Class Reference}
+\hypertarget{class_player}{}\label{class_player}\index{Player@{Player}}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_player_a2e6ca2bbbc37772ddd60e839a3f4d545}\label{class_player_a2e6ca2bbbc37772ddd60e839a3f4d545} 
+{\bfseries Player} (const int id, const std\+::string \&name, int team, int color\+ID, glm\+::vec3 color, glm\+::mat4 p\+Matrix, glm\+::mat4 v\+Matrix, int width, int height)
+\item 
+\Hypertarget{class_player_afa246a77bd997a50b9c3fb9f9185af01}\label{class_player_afa246a77bd997a50b9c3fb9f9185af01} 
+{\bfseries Player} (\mbox{\hyperlink{struct_player_data}{Player\+Data}} data, \mbox{\hyperlink{struct_player_name}{Player\+Name}} name, glm\+::mat4 p\+Matrix, glm\+::mat4 v\+Matrix, int width, int height)
+\item 
+\Hypertarget{class_player_a952f29f4ad704c3ebec764247fbf6e97}\label{class_player_a952f29f4ad704c3ebec764247fbf6e97} 
+{\bfseries Player} (\mbox{\hyperlink{struct_player_data}{Player\+Data}} data, glm\+::mat4 p\+Matrix, glm\+::mat4 v\+Matrix, int width, int height)
+\item 
+\Hypertarget{class_player_a025c2a72e2d999959cfd9ac5fac49db1}\label{class_player_a025c2a72e2d999959cfd9ac5fac49db1} 
+{\bfseries Player} (const \mbox{\hyperlink{class_player}{Player}} \&)=default
+\item 
+\Hypertarget{class_player_a6cbb28bf742e34a2b2456ce7d53b6980}\label{class_player_a6cbb28bf742e34a2b2456ce7d53b6980} 
+\mbox{\hyperlink{class_player}{Player}} \& {\bfseries operator=} (const \mbox{\hyperlink{class_player}{Player}} \&)=delete
+\item 
+\Hypertarget{class_player_a37969efc1a9437a229455db3a0ff404d}\label{class_player_a37969efc1a9437a229455db3a0ff404d} 
+int {\bfseries char\+To\+Number} (char c)
+\item 
+\Hypertarget{class_player_a82f8fd96f01af3989f3d006c567d64c6}\label{class_player_a82f8fd96f01af3989f3d006c567d64c6} 
+char {\bfseries number\+To\+Char} (int n)
+\item 
+\Hypertarget{class_player_a9d51e0352618c5e77f00c57428462bf5}\label{class_player_a9d51e0352618c5e77f00c57428462bf5} 
+unsigned long long {\bfseries encode\+ULL} (const std\+::string \&input)
+\item 
+\Hypertarget{class_player_ad042d360d0a856226f69915ecc7652b8}\label{class_player_ad042d360d0a856226f69915ecc7652b8} 
+std\+::string {\bfseries decode\+ULL} (unsigned long long value)
+\item 
+\Hypertarget{class_player_a819d02e438af89f8ffcc77f71b2ec35e}\label{class_player_a819d02e438af89f8ffcc77f71b2ec35e} 
+void {\bfseries get\+Name} (unsigned long long \&n)
+\item 
+\Hypertarget{class_player_a54fe2ad49146b04404a8b85da88f4a78}\label{class_player_a54fe2ad49146b04404a8b85da88f4a78} 
+void {\bfseries set\+Name} (unsigned long long n)
+\item 
+\Hypertarget{class_player_ae40ac46fa7149b80edbc66e7e72e5434}\label{class_player_ae40ac46fa7149b80edbc66e7e72e5434} 
+void {\bfseries set\+Name\+Data} (\mbox{\hyperlink{struct_player_name}{Player\+Name}} data)
+\item 
+\Hypertarget{class_player_a34233687ea70afa3cff67736aecaaeeb}\label{class_player_a34233687ea70afa3cff67736aecaaeeb} 
+void {\bfseries get\+Data} (\mbox{\hyperlink{struct_player_data}{Player\+Data}} \&data)
+\item 
+\Hypertarget{class_player_a8e2db46842ef2e2b76f7c2ffd6406145}\label{class_player_a8e2db46842ef2e2b76f7c2ffd6406145} 
+void {\bfseries set\+Data} (\mbox{\hyperlink{struct_player_data}{Player\+Data}} data)
+\item 
+\Hypertarget{class_player_a58e7d77f11a73787f05a11fd6d1cbb1e}\label{class_player_a58e7d77f11a73787f05a11fd6d1cbb1e} 
+void {\bfseries set\+Turn\+Speed} (float turn\+Speed)
+\item 
+\Hypertarget{class_player_acdad8ef678bff80d1b7c537eb879ccf7}\label{class_player_acdad8ef678bff80d1b7c537eb879ccf7} 
+int {\bfseries update} (const std\+::vector$<$ std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{class_bullet}{Bullet}} $>$ $>$ \&m\+Bullets, float height)
+\item 
+\Hypertarget{class_player_a1f9292282a44bf96c518b6bff3c2b4e6}\label{class_player_a1f9292282a44bf96c518b6bff3c2b4e6} 
+void {\bfseries draw} (const std\+::vector$<$ std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{class_assimp_loader}{Assimp\+Loader}} $>$ $>$ \&models\+Red, const std\+::vector$<$ std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{class_assimp_loader}{Assimp\+Loader}} $>$ $>$ \&models\+Green, const GLuint shader\+Program, const GLuint shader\+Program\+Booster, glm\+::mat4 p\+Matrix, glm\+::mat4 v\+Matrix) const
+\item 
+\Hypertarget{class_player_a33d3713eff2b50c291ee71242a28f36e}\label{class_player_a33d3713eff2b50c291ee71242a28f36e} 
+void {\bfseries update\+Player\+Data} (\mbox{\hyperlink{structplayer_data}{player\+Data}} \&data)
+\item 
+\Hypertarget{class_player_a515920b9f3992375f179ca17ee750dc1}\label{class_player_a515920b9f3992375f179ca17ee750dc1} 
+float {\bfseries get\+Speed} () const
+\item 
+\Hypertarget{class_player_aa69767d1f818e81004748f8ff94d52e6}\label{class_player_aa69767d1f818e81004748f8ff94d52e6} 
+float {\bfseries get\+Turn\+Speed} () const
+\item 
+\Hypertarget{class_player_ad7a4078a63f36b4db95d45809d20d1c0}\label{class_player_ad7a4078a63f36b4db95d45809d20d1c0} 
+int {\bfseries get\+ID} () const
+\item 
+\Hypertarget{class_player_a548c3c4307feda9d702f8c4d0d8daa7c}\label{class_player_a548c3c4307feda9d702f8c4d0d8daa7c} 
+const std\+::string \& {\bfseries get\+Name} () const
+\item 
+\Hypertarget{class_player_a789a795fc64e930b429815b761df96ab}\label{class_player_a789a795fc64e930b429815b761df96ab} 
+glm\+::vec3 {\bfseries get\+Colours} () const
+\item 
+\Hypertarget{class_player_a94bfff682b8a1f390ffb45ac2bcbcfb7}\label{class_player_a94bfff682b8a1f390ffb45ac2bcbcfb7} 
+void {\bfseries add\+Star\+Holding} ()
+\item 
+\Hypertarget{class_player_afd40e0eb80c2cc4fe32bd3024e2583d6}\label{class_player_afd40e0eb80c2cc4fe32bd3024e2583d6} 
+bool {\bfseries has\+Stars} ()
+\item 
+\Hypertarget{class_player_afaffaa272fbe95d18beedc37c2acd4c8}\label{class_player_afaffaa272fbe95d18beedc37c2acd4c8} 
+void {\bfseries null\+Stars} ()
+\item 
+\Hypertarget{class_player_aa51e7c01ccd46ca657802697be841986}\label{class_player_aa51e7c01ccd46ca657802697be841986} 
+int {\bfseries get\+Stars} ()
+\item 
+\Hypertarget{class_player_a44937d8dba4d3657c5aa2759c0b69736}\label{class_player_a44937d8dba4d3657c5aa2759c0b69736} 
+int {\bfseries get\+Handed\+In\+Stars} ()
+\item 
+\Hypertarget{class_player_ac5be7ba0de712cd1c8eb667be0dbc9c8}\label{class_player_ac5be7ba0de712cd1c8eb667be0dbc9c8} 
+void {\bfseries add\+Handed\+In\+Stars} (int add\+Stars)
+\item 
+\Hypertarget{class_player_a5d6eec47c5c9fbf5eef16e070c6394d8}\label{class_player_a5d6eec47c5c9fbf5eef16e070c6394d8} 
+void {\bfseries set\+Is\+Alive} (bool is\+Alive)
+\item 
+\Hypertarget{class_player_a9345c6c5d6e95f7caccc1467f50c5d40}\label{class_player_a9345c6c5d6e95f7caccc1467f50c5d40} 
+void {\bfseries set\+Position} (const glm\+::vec3 \&position\+Change)
+\item 
+\Hypertarget{class_player_a83dd3dbfb9fa0a1a17da4004aa53159e}\label{class_player_a83dd3dbfb9fa0a1a17da4004aa53159e} 
+void {\bfseries set\+Position\+Complete} (const glm\+::vec3 \&position\+Change)
+\item 
+\Hypertarget{class_player_a30430e0263e515e1fa98e4230d52b39d}\label{class_player_a30430e0263e515e1fa98e4230d52b39d} 
+void {\bfseries set\+Charge\+Mode} (bool mode)
+\item 
+\Hypertarget{class_player_a82592a193a375f45b8873f8bcba7d780}\label{class_player_a82592a193a375f45b8873f8bcba7d780} 
+int {\bfseries get\+Super\+Charge} ()
+\item 
+\Hypertarget{class_player_a914c0922db9cd810b56ebeec796cd623}\label{class_player_a914c0922db9cd810b56ebeec796cd623} 
+void {\bfseries use\+Super\+Charge} ()
+\item 
+\Hypertarget{class_player_a4cd918294a3489a860302db1eae00d95}\label{class_player_a4cd918294a3489a860302db1eae00d95} 
+void {\bfseries fill\+Super\+Charge} ()
+\item 
+\Hypertarget{class_player_a767eea7fa9ccd2b44cd20a4440beb1f7}\label{class_player_a767eea7fa9ccd2b44cd20a4440beb1f7} 
+glm\+::vec3 {\bfseries get\+Position} ()
+\item 
+\Hypertarget{class_player_a0482dc5f849aa7188faaf7d17ccb7dc4}\label{class_player_a0482dc5f849aa7188faaf7d17ccb7dc4} 
+float {\bfseries get\+PositionX} ()
+\item 
+\Hypertarget{class_player_ae9f950fde2fa8bfa9982110918a547c5}\label{class_player_ae9f950fde2fa8bfa9982110918a547c5} 
+float {\bfseries get\+PositionY} ()
+\item 
+\Hypertarget{class_player_a6e8dfd00ebf5e9e1f2be9cd4b4169785}\label{class_player_a6e8dfd00ebf5e9e1f2be9cd4b4169785} 
+float {\bfseries get\+PositionZ} ()
+\item 
+\Hypertarget{class_player_aea044834490a941d55e8022f4dad60ca}\label{class_player_aea044834490a941d55e8022f4dad60ca} 
+int {\bfseries get\+Team} ()
+\item 
+\Hypertarget{class_player_a508fb8445e1f127dd124fc7aa659a518}\label{class_player_a508fb8445e1f127dd124fc7aa659a518} 
+void {\bfseries reset\+All\+Stars} ()
+\item 
+\Hypertarget{class_player_a9157fb4139d90aeb394cc8a522c62241}\label{class_player_a9157fb4139d90aeb394cc8a522c62241} 
+void {\bfseries set\+Spawn\+Timer\+Full} ()
+\item 
+\Hypertarget{class_player_a4350c347b1bcb8659cbe876b8c93a545}\label{class_player_a4350c347b1bcb8659cbe876b8c93a545} 
+void {\bfseries set\+Orientation} (float angle\+Speed)
+\item 
+\Hypertarget{class_player_aeec8855e7dde3d4d49072c5b57530589}\label{class_player_aeec8855e7dde3d4d49072c5b57530589} 
+void {\bfseries set\+Orientation\+Complete} (float angle)
+\item 
+\Hypertarget{class_player_aeb38adafb5e2ef723021225410e20668}\label{class_player_aeb38adafb5e2ef723021225410e20668} 
+float {\bfseries get\+Orientation} ()
+\item 
+\Hypertarget{class_player_a37e46415207d2408349a8f2e3c6be334}\label{class_player_a37e46415207d2408349a8f2e3c6be334} 
+int {\bfseries get\+Bullet\+Timer} ()
+\item 
+\Hypertarget{class_player_a81aaa8c331b20c416fd2d4506bda146b}\label{class_player_a81aaa8c331b20c416fd2d4506bda146b} 
+void {\bfseries increase\+Timer} ()
+\item 
+\Hypertarget{class_player_a5a8e8258ba8d58bcedb3f5105343265b}\label{class_player_a5a8e8258ba8d58bcedb3f5105343265b} 
+void {\bfseries restore\+Timer} ()
+\item 
+\Hypertarget{class_player_af1aa472885d589516f483e26e786600e}\label{class_player_af1aa472885d589516f483e26e786600e} 
+std\+::string {\bfseries get\+Name} ()
+\item 
+\Hypertarget{class_player_a8ee9e9607b88569d35ead8b00226e3a3}\label{class_player_a8ee9e9607b88569d35ead8b00226e3a3} 
+bool {\bfseries get\+Drop\+Stars} ()
+\item 
+\Hypertarget{class_player_aab039e2e801f3a1f3f9f48146b1d013d}\label{class_player_aab039e2e801f3a1f3f9f48146b1d013d} 
+void {\bfseries set\+Drop\+Stars} ()
+\item 
+\Hypertarget{class_player_a06e38c0f57e67eb006c9d09779bd8f8f}\label{class_player_a06e38c0f57e67eb006c9d09779bd8f8f} 
+bool {\bfseries is\+Alive} ()
+\item 
+\Hypertarget{class_player_a00612b71fd728e774073af7a9967a280}\label{class_player_a00612b71fd728e774073af7a9967a280} 
+int {\bfseries get\+Shot\+Available} ()
+\item 
+\Hypertarget{class_player_a30f1014b21ac504f9117bcd5ad5e8de0}\label{class_player_a30f1014b21ac504f9117bcd5ad5e8de0} 
+int {\bfseries get\+Color\+ID} ()
+\item 
+\Hypertarget{class_player_aa7f9b6d9f841bf724362fe1f35cec46f}\label{class_player_aa7f9b6d9f841bf724362fe1f35cec46f} 
+bool {\bfseries can\+Shot} ()
+\item 
+\Hypertarget{class_player_ac7cdc8759a4f7a4de9ee50ead2c94f93}\label{class_player_ac7cdc8759a4f7a4de9ee50ead2c94f93} 
+float {\bfseries get\+TextX} ()
+\item 
+\Hypertarget{class_player_ab6377a5362f67d03200a29e0c05c66e6}\label{class_player_ab6377a5362f67d03200a29e0c05c66e6} 
+float {\bfseries get\+TextY} ()
+\item 
+\Hypertarget{class_player_a0ab263f78fda7ec81d5df2f28f159c2d}\label{class_player_a0ab263f78fda7ec81d5df2f28f159c2d} 
+void {\bfseries set\+Text\+Pos} (glm\+::vec2 pos)
+\item 
+\Hypertarget{class_player_afea89f0f19198a6c626bb0c8d37f9af2}\label{class_player_afea89f0f19198a6c626bb0c8d37f9af2} 
+bool {\bfseries get\+Shot\+Bullet} ()
+\item 
+\Hypertarget{class_player_a63fa8020722cad7d4992e014021c2aae}\label{class_player_a63fa8020722cad7d4992e014021c2aae} 
+void {\bfseries set\+Speed} (float speed)
+\item 
+\Hypertarget{class_player_a50194e2caeefda86bb2c04b1997478ae}\label{class_player_a50194e2caeefda86bb2c04b1997478ae} 
+void {\bfseries set\+Has\+Shield} (bool has\+Shield)
+\item 
+\Hypertarget{class_player_aea0821346d1554604798b9e5970f32e4}\label{class_player_aea0821346d1554604798b9e5970f32e4} 
+void {\bfseries add\+Booster} (std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{class_booster}{Booster}} $>$ booster)
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+player.\+h\end{DoxyCompactItemize}

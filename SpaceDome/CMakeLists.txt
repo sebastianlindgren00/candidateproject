@@ -85,6 +85,11 @@ add_executable(${PROJECT_NAME}
   src/TextItem.h
   src/booster.h
   src/booster.cpp
+  src/speedBooster.h
+  src/speedBooster.cpp
+  src/shieldBooster.h
+  src/shieldBooster.cpp
+
 )
 #---------- MAC
 #include_directories(/opt/homebrew/Cellar/libpng/1.6.43/include)

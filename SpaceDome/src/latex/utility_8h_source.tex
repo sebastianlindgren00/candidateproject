@@ -1,0 +1,87 @@
+\doxysection{utility.\+h}
+\hypertarget{utility_8h_source}{}\label{utility_8h_source}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <filesystem>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <tuple>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <sstream>}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ <map>}}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ "{}sgct/sgct.h"{}}}
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#include\ <assimp/Importer.hpp>}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ <assimp/scene.h>}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#include\ <assimp/postprocess.h>}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <assimp/stb\_image.h>}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#include\ <glad/glad.h>}}
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#include\ <GLFW/glfw3.h>}}
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ <glm/gtc/type\_ptr.hpp>}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#include\ "{}AssimpLoader.h"{}}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#include\ "{}globals.h"{}}}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_game}{Game}};}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_utility}{Utility}}}
+\DoxyCodeLine{00025\ \{}
+\DoxyCodeLine{00026\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{comment}{//constructor}}
+\DoxyCodeLine{00029\ \ \ \ \ \mbox{\hyperlink{class_utility}{Utility}}()\{}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ setupPlane();}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \ \ setupText();}
+\DoxyCodeLine{00032\ \ \ \ \ \}}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{class_utility}{Utility}}\&\ getInstance()\ \{}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{class_utility}{Utility}}\ instance;}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ instance;}
+\DoxyCodeLine{00037\ \ \ \ \ \}}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{comment}{//load\ fonts}}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ LoadFontAtlas(\textcolor{keyword}{const}\ std::string\&\ fontPath);}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{comment}{//rendering\ text}}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keywordtype}{void}\ RenderText(GLuint\ shaderProgram,\ std::string\ text,\ \textcolor{keywordtype}{int}\ row,\ \textcolor{keywordtype}{float}\ scale,\ glm::vec3\ color,\ \ \textcolor{keywordtype}{float}\ width,\ \textcolor{keywordtype}{float}\ height);}
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keywordtype}{void}\ RenderTextPlayers(GLuint\ shaderProgram,\ \textcolor{keyword}{const}\ std::vector<std::tuple<std::string,\ float,\ float,\ float,\ glm::vec3>>\&\ texts,\ \textcolor{keywordtype}{int}\ width,\ \textcolor{keywordtype}{int}\ height);}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keywordtype}{void}\ RenderSingleText(GLuint\ shaderProgram,\ \textcolor{keyword}{const}\ std::string\&\ text,\ \textcolor{keywordtype}{float}\ x,\ \textcolor{keywordtype}{float}\ y,\ \textcolor{keywordtype}{float}\ scale,\ \textcolor{keyword}{const}\ glm::vec3\&\ color);}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keywordtype}{void}\ renderPlane(GLuint\ shaderProgram,\ GLuint\ textureId,\ \textcolor{keyword}{const}\ glm::mat4\&\ projection,\ \textcolor{keyword}{const}\ glm::mat4\&\ view);}
+\DoxyCodeLine{00046\ \ \ \ \ }
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordtype}{void}\ setScaleConst(\textcolor{keywordtype}{float}\ s)\ \{scale\ =\ s;\}}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{comment}{//getting\ textures}}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ textureFromFile(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ path,\ \textcolor{keyword}{const}\ std::string\&\ directory\textcolor{comment}{/*bool\ gamma\ =\ false*/});}
+\DoxyCodeLine{00051\ \ \ \ \ }
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{comment}{//setting\ up\ shaders\ before\ drawing}}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ setupShaderForDrawing(\textcolor{keyword}{const}\ GLuint\ shaderProgram,\ \textcolor{keyword}{const}\ glm::vec3\&\ position,\ \textcolor{keyword}{const}\ glm::vec3\&\ color,\ \textcolor{keywordtype}{float}\ orientation,\ \textcolor{keywordtype}{float}\ scale,\ \textcolor{keywordtype}{int}\ rotAxis,\ glm::mat4\ pMatrix,\ glm::mat4\ vMatrix);}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ setupShaderForDrawingMaterial(\textcolor{keyword}{const}\ GLuint\ shaderProgram,\ \textcolor{keyword}{const}\ glm::vec3\&\ position,\ \textcolor{keywordtype}{float}\ orientation,\ \textcolor{keywordtype}{float}\ scale,\ \textcolor{keywordtype}{int}\ rotAxis,\ glm::mat4\ pMatrix,\ glm::mat4\ vMatrix);}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keyword}{static}\ GLuint\ compileShader(GLenum\ type,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ source);}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keyword}{static}\ GLuint\ createShaderProgram(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ vertexSource,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ fragmentSource);}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{comment}{//calculate\ positions\ for\ texts}}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keyword}{static}\ glm::vec2\ screenPositions[8];}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ glm::vec3\ worldPositions[8];}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keyword}{static}\ glm::vec2\ CalculateScreenPositionsPlayers(glm::vec3\ playerpos,\ glm::mat4\ pMatrix,\ glm::mat4\ vMatrix,\ \textcolor{keywordtype}{float}\ width,\ \textcolor{keywordtype}{float}\ height);}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ CalculateScreenPositions(glm::mat4\ pMatrix,\ glm::mat4\ vMatrix,\ \textcolor{keywordtype}{float}\ width,\ \textcolor{keywordtype}{float}\ height);}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{float}\ scale;}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \ \ \mbox{\hyperlink{class_utility}{Utility}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{class_utility}{Utility}}\&)\ =\ \textcolor{keyword}{delete};\ \textcolor{comment}{//\ Prevent\ copying}}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keywordtype}{void}\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{class_utility}{Utility}}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \ \ std::vector<float>\ planeVertices;\ \ \ \textcolor{comment}{//\ Using\ vector\ to\ handle\ dynamic\ size}}
+\DoxyCodeLine{00072\ \ \ \ \ std::vector<unsigned\ int>\ planeIndices;}
+\DoxyCodeLine{00073\ \ \ \ \ GLuint\ textVAO,\ textVBO;}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keyword}{static}\ GLuint\ planeVAO;}
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keyword}{static}\ GLuint\ planeVBO;}
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keyword}{static}\ GLuint\ planeEBO;}
+\DoxyCodeLine{00078\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{bool}\ planeInitialized;}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ setupPlane();}
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keywordtype}{void}\ setupText();}
+\DoxyCodeLine{00082\ \};}
+
+\end{DoxyCode}

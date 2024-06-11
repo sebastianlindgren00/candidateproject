@@ -1,0 +1,36 @@
+\doxysection{globals.\+h}
+\hypertarget{globals_8h_source}{}\label{globals_8h_source}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#ifndef\ GLOBALS\_H}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#define\ GLOBALS\_H}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <glad/glad.h>}\ }
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <glm/gtc/type\_ptr.hpp>}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \textcolor{keyword}{extern}\ GLuint\ shaderProgram;\ \textcolor{comment}{//\ Define\ it\ exactly\ once\ in\ the\ whole\ pro}}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \textcolor{comment}{//\ gör\ shaderprogrammet\ till\ en\ global\ för\ att\ kunna\ defineras\ direkt\ i\ booster}}
+\DoxyCodeLine{00014\ \textcolor{keyword}{extern}\ GLuint\ shaderProgramTexture;\ }
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \textcolor{keyword}{const}\ std::vector<std::string>\ allModelNames\{\ \textcolor{stringliteral}{"{}planet1"{}},\ \textcolor{stringliteral}{"{}planet2"{}},\ \textcolor{stringliteral}{"{}SpaceShip"{}},\ \textcolor{stringliteral}{"{}asteroid1"{}},\ \textcolor{stringliteral}{"{}SpawnPlanetGreenTest"{}},\ \textcolor{stringliteral}{"{}SpawnPlanetRed"{}},\ \textcolor{stringliteral}{"{}backgroundFirstTest"{}},\ \textcolor{stringliteral}{"{}bullet"{}},\ \textcolor{stringliteral}{"{}star"{}},\ \textcolor{stringliteral}{"{}GreenBullet"{}},\ \textcolor{stringliteral}{"{}RedBullet"{}}\};}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ \textcolor{keyword}{const}\ std::vector<std::string>\ allShipsRed\{\ \textcolor{stringliteral}{"{}RedShip11"{}},\textcolor{stringliteral}{"{}RedShip12"{}},\textcolor{stringliteral}{"{}RedShip13"{}},\textcolor{stringliteral}{"{}RedShip21"{}},\textcolor{stringliteral}{"{}RedShip22"{}},\textcolor{stringliteral}{"{}RedShip23"{}},\ \textcolor{stringliteral}{"{}RedShip31"{}},\ \textcolor{stringliteral}{"{}RedShip32"{}},\textcolor{stringliteral}{"{}RedShip33"{}},\ \textcolor{stringliteral}{"{}RedShip41"{}},\textcolor{stringliteral}{"{}RedShip42"{}},\textcolor{stringliteral}{"{}RedShip43"{}},\textcolor{stringliteral}{"{}RedShip51"{}},\textcolor{stringliteral}{"{}RedShip52"{}},\textcolor{stringliteral}{"{}RedShip53"{}},\ \textcolor{stringliteral}{"{}RedShip61"{}},\ \textcolor{stringliteral}{"{}RedShip62"{}},\textcolor{stringliteral}{"{}RedShip63"{}}\};}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ \textcolor{keyword}{const}\ std::vector<std::string>\ allShipsGreen\{\ \textcolor{stringliteral}{"{}GreenShip11"{}},\textcolor{stringliteral}{"{}GreenShip12"{}},\textcolor{stringliteral}{"{}GreenShip13"{}},\textcolor{stringliteral}{"{}GreenShip21"{}},\textcolor{stringliteral}{"{}GreenShip22"{}},\textcolor{stringliteral}{"{}GreenShip23"{}},\ \textcolor{stringliteral}{"{}GreenShip31"{}},\ \textcolor{stringliteral}{"{}GreenShip32"{}},\textcolor{stringliteral}{"{}GreenShip33"{}},\ \textcolor{stringliteral}{"{}GreenShip41"{}},\textcolor{stringliteral}{"{}GreenShip42"{}},\textcolor{stringliteral}{"{}GreenShip43"{}},\textcolor{stringliteral}{"{}GreenShip51"{}},\textcolor{stringliteral}{"{}GreenShip52"{}},\textcolor{stringliteral}{"{}GreenShip53"{}},\ \textcolor{stringliteral}{"{}GreenShip61"{}},\ \textcolor{stringliteral}{"{}GreenShip62"{}},\textcolor{stringliteral}{"{}GreenShip63"{}}\};}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \textcolor{keyword}{const}\ std::vector<std::string>\ allShaderNames\{\ \textcolor{stringliteral}{"{}player"{}},\ \textcolor{stringliteral}{"{}text"{}},\ \textcolor{stringliteral}{"{}texture"{}}\};}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}\ playerScale\ =\ 0.15f;}
+\DoxyCodeLine{00025\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}\ fovScale\ =\ 50.0f;}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \textcolor{comment}{//boundries\ for\ game\ field}}
+\DoxyCodeLine{00028\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}\ boundryX\ =\ 9;}
+\DoxyCodeLine{00029\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}\ boundryY\ =\ 6;}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//\ GLOBALS\_H}}
+
+\end{DoxyCode}

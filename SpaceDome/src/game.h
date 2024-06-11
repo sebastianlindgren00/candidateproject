@@ -26,6 +26,8 @@
 #include "glm/matrix.hpp"
 
 #include "booster.h"
+#include "speedBooster.h"
+#include "shieldBooster.h"
 #include "player.h"
 #include "utility.h"
 #include "bullets.h"

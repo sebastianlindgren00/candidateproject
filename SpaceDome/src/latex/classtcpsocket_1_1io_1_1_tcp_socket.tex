@@ -1,0 +1,175 @@
+\doxysection{tcpsocket\+::io\+::Tcp\+Socket Class Reference}
+\hypertarget{classtcpsocket_1_1io_1_1_tcp_socket}{}\label{classtcpsocket_1_1io_1_1_tcp_socket}\index{tcpsocket::io::TcpSocket@{tcpsocket::io::TcpSocket}}
+Inheritance diagram for tcpsocket\+::io\+::Tcp\+Socket\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classtcpsocket_1_1io_1_1_tcp_socket}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structtcpsocket_1_1io_1_1_tcp_socket_1_1_tcp_socket_error}{Tcp\+Socket\+Error}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classtcpsocket_1_1io_1_1_tcp_socket_ad2150ac523d423f2e8510f49bdc38be1}\label{classtcpsocket_1_1io_1_1_tcp_socket_ad2150ac523d423f2e8510f49bdc38be1} 
+using {\bfseries Input\+Interceptor} = std\+::function$<$void(const char\texorpdfstring{$\ast$}{*} data, size\+\_\+t n\+Bytes)$>$
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classtcpsocket_1_1io_1_1_tcp_socket_a55f5dc8531f28a40c4cbffb05f4c0ffe}\label{classtcpsocket_1_1io_1_1_tcp_socket_a55f5dc8531f28a40c4cbffb05f4c0ffe} 
+{\bfseries Tcp\+Socket} (std\+::string address, int port)
+\item 
+\Hypertarget{classtcpsocket_1_1io_1_1_tcp_socket_a2eafa06c430da619d9aad76960a2e092}\label{classtcpsocket_1_1io_1_1_tcp_socket_a2eafa06c430da619d9aad76960a2e092} 
+{\bfseries Tcp\+Socket} (std\+::string address, int port, \+\_\+\+SOCKET socket)
+\item 
+\Hypertarget{classtcpsocket_1_1io_1_1_tcp_socket_a761451e4a59e3063cfe2d131da63fba3}\label{classtcpsocket_1_1io_1_1_tcp_socket_a761451e4a59e3063cfe2d131da63fba3} 
+void {\bfseries connect} ()
+\item 
+void \mbox{\hyperlink{classtcpsocket_1_1io_1_1_tcp_socket_a432879b423b4470b848b5eb6d0609bc9}{start\+Streams}} () override
+\item 
+void \mbox{\hyperlink{classtcpsocket_1_1io_1_1_tcp_socket_a49d8e59697c50cebad2314d07143b860}{disconnect}} (int reason=0) override
+\item 
+bool \mbox{\hyperlink{classtcpsocket_1_1io_1_1_tcp_socket_a5b55e3d0a2041861fa90c1f7397a638c}{is\+Connected}} () const override
+\item 
+bool \mbox{\hyperlink{classtcpsocket_1_1io_1_1_tcp_socket_a6aeb89e1b796d16e1db8969220b3ac9b}{is\+Connecting}} () const override
+\item 
+std\+::string \mbox{\hyperlink{classtcpsocket_1_1io_1_1_tcp_socket_abfe8613a9b41c8d0d8fb4b58b077a28f}{address}} () const override
+\item 
+int \mbox{\hyperlink{classtcpsocket_1_1io_1_1_tcp_socket_aeb0c911e350eac1013d769f94ddda5d2}{port}} () const override
+\item 
+bool \mbox{\hyperlink{classtcpsocket_1_1io_1_1_tcp_socket_aadf6b97ce800ac8914f51a4b93e3128e}{get\+Message}} (std\+::string \&message) override
+\begin{DoxyCompactList}\small\item\em Methods for text based communication. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classtcpsocket_1_1io_1_1_tcp_socket_af6c588c87596597e9e17bfe2cdd5c464}{put\+Message}} (const std\+::string \&message) override
+\item 
+\Hypertarget{classtcpsocket_1_1io_1_1_tcp_socket_a30ceb30ca3b0a9415a92daea30669029}\label{classtcpsocket_1_1io_1_1_tcp_socket_a30ceb30ca3b0a9415a92daea30669029} 
+void {\bfseries set\+Delimiter} (char delimiter)
+\item 
+\Hypertarget{classtcpsocket_1_1io_1_1_tcp_socket_afa4c478149f8bf82d44a8cd2eb1a50df}\label{classtcpsocket_1_1io_1_1_tcp_socket_afa4c478149f8bf82d44a8cd2eb1a50df} 
+void {\bfseries intercept\+Input} (Input\+Interceptor interceptor)
+\item 
+\Hypertarget{classtcpsocket_1_1io_1_1_tcp_socket_a2198a8dbd245e1eff741b7f1805127f4}\label{classtcpsocket_1_1io_1_1_tcp_socket_a2198a8dbd245e1eff741b7f1805127f4} 
+void {\bfseries unintercept\+Input} ()
+\item 
+\Hypertarget{classtcpsocket_1_1io_1_1_tcp_socket_a9c8a43cfd905158c2a28e83599555549}\label{classtcpsocket_1_1io_1_1_tcp_socket_a9c8a43cfd905158c2a28e83599555549} 
+{\footnotesize template$<$typename T  = char$>$ }\\bool {\bfseries get} (T \texorpdfstring{$\ast$}{*}buffer, size\+\_\+t n\+Items=1)
+\begin{DoxyCompactList}\small\item\em Methods for binary communication. \end{DoxyCompactList}\item 
+\Hypertarget{classtcpsocket_1_1io_1_1_tcp_socket_a15323122ce5f3d1b5adfa4e3b909c002}\label{classtcpsocket_1_1io_1_1_tcp_socket_a15323122ce5f3d1b5adfa4e3b909c002} 
+{\footnotesize template$<$typename T  = char$>$ }\\bool {\bfseries peek} (T \texorpdfstring{$\ast$}{*}buffer, size\+\_\+t n\+Items=1)
+\item 
+\Hypertarget{classtcpsocket_1_1io_1_1_tcp_socket_a2c0c896ad45824f8102ace0c90c8b70c}\label{classtcpsocket_1_1io_1_1_tcp_socket_a2c0c896ad45824f8102ace0c90c8b70c} 
+{\footnotesize template$<$typename T  = char$>$ }\\bool {\bfseries skip} (size\+\_\+t n\+Items=1)
+\item 
+\Hypertarget{classtcpsocket_1_1io_1_1_tcp_socket_a08ea6a47faf10a545c5491e91ee0e78b}\label{classtcpsocket_1_1io_1_1_tcp_socket_a08ea6a47faf10a545c5491e91ee0e78b} 
+{\footnotesize template$<$typename T  = char$>$ }\\bool {\bfseries put} (const T \texorpdfstring{$\ast$}{*}buffer, size\+\_\+t n\+Items=1)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classtcpsocket_1_1io_1_1_socket}{tcpsocket\+::io\+::\+Socket}}}
+\begin{DoxyCompactItemize}
+\item 
+int {\bfseries socket\+Id} () const
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classtcpsocket_1_1io_1_1_tcp_socket_a95a8484cb83aae6742e6fca077381933}\label{classtcpsocket_1_1io_1_1_tcp_socket_a95a8484cb83aae6742e6fca077381933} 
+static void {\bfseries initialize\+Network\+Api} ()
+\item 
+\Hypertarget{classtcpsocket_1_1io_1_1_tcp_socket_a8aa7518ce53902374629ddaecfff8450}\label{classtcpsocket_1_1io_1_1_tcp_socket_a8aa7518ce53902374629ddaecfff8450} 
+static bool {\bfseries initialized\+Network\+Api} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classtcpsocket_1_1io_1_1_tcp_socket_abfe8613a9b41c8d0d8fb4b58b077a28f}\index{tcpsocket::io::TcpSocket@{tcpsocket::io::TcpSocket}!address@{address}}
+\index{address@{address}!tcpsocket::io::TcpSocket@{tcpsocket::io::TcpSocket}}
+\doxysubsubsection{\texorpdfstring{address()}{address()}}
+{\footnotesize\ttfamily \label{classtcpsocket_1_1io_1_1_tcp_socket_abfe8613a9b41c8d0d8fb4b58b077a28f} 
+std\+::string tcpsocket\+::io\+::\+Tcp\+Socket\+::address (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classtcpsocket_1_1io_1_1_socket}{tcpsocket\+::io\+::\+Socket}}.
+
+\Hypertarget{classtcpsocket_1_1io_1_1_tcp_socket_a49d8e59697c50cebad2314d07143b860}\index{tcpsocket::io::TcpSocket@{tcpsocket::io::TcpSocket}!disconnect@{disconnect}}
+\index{disconnect@{disconnect}!tcpsocket::io::TcpSocket@{tcpsocket::io::TcpSocket}}
+\doxysubsubsection{\texorpdfstring{disconnect()}{disconnect()}}
+{\footnotesize\ttfamily \label{classtcpsocket_1_1io_1_1_tcp_socket_a49d8e59697c50cebad2314d07143b860} 
+void tcpsocket\+::io\+::\+Tcp\+Socket\+::disconnect (\begin{DoxyParamCaption}\item[{int}]{reason}{ = {\ttfamily 0}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classtcpsocket_1_1io_1_1_socket}{tcpsocket\+::io\+::\+Socket}}.
+
+\Hypertarget{classtcpsocket_1_1io_1_1_tcp_socket_aadf6b97ce800ac8914f51a4b93e3128e}\index{tcpsocket::io::TcpSocket@{tcpsocket::io::TcpSocket}!getMessage@{getMessage}}
+\index{getMessage@{getMessage}!tcpsocket::io::TcpSocket@{tcpsocket::io::TcpSocket}}
+\doxysubsubsection{\texorpdfstring{getMessage()}{getMessage()}}
+{\footnotesize\ttfamily \label{classtcpsocket_1_1io_1_1_tcp_socket_aadf6b97ce800ac8914f51a4b93e3128e} 
+bool tcpsocket\+::io\+::\+Tcp\+Socket\+::get\+Message (\begin{DoxyParamCaption}\item[{std\+::string \&}]{message}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Methods for text based communication. 
+
+
+
+Implements \mbox{\hyperlink{classtcpsocket_1_1io_1_1_socket_a02dc2830e7964d105a93e089ee66debc}{tcpsocket\+::io\+::\+Socket}}.
+
+\Hypertarget{classtcpsocket_1_1io_1_1_tcp_socket_a5b55e3d0a2041861fa90c1f7397a638c}\index{tcpsocket::io::TcpSocket@{tcpsocket::io::TcpSocket}!isConnected@{isConnected}}
+\index{isConnected@{isConnected}!tcpsocket::io::TcpSocket@{tcpsocket::io::TcpSocket}}
+\doxysubsubsection{\texorpdfstring{isConnected()}{isConnected()}}
+{\footnotesize\ttfamily \label{classtcpsocket_1_1io_1_1_tcp_socket_a5b55e3d0a2041861fa90c1f7397a638c} 
+bool tcpsocket\+::io\+::\+Tcp\+Socket\+::is\+Connected (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classtcpsocket_1_1io_1_1_socket}{tcpsocket\+::io\+::\+Socket}}.
+
+\Hypertarget{classtcpsocket_1_1io_1_1_tcp_socket_a6aeb89e1b796d16e1db8969220b3ac9b}\index{tcpsocket::io::TcpSocket@{tcpsocket::io::TcpSocket}!isConnecting@{isConnecting}}
+\index{isConnecting@{isConnecting}!tcpsocket::io::TcpSocket@{tcpsocket::io::TcpSocket}}
+\doxysubsubsection{\texorpdfstring{isConnecting()}{isConnecting()}}
+{\footnotesize\ttfamily \label{classtcpsocket_1_1io_1_1_tcp_socket_a6aeb89e1b796d16e1db8969220b3ac9b} 
+bool tcpsocket\+::io\+::\+Tcp\+Socket\+::is\+Connecting (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classtcpsocket_1_1io_1_1_socket}{tcpsocket\+::io\+::\+Socket}}.
+
+\Hypertarget{classtcpsocket_1_1io_1_1_tcp_socket_aeb0c911e350eac1013d769f94ddda5d2}\index{tcpsocket::io::TcpSocket@{tcpsocket::io::TcpSocket}!port@{port}}
+\index{port@{port}!tcpsocket::io::TcpSocket@{tcpsocket::io::TcpSocket}}
+\doxysubsubsection{\texorpdfstring{port()}{port()}}
+{\footnotesize\ttfamily \label{classtcpsocket_1_1io_1_1_tcp_socket_aeb0c911e350eac1013d769f94ddda5d2} 
+int tcpsocket\+::io\+::\+Tcp\+Socket\+::port (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classtcpsocket_1_1io_1_1_socket}{tcpsocket\+::io\+::\+Socket}}.
+
+\Hypertarget{classtcpsocket_1_1io_1_1_tcp_socket_af6c588c87596597e9e17bfe2cdd5c464}\index{tcpsocket::io::TcpSocket@{tcpsocket::io::TcpSocket}!putMessage@{putMessage}}
+\index{putMessage@{putMessage}!tcpsocket::io::TcpSocket@{tcpsocket::io::TcpSocket}}
+\doxysubsubsection{\texorpdfstring{putMessage()}{putMessage()}}
+{\footnotesize\ttfamily \label{classtcpsocket_1_1io_1_1_tcp_socket_af6c588c87596597e9e17bfe2cdd5c464} 
+bool tcpsocket\+::io\+::\+Tcp\+Socket\+::put\+Message (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{message}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classtcpsocket_1_1io_1_1_socket}{tcpsocket\+::io\+::\+Socket}}.
+
+\Hypertarget{classtcpsocket_1_1io_1_1_tcp_socket_a432879b423b4470b848b5eb6d0609bc9}\index{tcpsocket::io::TcpSocket@{tcpsocket::io::TcpSocket}!startStreams@{startStreams}}
+\index{startStreams@{startStreams}!tcpsocket::io::TcpSocket@{tcpsocket::io::TcpSocket}}
+\doxysubsubsection{\texorpdfstring{startStreams()}{startStreams()}}
+{\footnotesize\ttfamily \label{classtcpsocket_1_1io_1_1_tcp_socket_a432879b423b4470b848b5eb6d0609bc9} 
+void tcpsocket\+::io\+::\+Tcp\+Socket\+::start\+Streams (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classtcpsocket_1_1io_1_1_socket}{tcpsocket\+::io\+::\+Socket}}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+tcpsocket.\+h\item 
+tcpsocket.\+inl\end{DoxyCompactItemize}

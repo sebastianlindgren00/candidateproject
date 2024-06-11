@@ -7,70 +7,82 @@
 #include <AssimpLoader.h>
 #include "assimp/Importer.hpp"
 
-
 #include "mesh.h"
 #include "utility.h"
 #include "player.h"
+#include "bullets.h"
 
 class Player;
 
-
+/**
+ * @class Booster 
+ */
 class Booster {
 
-    public:
-
-        Booster(){position = generateBoosterPos();}
-    
-        virtual void draw(const GLuint shaderBooster, glm::mat4 pMatrix, glm::mat4 vMatrix) const = 0;
-        virtual void deActivate(Player& player) = 0;
-        virtual void activate(Player& player) = 0;
-
-        void updateBooster();
-        glm::vec3 generateBoosterPos();
-        glm::vec3 getPosition() {return position;}
-        bool getIsDeactived(){ return isDeactived;}
-
-    protected:
-
-        glm::vec3 position;
-        float orientation = 1.0f;
-        bool isDeactived = false;
-
-};
-
-class ShieldBooster : public Booster {
 public:
-    ShieldBooster() : Booster(){
-        std::string shieldModelPath = std::string("C:/Users/corne/Kanditatprojekt/candidateproject/SpaceDome/src/models") + "/" + allModelNames[12] + ".fbx";
-        shieldModel = std::make_unique<AssimpLoader>(shieldModelPath);
+    /**
+     * @brief Constructor for Booster class. 
+     */
+    Booster() { position = generateBoosterPos(); 
+        
     }
+    /**
+     * @brief Activates booster, is done in game.cpp when a player is close enough to a booster. 
+     * 
+     * @param Player Player object
+     */
 
-    void hitByBullet(Player& player); 
+    virtual void activate(Player& player) = 0;
 
-    void activate(Player& player);
-    void deActivate(Player& player) override;
-    void draw(GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const override;
+    /**
+     * @brief Dectivates booster, is called by in player.cpp. 
+     * 
+     * @param Player Player object
+     */
 
-    private:
-        std::unique_ptr<AssimpLoader> shieldModel;
-};
+    virtual void deactivate(Player& player) = 0;
 
-class SpeedBooster : public Booster {
-public:
-    SpeedBooster() : Booster(), boosterSpeed(0.025f), hasSpeedBooster(false), startSpeedBooster(0.0f) {
-        std::string speedModelPath = std::string("C:/Users/corne/Kanditatprojekt/candidateproject/SpaceDome/src/models") + "/" + allModelNames[11] + ".fbx";
-        speedModel = std::make_unique<AssimpLoader>(speedModelPath);
-    }
+    /**
+     * @brief Virtual function to draw the booster.
+     * 
+     * @param pMatrix The projection matrix.
+     * @param vMatrix The view matrix.
+     */
+    virtual void draw(glm::mat4 pMatrix, glm::mat4 vMatrix) const = 0;
 
-    void activate(Player& player);
-    void deActivate(Player& player) override;
-    void draw(GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const override;
+    /**
+     * @brief Rotates the booster.
+     */
+    void updateBooster();
 
-private:
+    /**
+     * @brief Generate random position for the booster.
+     * 
+     * @return The position of the booster.
+     */
+    glm::vec3 generateBoosterPos() const;
 
-    float boosterSpeed;
-    float startSpeedBooster;
-    float maxSpeedBoosterTime = 3;
-    bool hasSpeedBooster;
-    std::unique_ptr<AssimpLoader> speedModel;
+    /**
+     * @brief Gets the position of the booster. Is used in game.cpp to see if the player is close enough to get the booster.
+     * 
+     * @return The position of the booster.
+     */
+    glm::vec3 getPosition() const { return position; }
+
+    /**
+     * @brief Checks if the booster is deactivated. The purpose of this function is to be able to remove deactivated boosters from the booster 
+     * vector in player.
+     * 
+     * @return Is set to true if the deactive function has been called for a booster. 
+     * 
+     */
+    bool isDeactivated() { return deActviated; }
+
+protected:
+
+    glm::vec3 position; /**< The position of the booster. */
+    float orientation = 1.0f; /**< The orientation of the booster. */
+    bool deActviated = false; /**< Whether the booster has been deactivated. */
+    // annan gruppmedlem hade gjort en path i cmakelist för dem andra modellerna så använde den
+    std::string path = std::string(MODELS_DIRECTORY); /** Path to the models for the boosters */
 };

@@ -1,0 +1,54 @@
+\doxysection{Web\+Socket\+Handler Class Reference}
+\hypertarget{class_web_socket_handler}{}\label{class_web_socket_handler}\index{WebSocketHandler@{WebSocketHandler}}
+
+
+{\ttfamily \#include $<$websockethandler.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_web_socket_handler_a10566b99600c52ec6333d4273095b91a}\label{class_web_socket_handler_a10566b99600c52ec6333d4273095b91a} 
+{\bfseries Web\+Socket\+Handler} (std\+::string address, int port, std\+::function$<$ void()$>$ connection\+Established, std\+::function$<$ void()$>$ connection\+Closed, std\+::function$<$ void(const void \texorpdfstring{$\ast$}{*}, size\+\_\+t)$>$ message\+Received)
+\item 
+\Hypertarget{class_web_socket_handler_af5e814532fd2a57c32749d4d7c8a9ee9}\label{class_web_socket_handler_af5e814532fd2a57c32749d4d7c8a9ee9} 
+bool {\bfseries connect} (std\+::string protocol\+Name, int buffer\+Size)
+\item 
+\Hypertarget{class_web_socket_handler_ad43b03a83e45c73c239422bc3e7baf27}\label{class_web_socket_handler_ad43b03a83e45c73c239422bc3e7baf27} 
+void {\bfseries disconnect} ()
+\item 
+\Hypertarget{class_web_socket_handler_a542351961238824741520d16139e34a6}\label{class_web_socket_handler_a542351961238824741520d16139e34a6} 
+bool {\bfseries is\+Connected} () const
+\item 
+\Hypertarget{class_web_socket_handler_a6e7dd8fb7810815fe9cd34292c507d4a}\label{class_web_socket_handler_a6e7dd8fb7810815fe9cd34292c507d4a} 
+void {\bfseries tick} ()
+\item 
+\Hypertarget{class_web_socket_handler_acc40add5e357724eafdd339ef6bb73a1}\label{class_web_socket_handler_acc40add5e357724eafdd339ef6bb73a1} 
+void {\bfseries queue\+Message} (std\+::string message)
+\item 
+\Hypertarget{class_web_socket_handler_a2efc5a533d6b7f385531b83d447cc3c2}\label{class_web_socket_handler_a2efc5a533d6b7f385531b83d447cc3c2} 
+void {\bfseries queue\+Message} (std\+::vector$<$ std\+::byte $>$ message)
+\item 
+\Hypertarget{class_web_socket_handler_a991b0845d2d47d4c5906cf2f8393408c}\label{class_web_socket_handler_a991b0845d2d47d4c5906cf2f8393408c} 
+int {\bfseries queue\+Size} () const
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+This class handles a websocket connection using the libwebsocket library. To establish a connection, first create an instance of this class using the address of the remote address you want to connect to, the port at which to connect to the remote, and callbacks for when messages are received through this socket connection (see below). Then call the connect method with a specific protocol\+Name (which has to match the clients parameter in the {\ttfamily new Web\+Socket(url, \textquotesingle{}protocol\textquotesingle{})} call) and a buffer size in which a received message has to fit.
+
+After that, the tick method has to be called regularly (preferrably every frame) by your application to be able to receive messages.
+
+If you want send a message to the client, you can queue a message to be sent using the queue\+Message method, which will add the message to the queue handled internally. At any point you can query the size of the queue through the queue\+Size method.
+
+You can prematurely close the connection through the disconnect message.
+
+Callbacks\+:
+\begin{DoxyItemize}
+\item {\ttfamily connection\+Established} This callback is called when the inital handshaking has been performed and the connection is ready to be used
+\item {\ttfamily connection\+Closed} This callback is called when the connection is closed by the remote host. The same \doxylink{class_web_socket_handler}{Web\+Socket\+Handler} instance can then be reused in a subsequent connect call to initialize a new connection
+\item {\ttfamily message\+Received} This callback is called when a new message is received from the remote host. The parameters to the callback are a pointer to the message and the length of the message in bytes. 
+\end{DoxyItemize}
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+websockethandler.\+h\end{DoxyCompactItemize}

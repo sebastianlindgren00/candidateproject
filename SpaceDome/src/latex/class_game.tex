@@ -1,0 +1,187 @@
+\doxysection{Game Class Reference}
+\hypertarget{class_game}{}\label{class_game}\index{Game@{Game}}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_game_a95e2401e2d3cfc1d2822fa2899762b0a}\label{class_game_a95e2401e2d3cfc1d2822fa2899762b0a} 
+\mbox{\hyperlink{structsync_data}{sync\+Data}} {\bfseries fetch\+Sync\+Data} ()
+\item 
+\Hypertarget{class_game_a154a5b1ec46004e60103f3882285bc9a}\label{class_game_a154a5b1ec46004e60103f3882285bc9a} 
+\mbox{\hyperlink{structsync_game_data}{sync\+Game\+Data}} {\bfseries fetch\+Sync\+Game\+Data} ()
+\item 
+\Hypertarget{class_game_aa938aa6be4a60e1aa5246c3f891be0a5}\label{class_game_aa938aa6be4a60e1aa5246c3f891be0a5} 
+void {\bfseries set\+Sync\+Game\+Data} (const \mbox{\hyperlink{structsync_game_data}{sync\+Game\+Data}} data)
+\item 
+\Hypertarget{class_game_aee79acb0ba9aa43a45e7a2374a2eb593}\label{class_game_aee79acb0ba9aa43a45e7a2374a2eb593} 
+void {\bfseries set\+Sync\+Data} (const \mbox{\hyperlink{structsync_data}{sync\+Data}} data)
+\item 
+\Hypertarget{class_game_a52e30d2e82a923cc86cc8860ad0e6476}\label{class_game_a52e30d2e82a923cc86cc8860ad0e6476} 
+std\+::string {\bfseries char\+Vector\+To\+String} (std\+::vector$<$ char32\+\_\+t $>$ char\+Vector)
+\item 
+\Hypertarget{class_game_ad7733b4ef56f5f8ca5683d2a09ff6923}\label{class_game_ad7733b4ef56f5f8ca5683d2a09ff6923} 
+void {\bfseries set\+Matrixes} (glm\+::mat4 p\+Matrix, glm\+::mat4 v\+Matrix, int inwidth, int inheight)
+\item 
+\Hypertarget{class_game_a26bb19ce8e2de4cf15de23629413eb38}\label{class_game_a26bb19ce8e2de4cf15de23629413eb38} 
+bool {\bfseries has\+Players} () const
+\item 
+\Hypertarget{class_game_a735588f51e9976034ef4ce72cc6e07c3}\label{class_game_a735588f51e9976034ef4ce72cc6e07c3} 
+void {\bfseries get\+Texts} (std\+::vector$<$ \mbox{\hyperlink{struct_text_item}{Text\+Item}} $>$ \&texts)
+\item 
+\Hypertarget{class_game_a984fc991cd91b47326f69ce23fa6687f}\label{class_game_a984fc991cd91b47326f69ce23fa6687f} 
+std\+::vector$<$ std\+::string $>$ {\bfseries get\+Hiscore\+List} (const std\+::vector$<$ std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{class_player}{Player}} $>$ $>$ \&players)
+\item 
+\Hypertarget{class_game_a05828d76b50ff2959a800bedc3030515}\label{class_game_a05828d76b50ff2959a800bedc3030515} 
+void {\bfseries render\+All\+Text\+Once} (GLuint shader\+Program\+Text, GLuint text\+Framebuffer, float text\+Width, float text\+Height, GLFWwindow \texorpdfstring{$\ast$}{*}glfw\+Window, \mbox{\hyperlink{class_utility}{Utility}} utility\+Instance)
+\item 
+\Hypertarget{class_game_a921827fec1c1f1e18b5b152d5b460993}\label{class_game_a921827fec1c1f1e18b5b152d5b460993} 
+void {\bfseries render\+Text} (GLuint shader\+Program, float scale, float width, float height, \mbox{\hyperlink{class_utility}{Utility}} utility\+Instance)
+\item 
+\Hypertarget{class_game_a50584d4223d5c238a8671dc8c0f36bb5}\label{class_game_a50584d4223d5c238a8671dc8c0f36bb5} 
+bool {\bfseries has\+Bullets} () const
+\item 
+\Hypertarget{class_game_a16048e9e8ae2d2ee15f53096653884c8}\label{class_game_a16048e9e8ae2d2ee15f53096653884c8} 
+bool {\bfseries has\+Stars} () const
+\item 
+\Hypertarget{class_game_a1de6a8fac126226a6e78033a63e8c3a6}\label{class_game_a1de6a8fac126226a6e78033a63e8c3a6} 
+bool {\bfseries has\+BGObjects} () const
+\item 
+\Hypertarget{class_game_a92b3e0a2861f1ab65cb0d5689d8c22b5}\label{class_game_a92b3e0a2861f1ab65cb0d5689d8c22b5} 
+const std\+::vector$<$ std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{class_player}{Player}} $>$ $>$ \& {\bfseries get\+Players} () const
+\item 
+\Hypertarget{class_game_ad3e7a008ee43eaa26744ad3ea569bc49}\label{class_game_ad3e7a008ee43eaa26744ad3ea569bc49} 
+std\+::vector$<$ std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{class_bullet}{Bullet}} $>$ $>$ \& {\bfseries get\+Bullets} ()
+\item 
+\Hypertarget{class_game_ac485b9d9ba9ddedcad4d78d2150c0bac}\label{class_game_ac485b9d9ba9ddedcad4d78d2150c0bac} 
+const std\+::vector$<$ std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{class_star}{Star}} $>$ $>$ \& {\bfseries get\+Stars} () const
+\item 
+\Hypertarget{class_game_af73e7345f23eacad456cb8d6e7731a4b}\label{class_game_af73e7345f23eacad456cb8d6e7731a4b} 
+const std\+::vector$<$ std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{class_background_object}{Background\+Object}} $>$ $>$ \& {\bfseries get\+BGObjects} () const
+\item 
+\Hypertarget{class_game_a168dd55f46d5a389db4cfe4fbf48c942}\label{class_game_a168dd55f46d5a389db4cfe4fbf48c942} 
+float {\bfseries get\+Height} ()
+\item 
+\Hypertarget{class_game_aaceba8a2981889b0c7e20b12e521e3e7}\label{class_game_aaceba8a2981889b0c7e20b12e521e3e7} 
+std\+::vector$<$ float $>$ {\bfseries get\+Rows} ()
+\item 
+\Hypertarget{class_game_a586a831ed5ff1283fcf1b96f4eff065c}\label{class_game_a586a831ed5ff1283fcf1b96f4eff065c} 
+{\bfseries Game} (\mbox{\hyperlink{class_game}{Game}} const \&)=delete
+\item 
+\Hypertarget{class_game_aa4c0eacd8656e54ec4e94877c453e531}\label{class_game_aa4c0eacd8656e54ec4e94877c453e531} 
+void {\bfseries operator=} (\mbox{\hyperlink{class_game}{Game}} const \&)=delete
+\item 
+\Hypertarget{class_game_a72b94d235add1c8c1cae8814622350c5}\label{class_game_a72b94d235add1c8c1cae8814622350c5} 
+void {\bfseries add\+Player} (int id, const std\+::string \&name)
+\item 
+\Hypertarget{class_game_a8f28ef18eec98ddb6d0492905884d6a7}\label{class_game_a8f28ef18eec98ddb6d0492905884d6a7} 
+int {\bfseries get\+Lowest\+Available\+Player\+ID} ()
+\item 
+\Hypertarget{class_game_ad82c46c95966752c4ce1c80fb141f946}\label{class_game_ad82c46c95966752c4ce1c80fb141f946} 
+int {\bfseries find\+Next\+Available\+Color\+ID} (int team)
+\item 
+\Hypertarget{class_game_a41e2d8d97ff636385e48f24468823882}\label{class_game_a41e2d8d97ff636385e48f24468823882} 
+void {\bfseries add\+Bullet} (int team, float speed, glm\+::vec3 position, float orientation, int id)
+\item 
+\Hypertarget{class_game_a1e13286336e05a91421d41ab8656d83c}\label{class_game_a1e13286336e05a91421d41ab8656d83c} 
+void {\bfseries shot\+Bullet} (int id)
+\item 
+\Hypertarget{class_game_a49f8b7f402f0a6ccd7d65fec85dd42eb}\label{class_game_a49f8b7f402f0a6ccd7d65fec85dd42eb} 
+void {\bfseries remove\+Player} (int id)
+\item 
+\Hypertarget{class_game_a299e0e7dbb843c8ab4adb8d507f4ee23}\label{class_game_a299e0e7dbb843c8ab4adb8d507f4ee23} 
+void {\bfseries game\+Keyboard} (sgct\+::\+Key key, sgct\+::\+Modifier modifier, sgct\+::\+Action action, sgct\+::\+Window \texorpdfstring{$\ast$}{*})
+\item 
+\Hypertarget{class_game_a6ccf2b12363056fe595f7df118087084}\label{class_game_a6ccf2b12363056fe595f7df118087084} 
+void {\bfseries pick\+Up\+Stars} (int id)
+\item 
+\Hypertarget{class_game_ac07e8da22e55276c8659ac16fd86f3b4}\label{class_game_ac07e8da22e55276c8659ac16fd86f3b4} 
+void {\bfseries hand\+In\+Stars} (int id)
+\item 
+\Hypertarget{class_game_a8586cabf7e7d6462de1a748ae522785d}\label{class_game_a8586cabf7e7d6462de1a748ae522785d} 
+void {\bfseries update\+Turn\+Speed} (unsigned int id, float rot\+Angle)
+\item 
+\Hypertarget{class_game_a8a0d6568570f18e5713afd0cda1eac57}\label{class_game_a8a0d6568570f18e5713afd0cda1eac57} 
+void {\bfseries set\+Charge\+Active} (unsigned int id, bool mode)
+\item 
+\Hypertarget{class_game_a85b30d5d80017f076306624ac224fba8}\label{class_game_a85b30d5d80017f076306624ac224fba8} 
+int {\bfseries get\+Stars} (int team)
+\item 
+\Hypertarget{class_game_a6078ab2c67d9c9f36f14276cffce0b12}\label{class_game_a6078ab2c67d9c9f36f14276cffce0b12} 
+int {\bfseries get\+Wins} (int team)
+\item 
+\Hypertarget{class_game_ac9c33292ec40f6d705aea54f12160179}\label{class_game_ac9c33292ec40f6d705aea54f12160179} 
+bool {\bfseries is\+Game\+Active} ()
+\item 
+\Hypertarget{class_game_a70137328f9d834f836cd7a185e7a309f}\label{class_game_a70137328f9d834f836cd7a185e7a309f} 
+bool {\bfseries should\+Return\+Time} ()
+\item 
+\Hypertarget{class_game_a50b499f49d7c460d3f92bc26a6763c46}\label{class_game_a50b499f49d7c460d3f92bc26a6763c46} 
+void {\bfseries reset\+Game\+Time} ()
+\item 
+\Hypertarget{class_game_afccb3c54be7ced6228ce94d4915b3267}\label{class_game_afccb3c54be7ced6228ce94d4915b3267} 
+int {\bfseries get\+End\+Time} ()
+\item 
+\Hypertarget{class_game_a0feeea5d553242b0194b60d69dd24925}\label{class_game_a0feeea5d553242b0194b60d69dd24925} 
+int {\bfseries get\+Restart\+Time} ()
+\item 
+\Hypertarget{class_game_a5a58b68cd2c499998193bd9a96c874bb}\label{class_game_a5a58b68cd2c499998193bd9a96c874bb} 
+float {\bfseries get\+Spawn\+Rot} ()
+\item 
+\Hypertarget{class_game_a61f87326f00ef40315b50a325b544f69}\label{class_game_a61f87326f00ef40315b50a325b544f69} 
+void {\bfseries add\+Spawn\+Rot} ()
+\item 
+\Hypertarget{class_game_a78cf7722003be08eafd82d4d4c5ca232}\label{class_game_a78cf7722003be08eafd82d4d4c5ca232} 
+int {\bfseries get\+Bullet\+ID} ()
+\item 
+\Hypertarget{class_game_a7093c501fa3dca0201ad8b61754ab684}\label{class_game_a7093c501fa3dca0201ad8b61754ab684} 
+void {\bfseries add\+Bullet\+ID} ()
+\item 
+\Hypertarget{class_game_a79df6376b332d63c9eca0dcee30305c3}\label{class_game_a79df6376b332d63c9eca0dcee30305c3} 
+void {\bfseries update} ()
+\item 
+\Hypertarget{class_game_a920b924b09bb2614d2cd05f6985dad10}\label{class_game_a920b924b09bb2614d2cd05f6985dad10} 
+const std\+::vector$<$ std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{class_booster}{Booster}} $>$ $>$ \& {\bfseries get\+Boosters} () const
+\item 
+\Hypertarget{class_game_a43f8a0173d5bddd86424129da4ad1fe0}\label{class_game_a43f8a0173d5bddd86424129da4ad1fe0} 
+void {\bfseries pick\+Up\+Boosters} (int player\+Id)
+\item 
+\Hypertarget{class_game_abaac8395a532b0360b5fdf7fb5740bd3}\label{class_game_abaac8395a532b0360b5fdf7fb5740bd3} 
+void {\bfseries generate\+Boosters} ()
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_game_a301560bd21c8f67803f4d533cdf1c3d8}\label{class_game_a301560bd21c8f67803f4d533cdf1c3d8} 
+static \mbox{\hyperlink{class_game}{Game}} \& {\bfseries instance} ()
+\item 
+\Hypertarget{class_game_a3569505bce870656be98014b1f77a1da}\label{class_game_a3569505bce870656be98014b1f77a1da} 
+static std\+::vector$<$ glm\+::vec3 $>$ {\bfseries generate\+Color\+Shades} (glm\+::vec3 base\+Color, int count, int team)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_game_ad50ca71952c98bd171cd429bdbacb945}\label{class_game_ad50ca71952c98bd171cd429bdbacb945} 
+std\+::vector$<$ std\+::string $>$ {\bfseries hiscore\+List} \mbox{[}3\mbox{]}
+\item 
+\Hypertarget{class_game_aee41262bc54434f6e7302ed2b0157a35}\label{class_game_aee41262bc54434f6e7302ed2b0157a35} 
+std\+::vector$<$ std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{class_booster}{Booster}} $>$ $>$ {\bfseries boosters}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_game_ab9bc5114249bcda8a7e4322a1c3116f8}\label{class_game_ab9bc5114249bcda8a7e4322a1c3116f8} 
+static glm\+::mat4 {\bfseries projection\+Matrix}
+\item 
+\Hypertarget{class_game_a335cb05b6472b0fb871614a635be2273}\label{class_game_a335cb05b6472b0fb871614a635be2273} 
+static glm\+::mat4 {\bfseries view\+Matrix}
+\item 
+\Hypertarget{class_game_aff5568dcc7298a46336e9fbc9af7339e}\label{class_game_aff5568dcc7298a46336e9fbc9af7339e} 
+static int {\bfseries window\+Height}
+\item 
+\Hypertarget{class_game_a5cc348b64b628b0eadbbe11b7e3d716f}\label{class_game_a5cc348b64b628b0eadbbe11b7e3d716f} 
+static int {\bfseries window\+Width}
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+game.\+h\end{DoxyCompactItemize}

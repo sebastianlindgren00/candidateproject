@@ -1,0 +1,67 @@
+\doxysection{websockethandler.\+h}
+\hypertarget{websockethandler_8h_source}{}\label{websockethandler_8h_source}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*****************************************************************************************}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ WebSocket\ Handler\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ Copyright\ (c)\ Alexander\ Bock,\ 2020\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ All\ rights\ reserved.\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ Redistribution\ and\ use\ in\ source\ and\ binary\ forms,\ with\ or\ without\ modification,\ are\ \ *}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ permitted\ provided\ that\ the\ following\ conditions\ are\ met:\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ 1.\ Redistributions\ of\ source\ code\ must\ retain\ the\ above\ copyright\ notice,\ this\ list\ \ \ *}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ \ \ \ of\ conditions\ and\ the\ following\ disclaimer.\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ 2.\ Redistributions\ in\ binary\ form\ must\ reproduce\ the\ above\ copyright\ notice,\ this\ \ \ \ \ *}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *\ \ \ \ list\ of\ conditions\ and\ the\ following\ disclaimer\ in\ the\ documentation\ and/or\ other\ \ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ \ \ \ materials\ provided\ with\ the\ distribution.\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ THIS\ SOFTWARE\ IS\ PROVIDED\ BY\ THE\ COPYRIGHT\ HOLDERS\ AND\ CONTRIBUTORS\ "{}AS\ IS"{}\ AND\ ANY\ \ \ *}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *\ EXPRESS\ OR\ IMPLIED\ WARRANTIES,\ INCLUDING,\ BUT\ NOT\ LIMITED\ TO,\ THE\ IMPLIED\ WARRANTIES\ \ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ *\ OF\ MERCHANTABILITY\ AND\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE\ ARE\ DISCLAIMED.\ IN\ NO\ EVENT\ \ \ *}}
+\DoxyCodeLine{00022\ \textcolor{comment}{\ *\ SHALL\ THE\ COPYRIGHT\ HOLDER\ OR\ CONTRIBUTORS\ BE\ LIABLE\ FOR\ ANY\ DIRECT,\ INDIRECT,\ \ \ \ \ \ \ \ *}}
+\DoxyCodeLine{00023\ \textcolor{comment}{\ *\ INCIDENTAL,\ SPECIAL,\ EXEMPLARY,\ OR\ CONSEQUENTIAL\ DAMAGES\ (INCLUDING,\ BUT\ NOT\ LIMITED\ \ *}}
+\DoxyCodeLine{00024\ \textcolor{comment}{\ *\ TO,\ PROCUREMENT\ OF\ SUBSTITUTE\ GOODS\ OR\ SERVICES;\ LOSS\ OF\ USE,\ DATA,\ OR\ PROFITS;\ OR\ \ \ \ *}}
+\DoxyCodeLine{00025\ \textcolor{comment}{\ *\ BUSINESS\ INTERRUPTION)\ HOWEVER\ CAUSED\ AND\ ON\ ANY\ THEORY\ OF\ LIABILITY,\ WHETHER\ IN\ \ \ \ \ \ *}}
+\DoxyCodeLine{00026\ \textcolor{comment}{\ *\ CONTRACT,\ STRICT\ LIABILITY,\ OR\ TORT\ (INCLUDING\ NEGLIGENCE\ OR\ OTHERWISE)\ ARISING\ IN\ \ \ \ *}}
+\DoxyCodeLine{00027\ \textcolor{comment}{\ *\ ANY\ WAY\ OUT\ OF\ THE\ USE\ OF\ THIS\ SOFTWARE,\ EVEN\ IF\ ADVISED\ OF\ THE\ POSSIBILITY\ OF\ SUCH\ \ \ *}}
+\DoxyCodeLine{00028\ \textcolor{comment}{\ *\ DAMAGE.\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *}}
+\DoxyCodeLine{00029\ \textcolor{comment}{\ ****************************************************************************************/}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#ifndef\ \_\_WEBSOCKETHANDLER\_H\_\_}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#define\ \_\_WEBSOCKETHANDLER\_H\_\_}}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#include\ <functional>}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{keyword}{struct\ }WebSocketHandlerImpl;}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00068\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_web_socket_handler}{WebSocketHandler}}\ \{}
+\DoxyCodeLine{00069\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00070\ \ \ \ \ \mbox{\hyperlink{class_web_socket_handler}{WebSocketHandler}}(std::string\ address,\ \textcolor{keywordtype}{int}\ port,}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ std::function<\textcolor{keywordtype}{void}()>\ connectionEstablished,}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ std::function<\textcolor{keywordtype}{void}()>\ connectionClosed,}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ std::function<\textcolor{keywordtype}{void}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{void}*,\ \textcolor{keywordtype}{size\_t})>\ messageReceived);}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \ \ \ \ \mbox{\hyperlink{class_web_socket_handler}{\string~WebSocketHandler}}();}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keywordtype}{bool}\ connect(std::string\ protocolName,\ \textcolor{keywordtype}{int}\ bufferSize);}
+\DoxyCodeLine{00078\ \ \ \ \ \textcolor{keywordtype}{void}\ disconnect();}
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{keywordtype}{bool}\ isConnected()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keywordtype}{void}\ tick();}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keywordtype}{void}\ queueMessage(std::string\ message);}
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{keywordtype}{void}\ queueMessage(std::vector<std::byte>\ message);}
+\DoxyCodeLine{00084\ \ \ \ \ \textcolor{keywordtype}{int}\ queueSize()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00087\ \ \ \ \ std::unique\_ptr<WebSocketHandlerImpl>\ \_pImpl;}
+\DoxyCodeLine{00088\ \};}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//\ \_\_WEBSOCKETHANDLER\_H\_\_}}
+
+\end{DoxyCode}

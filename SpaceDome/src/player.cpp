@@ -1,4 +1,5 @@
 #include "player.h" 
+#include "shieldBooster.h"
 
 Player::Player(const int id, const std::string& name, int team, int colorID, glm::vec3 color, glm::mat4 pMatrix, glm::mat4 vMatrix, int width, int height){
     mIsAlive = true;
@@ -85,27 +86,31 @@ int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets, float h
         return -1; 
     }
 
-    for (auto it = activeBoosters.begin(); it != activeBoosters.end();) {
-        (*it)->activate(*this);
-        (*it)->deActivate(*this);
-
-        if ((*it)->getIsDeactived()) {
-            it = activeBoosters.erase(it); 
-        } else {
-            ++it;
+    // om spelaren har åkt på en booster
+    if(boosters.size() != 0){
+        for (auto it = boosters.begin(); it != boosters.end();) {
+            //avaktiverar en booster
+             (*it)->deactivate(*this);
+             
+            // för att inte ta upp onödigt minne tas boostern bort från vektorn efter att den avaktiveras
+            if ((*it)->isDeactivated()) {
+                it = boosters.erase(it); 
+            } else {
+                ++it;
+            }
         }
     }
-
 
     for (const auto& bullet : mBullets) {
         if (bullet->getTeam() != mTeam) {
             glm::vec3 bulletPos = bullet->getPosition();
             float distance = glm::distance(bulletPos, mPosition);
                 if (distance <= hitRadius) {
+                    // om spelaren inte har en sköljd ska den dö direkt, annars ska den avaktivera sköljden vilket görs genom shieldHit
                     if(mHasShield){
-                        for(auto& booster : activeBoosters){
+                        for(auto& booster : boosters){
                             if (auto shieldBooster = dynamic_cast<ShieldBooster*>(booster.get())){
-                                shieldBooster->hitByBullet(*this);
+                                shieldBooster->shieldHit();
                                 return bullet->getID();   
                             }                         
                         }

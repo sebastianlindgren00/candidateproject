@@ -99,7 +99,6 @@ void initOGL(GLFWwindow*) {
 
     std::string filePath2 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[4] + ".fbx";
     std::string filePath3 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[5] + ".fbx";
-    //std::string filePath4 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[7] + ".fbx";
     std::string filePath5 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[8] + ".fbx";
     std::string filePath6 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[6] + ".fbx";
     std::string filePath7 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[3] + ".fbx";
@@ -116,6 +115,8 @@ void initOGL(GLFWwindow*) {
     shaderProgramText = Utility::createShaderProgram(vertexShaderSourceText, fragmentShaderSourceText);
     plainShaderProgram = Utility::createShaderProgram(vertexShaderSourcePlain, fragmentShaderSourcePlain);
     ShaderProgramTextTexture = Utility::createShaderProgram(vertexShaderSourceTextTexture, fragmentShaderSourceTextTexture);
+    
+    //använder en annan fragment shader som gör att den blinkar, om en spelare har en aktiv sköljd
     shaderProgramTextureBooster = Utility::createShaderProgram(vertexShaderSourceTexture, fragmentShaderSourceTextureBooster);
     
     starsAssimp = std::make_unique<AssimpLoader>(filePath5);
@@ -298,7 +299,7 @@ void draw(const RenderData& data) {
     }
 
     for(const auto& booster : game.getBoosters()) {
-        booster->draw(shaderProgramTexture,projectionMatrix,modelMatrix*viewMatrix);
+        booster->draw(projectionMatrix,modelMatrix*viewMatrix);
     }
     
     if (!bulletsToRemove.empty()) {
@@ -508,7 +509,7 @@ void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Windo
                 std::cout << "Failed to send player data over TCP socket\n";
             }
             */
-            //Game::instance().addPlayer(id, "Z");
+            Game::instance().addPlayer(id, "Z");
         }
     }
     

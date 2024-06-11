@@ -19,8 +19,6 @@
 #include "bullets.h"
 #include "booster.h"
 
-//#define M_PI 3.14159265358979323846
-
 class Booster;
 
 struct playerData {
@@ -343,19 +341,9 @@ public:
 		mHasShield = hasShield;
 	}
 
-	void emptyActiveBoosters() {
-		activeBoosters.clear();
-	}
-
 	void addBooster(std::unique_ptr<Booster> booster) {
-    	activeBoosters.push_back(std::move(booster));
+    	boosters.push_back(std::move(booster));
 	}
-	
-	void increaseBulletCounter(){
-		hitByBulletCounter++;
-	};
-	int getBulletCounter(){return hitByBulletCounter;}
-	void resetBulletCounter() {hitByBulletCounter = 0;}
 
 private:
 	//Player information/data
@@ -397,14 +385,6 @@ private:
 	glm::vec2 textPosition;
 	GLint mColLoc = -1;
 
-	// booster
-	int hitByBulletCounter = 0;
-
-	double mStartSpeedBooster = 0.0;
-	double maxSpeedBosterTime = 5.0;
-
-	std::vector<std::unique_ptr<Booster>> activeBoosters;
-
+	std::vector<std::unique_ptr<Booster>> boosters;
 	bool mHasShield = false;
-    //bool mHasSpeedBooster = false;
 };

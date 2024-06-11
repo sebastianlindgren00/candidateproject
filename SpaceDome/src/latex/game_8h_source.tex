@@ -1,0 +1,308 @@
+\doxysection{game.\+h}
+\hypertarget{game_8h_source}{}\label{game_8h_source}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <fstream>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <map>}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ <utility>}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ <tuple>}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ <cmath>}}
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ <random>}}
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#include\ <cstddef>}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ <chrono>}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#include\ <sgct/sgct.h>}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <set>}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#include\ "{}TextItem.h"{}}}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ "{}sgct/shareddata.h"{}}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#include\ "{}sgct/log.h"{}}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#include\ "{}sgct/profiling.h"{}}}
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#include\ "{}sgct/shadermanager.h"{}}}
+\DoxyCodeLine{00022\ \textcolor{preprocessor}{\#include\ "{}sgct/shaderprogram.h"{}}}
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#include\ "{}sgct/engine.h"{}}}
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#include\ "{}glad/glad.h"{}}}
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}glm/packing.hpp"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}glm/matrix.hpp"{}}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}booster.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}speedBooster.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}shieldBooster.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ "{}player.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#include\ "{}utility.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#include\ "{}bullets.h"{}}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#include\ "{}stars.h"{}}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#include\ "{}backgroundObjects.h"{}}}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{comment}{//\ Contains\ all\ necessary\ game\ object\ data\ that\ is\ used\ for\ the\ sync}}
+\DoxyCodeLine{00039\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsync_data}{syncData}}\ \{}
+\DoxyCodeLine{00040\ \ \ \ \ std::vector<PlayerData>\ \mbox{\hyperlink{structplayer_data}{playerData}};}
+\DoxyCodeLine{00041\ \ \ \ \ std::vector<ObjectData>\ objectData;}
+\DoxyCodeLine{00042\ \ \ \ \ std::vector<StarData>\ starData;}
+\DoxyCodeLine{00043\ \ \ \ \ std::vector<BulletData>\ bulletData;}
+\DoxyCodeLine{00044\ \ \ \ \ std::vector<PlayerName>\ playerName;}
+\DoxyCodeLine{00045\ \};}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsync_game_data}{syncGameData}}\ \{}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordtype}{float}\ gameTimeLast;}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keywordtype}{float}\ totalTime;}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keywordtype}{int}\ teamRed;}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keywordtype}{int}\ teamGreen;}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keywordtype}{int}\ redTeamStars;}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keywordtype}{int}\ greenTeamStars;}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keywordtype}{int}\ counterForBGObjects;}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keywordtype}{float}\ zPosBgObjects;}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keywordtype}{int}\ bulletID;}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keywordtype}{int}\ starDelayCounter;}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keywordtype}{int}\ starDelay;}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keywordtype}{float}\ handInRadius;}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keywordtype}{int}\ maxStarsID;}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keywordtype}{int}\ redWins;}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keywordtype}{int}\ greenWins;}
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keywordtype}{float}\ spawnRotation;}
+\DoxyCodeLine{00065\ \ \ \ \ int64\_t\ gameActive;}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{00067\ \textcolor{comment}{\ \ \ \ float\ height;}}
+\DoxyCodeLine{00068\ \textcolor{comment}{\ \ \ \ float\ row1;}}
+\DoxyCodeLine{00069\ \textcolor{comment}{\ \ \ \ float\ row2;}}
+\DoxyCodeLine{00070\ \textcolor{comment}{\ \ \ \ float\ row3;}}
+\DoxyCodeLine{00071\ \textcolor{comment}{\ \ \ \ float\ row4;}}
+\DoxyCodeLine{00072\ \textcolor{comment}{\ \ \ \ float\ row5;}}
+\DoxyCodeLine{00073\ \textcolor{comment}{\ \ \ \ float\ row6;}}
+\DoxyCodeLine{00074\ \textcolor{comment}{\ \ \ \ float\ row7;}}
+\DoxyCodeLine{00075\ \textcolor{comment}{\ \ \ \ float\ row8;}}
+\DoxyCodeLine{00076\ \textcolor{comment}{\ \ \ \ */}}
+\DoxyCodeLine{00077\ \};}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \textcolor{comment}{//Implemented\ as\ explicit\ singleton,\ handles\ pretty\ much\ everything}}
+\DoxyCodeLine{00080\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_game}{Game}}}
+\DoxyCodeLine{00081\ \{}
+\DoxyCodeLine{00082\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \textcolor{comment}{//\ Creates\ one\ instance\ of\ a\ Game.\ There\ should\ only\ be\ one\ active\ instance\ of\ Game\ at\ a\ time}}
+\DoxyCodeLine{00085\ \textcolor{keyword}{static}\ \mbox{\hyperlink{class_game}{Game}}\&\ instance()\ \{}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{class_game}{Game}}\ instance;}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{keywordflow}{return}\ instance;}
+\DoxyCodeLine{00089\ \}}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \mbox{\hyperlink{structsync_data}{syncData}}\ fetchSyncData();}
+\DoxyCodeLine{00092\ \mbox{\hyperlink{structsync_game_data}{syncGameData}}\ fetchSyncGameData();}
+\DoxyCodeLine{00093\ \textcolor{keywordtype}{void}\ setSyncGameData(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsync_game_data}{syncGameData}}\ data);}
+\DoxyCodeLine{00094\ \textcolor{keywordtype}{void}\ setSyncData(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsync_data}{syncData}}\ data);}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ std::string\ charVectorToString(std::vector<char32\_t>\ charVector)\ \{}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Create\ a\ string\ from\ the\ vector\ of\ characters}}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::string(charVector.begin(),\ charVector.end());}
+\DoxyCodeLine{00099\ \ \ \ \ \}}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ \textcolor{keywordtype}{void}\ setMatrixes(glm::mat4\ pMatrix,\ glm::mat4\ vMatrix,\ \textcolor{keywordtype}{int}\ inwidth,\ \textcolor{keywordtype}{int}\ inheight)\ \{\ }
+\DoxyCodeLine{00102\ \ \ \ \ projectionMatrix\ =\ pMatrix;}
+\DoxyCodeLine{00103\ \ \ \ \ viewMatrix\ =\ vMatrix;}
+\DoxyCodeLine{00104\ \ \ \ \ windowHeight\ =\ inheight;}
+\DoxyCodeLine{00105\ \ \ \ \ windowWidth\ =\ inwidth;}
+\DoxyCodeLine{00106\ }
+\DoxyCodeLine{00107\ \ \ \ \ \}\ }
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00109\ \textcolor{keywordtype}{bool}\ hasPlayers()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ !mPlayers.empty();\ \}}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00111\ \textcolor{keywordtype}{void}\ getTexts(std::vector<TextItem>\&\ texts);}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00113\ std::vector<std::string>\ hiscoreList[3];}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ std::vector<std::string>\ getHiscoreList(\textcolor{keyword}{const}\ std::vector<std::unique\_ptr<Player>>\&\ players);}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ \textcolor{keywordtype}{void}\ renderAllTextOnce(GLuint\ shaderProgramText,\ GLuint\ textFramebuffer,\textcolor{keywordtype}{float}\ textWidth,\ \textcolor{keywordtype}{float}\ textHeight,\ GLFWwindow*\ glfwWindow,\ \mbox{\hyperlink{class_utility}{Utility}}\ utilityInstance\ );}
+\DoxyCodeLine{00118\ }
+\DoxyCodeLine{00119\ \textcolor{keywordtype}{void}\ renderText(GLuint\ shaderProgram,\ \textcolor{keywordtype}{float}\ scale,\ \textcolor{keywordtype}{float}\ width,\ \textcolor{keywordtype}{float}\ height,\ \mbox{\hyperlink{class_utility}{Utility}}\ utilityInstance);}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \textcolor{keywordtype}{bool}\ hasBullets()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ !mBullets.empty();\ \}}
+\DoxyCodeLine{00122\ }
+\DoxyCodeLine{00123\ \textcolor{keywordtype}{bool}\ hasStars()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ !mStars.empty();\ \}}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00125\ \textcolor{keywordtype}{bool}\ hasBGObjects\ ()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ !mBGObjects.empty();\ \}}
+\DoxyCodeLine{00126\ }
+\DoxyCodeLine{00127\ \textcolor{keyword}{const}\ std::vector<std::unique\_ptr<Player>>\&\ getPlayers()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ mPlayers;\ \}}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00129\ std::vector<std::unique\_ptr<Bullet>>\&\ getBullets()\ \{\ \textcolor{keywordflow}{return}\ mBullets;\ \}}
+\DoxyCodeLine{00130\ }
+\DoxyCodeLine{00131\ \textcolor{keyword}{const}\ std::vector<std::unique\_ptr<Star>>\&\ getStars()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ mStars;\ \}}
+\DoxyCodeLine{00132\ }
+\DoxyCodeLine{00133\ \textcolor{keyword}{const}\ std::vector<std::unique\_ptr<BackgroundObject>>\&\ getBGObjects()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ mBGObjects;\ \}}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00135\ \textcolor{keywordtype}{float}\ getHeight()\{\textcolor{keywordflow}{return}\ height;\}}
+\DoxyCodeLine{00136\ }
+\DoxyCodeLine{00137\ std::vector<float>\ getRows()\{}
+\DoxyCodeLine{00138\ \ \ \ \ std::vector<float>\ rows;}
+\DoxyCodeLine{00139\ \ \ \ \ rows.push\_back(row1);}
+\DoxyCodeLine{00140\ \ \ \ \ rows.push\_back(row2);}
+\DoxyCodeLine{00141\ \ \ \ \ rows.push\_back(row3);}
+\DoxyCodeLine{00142\ \ \ \ \ rows.push\_back(row4);}
+\DoxyCodeLine{00143\ \ \ \ \ rows.push\_back(row5);}
+\DoxyCodeLine{00144\ \ \ \ \ rows.push\_back(row6);}
+\DoxyCodeLine{00145\ \ \ \ \ rows.push\_back(row7);}
+\DoxyCodeLine{00146\ \ \ \ \ rows.push\_back(row8);}
+\DoxyCodeLine{00147\ \ \ \ \ \textcolor{keywordflow}{return}\ rows;}
+\DoxyCodeLine{00148\ \}}
+\DoxyCodeLine{00149\ }
+\DoxyCodeLine{00150\ \textcolor{comment}{//Copying\ forbidden}}
+\DoxyCodeLine{00151\ \mbox{\hyperlink{class_game}{Game}}(\mbox{\hyperlink{class_game}{Game}}\ \textcolor{keyword}{const}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00152\ \textcolor{keywordtype}{void}\ operator=(\mbox{\hyperlink{class_game}{Game}}\ \textcolor{keyword}{const}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00153\ }
+\DoxyCodeLine{00154\ \textcolor{keywordtype}{void}\ addPlayer(\textcolor{keywordtype}{int}\ \textcolor{keywordtype}{id},\ \textcolor{keyword}{const}\ std::string\&\ name);}
+\DoxyCodeLine{00155\ }
+\DoxyCodeLine{00156\ \textcolor{keywordtype}{int}\ getLowestAvailablePlayerID();}
+\DoxyCodeLine{00157\ }
+\DoxyCodeLine{00158\ \textcolor{keyword}{static}\ std::vector<glm::vec3>\ generateColorShades(glm::vec3\ baseColor,\ \textcolor{keywordtype}{int}\ count,\ \textcolor{keywordtype}{int}\ team);}
+\DoxyCodeLine{00159\ }
+\DoxyCodeLine{00160\ \textcolor{keywordtype}{int}\ findNextAvailableColorID(\textcolor{keywordtype}{int}\ team);}
+\DoxyCodeLine{00161\ }
+\DoxyCodeLine{00162\ \textcolor{keywordtype}{void}\ addBullet(\textcolor{keywordtype}{int}\ team,\ \textcolor{keywordtype}{float}\ speed,\ glm::vec3\ position,\textcolor{keywordtype}{float}\ orientation,\ \textcolor{keywordtype}{int}\ \textcolor{keywordtype}{id});}
+\DoxyCodeLine{00163\ }
+\DoxyCodeLine{00164\ \textcolor{keywordtype}{void}\ shotBullet(\textcolor{keywordtype}{int}\ \textcolor{keywordtype}{id});}
+\DoxyCodeLine{00165\ }
+\DoxyCodeLine{00166\ \textcolor{keywordtype}{void}\ removePlayer(\textcolor{keywordtype}{int}\ \textcolor{keywordtype}{id});}
+\DoxyCodeLine{00167\ }
+\DoxyCodeLine{00168\ \textcolor{keywordtype}{void}\ gameKeyboard(sgct::Key\ key,\ sgct::Modifier\ modifier,\ sgct::Action\ action,\ sgct::Window*);}
+\DoxyCodeLine{00169\ }
+\DoxyCodeLine{00170\ \textcolor{keywordtype}{void}\ pickUpStars(\textcolor{keywordtype}{int}\ \textcolor{keywordtype}{id});}
+\DoxyCodeLine{00171\ }
+\DoxyCodeLine{00172\ \textcolor{keywordtype}{void}\ handInStars(\textcolor{keywordtype}{int}\ \textcolor{keywordtype}{id});}
+\DoxyCodeLine{00173\ }
+\DoxyCodeLine{00174\ \textcolor{keywordtype}{void}\ updateTurnSpeed(\textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ \textcolor{keywordtype}{id},\ \textcolor{keywordtype}{float}\ rotAngle);}
+\DoxyCodeLine{00175\ }
+\DoxyCodeLine{00176\ \textcolor{keywordtype}{void}\ setChargeActive(\textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ \textcolor{keywordtype}{id},\ \textcolor{keywordtype}{bool}\ mode)\{\ mPlayers[id]-\/>setChargeMode(mode);\ \}}
+\DoxyCodeLine{00177\ }
+\DoxyCodeLine{00178\ \textcolor{keywordtype}{int}\ getStars(\textcolor{keywordtype}{int}\ team)\ \{}
+\DoxyCodeLine{00179\ \ \ \ \ \textcolor{keywordflow}{if}(team\ ==\ 1)\ \{}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ redTeamStars;}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \}\textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}(team\ ==\ 2)\{}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ greenTeamStars;}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ std::cout\ <<\ \textcolor{stringliteral}{"{}\ Invalid\ team\(\backslash\)n"{}};}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{00187\ \}}
+\DoxyCodeLine{00188\ \textcolor{keywordtype}{int}\ getWins(\textcolor{keywordtype}{int}\ team)\ \{}
+\DoxyCodeLine{00189\ \ \ \ \ \textcolor{keywordflow}{if}(team\ ==\ 1)\ \{}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ redWins;}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \}\textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}(team\ ==\ 2)\{}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ greenWins;}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ std::cout\ <<\ \textcolor{stringliteral}{"{}\ Invalid\ team\(\backslash\)n"{}};}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{00197\ \}}
+\DoxyCodeLine{00198\ }
+\DoxyCodeLine{00199\ }
+\DoxyCodeLine{00200\ \textcolor{keywordtype}{bool}\ isGameActive()\ \{\ \textcolor{keywordflow}{return}\ mGameActive;\ \}}
+\DoxyCodeLine{00201\ }
+\DoxyCodeLine{00202\ \textcolor{keywordtype}{bool}\ shouldReturnTime()\{}
+\DoxyCodeLine{00203\ \ \ \ \ \textcolor{keywordflow}{if}(mTotalTime\ -\/\ mLastFrameTime\ >\ 1)\{}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ mLastFrameTime\ =\ mTotalTime;}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00206\ \ \ \ \ \}}
+\DoxyCodeLine{00207\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00208\ \}}
+\DoxyCodeLine{00209\ }
+\DoxyCodeLine{00210\ \textcolor{keywordtype}{void}\ resetGameTime()\ \{\ mTotalTime\ =\ 0;\ \}}
+\DoxyCodeLine{00211\ }
+\DoxyCodeLine{00212\ \textcolor{keywordtype}{int}\ getEndTime()\ \{\ \textcolor{keywordflow}{return}\ (\textcolor{keywordtype}{int})mMaxTime\ -\/\ mTotalTime;\ \}}
+\DoxyCodeLine{00213\ }
+\DoxyCodeLine{00214\ \textcolor{keywordtype}{int}\ getRestartTime()\ \{\ \textcolor{keywordflow}{return}\ (\textcolor{keywordtype}{int})mResetGame\ -\/\ mTotalTime;\ \}}
+\DoxyCodeLine{00215\ }
+\DoxyCodeLine{00216\ \textcolor{keywordtype}{float}\ getSpawnRot()\ \{\textcolor{keywordflow}{return}\ spawnRotation;\}}
+\DoxyCodeLine{00217\ }
+\DoxyCodeLine{00218\ \textcolor{keywordtype}{void}\ addSpawnRot()\ \{spawnRotation\ +=\ 0.001;\}}
+\DoxyCodeLine{00219\ }
+\DoxyCodeLine{00220\ \textcolor{keywordtype}{int}\ getBulletID()\ \{\textcolor{keywordflow}{return}\ bulletID;\}}
+\DoxyCodeLine{00221\ }
+\DoxyCodeLine{00222\ \textcolor{keywordtype}{void}\ addBulletID()\ \{bulletID++;\}}
+\DoxyCodeLine{00223\ }
+\DoxyCodeLine{00224\ }
+\DoxyCodeLine{00225\ \textcolor{keyword}{static}\ glm::mat4\ projectionMatrix;}
+\DoxyCodeLine{00226\ \textcolor{keyword}{static}\ glm::mat4\ viewMatrix;}
+\DoxyCodeLine{00227\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ windowHeight,\ windowWidth;}
+\DoxyCodeLine{00228\ }
+\DoxyCodeLine{00229\ \textcolor{keywordtype}{void}\ update();}
+\DoxyCodeLine{00230\ }
+\DoxyCodeLine{00231\ \textcolor{comment}{//\ booster\ stuff}}
+\DoxyCodeLine{00232\ }
+\DoxyCodeLine{00233\ std::vector<std::unique\_ptr<Booster>>\ boosters;}
+\DoxyCodeLine{00234\ \textcolor{keyword}{const}\ std::vector<std::unique\_ptr<Booster>>\&\ getBoosters()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ boosters;\ \}}
+\DoxyCodeLine{00235\ \textcolor{keywordtype}{void}\ pickUpBoosters(\textcolor{keywordtype}{int}\ playerId);}
+\DoxyCodeLine{00236\ \textcolor{keywordtype}{void}\ generateBoosters();}
+\DoxyCodeLine{00237\ }
+\DoxyCodeLine{00238\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00239\ \textcolor{comment}{//Constructor}}
+\DoxyCodeLine{00240\ \mbox{\hyperlink{class_game}{Game}}()\ \ \{}
+\DoxyCodeLine{00241\ \ \ \ \ redShades\ =\ generateColorShades(baseRed,\ 50,\ 1);}
+\DoxyCodeLine{00242\ \ \ \ \ greenShades\ =\ generateColorShades(baseGreen,\ 50,\ 2);}
+\DoxyCodeLine{00243\ \}}
+\DoxyCodeLine{00244\ }
+\DoxyCodeLine{00245\ }
+\DoxyCodeLine{00246\ }
+\DoxyCodeLine{00247\ std::vector<glm::vec3>\ redShades;}
+\DoxyCodeLine{00248\ std::vector<glm::vec3>\ greenShades;}
+\DoxyCodeLine{00249\ }
+\DoxyCodeLine{00250\ glm::vec3\ baseRed\ =\ glm::vec3(1.0f,\ 0.0f,\ 0.0f);\ \textcolor{comment}{//\ Pure\ red}}
+\DoxyCodeLine{00251\ glm::vec3\ baseGreen\ =\ glm::vec3(0.0f,\ 1.0f,\ 0.0f);\ \textcolor{comment}{//\ Pure\ green}}
+\DoxyCodeLine{00252\ }
+\DoxyCodeLine{00253\ std::vector<std::unique\_ptr<Player>>\ mPlayers;}
+\DoxyCodeLine{00254\ std::vector<std::unique\_ptr<Bullet>>\ mBullets;}
+\DoxyCodeLine{00255\ std::vector<std::unique\_ptr<Star>>\ mStars;}
+\DoxyCodeLine{00256\ std::vector<std::unique\_ptr<BackgroundObject>>\ mBGObjects;}
+\DoxyCodeLine{00257\ }
+\DoxyCodeLine{00258\ \textcolor{keywordtype}{bool}\ mGameActive\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00259\ std::unordered\_map<sgct::Key,\ bool>\ keyStates;}
+\DoxyCodeLine{00260\ \textcolor{keywordtype}{float}\ mLastFrameTime\ =\ -\/1;}
+\DoxyCodeLine{00261\ \textcolor{keywordtype}{float}\ mTotalTime\ =\ 0;}
+\DoxyCodeLine{00262\ \textcolor{keywordtype}{float}\ mMaxTime\ =\ 200;\ \textcolor{comment}{//seconds}}
+\DoxyCodeLine{00263\ \textcolor{comment}{//float\ mLastTime\ =\ 0;}}
+\DoxyCodeLine{00264\ \textcolor{keywordtype}{float}\ mResetGame\ =\ 3;}
+\DoxyCodeLine{00265\ }
+\DoxyCodeLine{00266\ \textcolor{keywordtype}{float}\ zPosBgObjects\ =\ -\/4.5;}
+\DoxyCodeLine{00267\ \textcolor{keywordtype}{int}\ starDelayCounter\ =\ 0;}
+\DoxyCodeLine{00268\ \textcolor{keywordtype}{int}\ starDelay\ =\ (rand()\ \%\ 100)\ +\ 1;}
+\DoxyCodeLine{00269\ \textcolor{comment}{//int\ amountOfPlayers;}}
+\DoxyCodeLine{00270\ \textcolor{keywordtype}{int}\ teamRed\ =\ 0;}
+\DoxyCodeLine{00271\ \textcolor{keywordtype}{int}\ teamGreen\ =\ 0;}
+\DoxyCodeLine{00272\ \textcolor{keywordtype}{int}\ redTeamStars\ =\ 0;}
+\DoxyCodeLine{00273\ \textcolor{keywordtype}{int}\ greenTeamStars\ =\ 0;}
+\DoxyCodeLine{00274\ \textcolor{keywordtype}{float}\ handInRadius\ =\ 0.7f;}
+\DoxyCodeLine{00275\ \textcolor{keywordtype}{int}\ maxStarsID\ =\ 0;}
+\DoxyCodeLine{00276\ \textcolor{keywordtype}{int}\ redWins\ =\ 0;}
+\DoxyCodeLine{00277\ \textcolor{keywordtype}{int}\ greenWins\ =\ 0;}
+\DoxyCodeLine{00278\ }
+\DoxyCodeLine{00279\ \textcolor{keywordtype}{float}\ spawnRotation\ =\ 0;}
+\DoxyCodeLine{00280\ }
+\DoxyCodeLine{00281\ \textcolor{keywordtype}{int}\ bulletID\ =\ 0;}
+\DoxyCodeLine{00282\ }
+\DoxyCodeLine{00283\ \textcolor{keywordtype}{int}\ counterForBGObjects\ =\ 0;}
+\DoxyCodeLine{00284\ }
+\DoxyCodeLine{00285\ \textcolor{keywordtype}{float}\ height\ =\ 1280;}
+\DoxyCodeLine{00286\ \textcolor{keywordtype}{float}\ row1\ =\ 900;}
+\DoxyCodeLine{00287\ \textcolor{keywordtype}{float}\ row2\ =\ 800;}
+\DoxyCodeLine{00288\ \textcolor{keywordtype}{float}\ row3\ =\ 720;}
+\DoxyCodeLine{00289\ \textcolor{keywordtype}{float}\ row4\ =\ 640;}
+\DoxyCodeLine{00290\ \textcolor{keywordtype}{float}\ row5\ =\ 540;}
+\DoxyCodeLine{00291\ \textcolor{keywordtype}{float}\ row6\ =\ 460;}
+\DoxyCodeLine{00292\ \textcolor{keywordtype}{float}\ row7\ =\ 380;}
+\DoxyCodeLine{00293\ \textcolor{keywordtype}{float}\ row8\ =\ 300;}
+\DoxyCodeLine{00294\ }
+\DoxyCodeLine{00295\ \textcolor{comment}{//\ boosters}}
+\DoxyCodeLine{00296\ }
+\DoxyCodeLine{00297\ \textcolor{keywordtype}{double}\ currentFrameTime;}
+\DoxyCodeLine{00298\ \textcolor{keywordtype}{double}\ lastBoosterSpawnTime;}
+\DoxyCodeLine{00299\ \textcolor{keywordtype}{double}\ boosterSpawnInterval\ =\ 3;}
+\DoxyCodeLine{00300\ \textcolor{keywordtype}{int}\ maxAmountOfBoosters\ =\ 15;}
+\DoxyCodeLine{00301\ \textcolor{keywordtype}{int}\ boosterID;}
+\DoxyCodeLine{00302\ }
+\DoxyCodeLine{00303\ \};}
+
+\end{DoxyCode}

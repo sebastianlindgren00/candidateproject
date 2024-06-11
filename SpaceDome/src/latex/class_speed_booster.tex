@@ -1,0 +1,124 @@
+\doxysection{Speed\+Booster Class Reference}
+\hypertarget{class_speed_booster}{}\label{class_speed_booster}\index{SpeedBooster@{SpeedBooster}}
+
+
+Class representing a speed booster.  
+
+
+
+
+{\ttfamily \#include $<$speed\+Booster.\+h$>$}
+
+Inheritance diagram for Speed\+Booster\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_speed_booster}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_speed_booster_acd41bffc5fd5df01ef826f5fda5214c2}\label{class_speed_booster_acd41bffc5fd5df01ef826f5fda5214c2} 
+{\bfseries Speed\+Booster} ()
+\begin{DoxyCompactList}\small\item\em Constructor for \doxylink{class_speed_booster}{Speed\+Booster} class. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_speed_booster_a809b14572699c90be126135724947931}{deactivate}} (\mbox{\hyperlink{class_player}{Player}} \&player) override
+\begin{DoxyCompactList}\small\item\em Handles the logic for the speed\+Booster. Will increase the speed for the player, with players set\+Speed function, and will then reset the speed to the the base speed when timer is up. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_speed_booster_a9e60599400398ec7dadaf7a64360c8ce}{activate}} (\mbox{\hyperlink{class_player}{Player}} \&player) override
+\begin{DoxyCompactList}\small\item\em Activates booster, is done in game.\+cpp when a player is close enough to a booster. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_speed_booster_a2308d28fd816ebfd5bb742317d34bcb8}{draw}} (glm\+::mat4 p\+Matrix, glm\+::mat4 v\+Matrix) const override
+\begin{DoxyCompactList}\small\item\em Draws the speed booster. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{class_booster}{Booster}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries Booster} ()
+\begin{DoxyCompactList}\small\item\em Constructor for \doxylink{class_booster}{Booster} class. \end{DoxyCompactList}\item 
+void {\bfseries update\+Booster} ()
+\begin{DoxyCompactList}\small\item\em Rotates the booster. \end{DoxyCompactList}\item 
+glm\+::vec3 \mbox{\hyperlink{class_booster_ad4f8a756aea026f7c1ed4b0f6c3c3a75}{generate\+Booster\+Pos}} () const
+\begin{DoxyCompactList}\small\item\em Generate random position for the booster. \end{DoxyCompactList}\item 
+glm\+::vec3 \mbox{\hyperlink{class_booster_a56e30ec5ad31ca517e3e1042a556fb0f}{get\+Position}} () const
+\begin{DoxyCompactList}\small\item\em Gets the position of the booster. Is used in game.\+cpp to see if the player is close enough to get the booster. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_booster_adaa1b09c5d7d29cfce8d67805caa46c5}{is\+Deactivated}} ()
+\begin{DoxyCompactList}\small\item\em Checks if the booster is deactivated. The purpose of this function is to be able to remove deactivated boosters from the booster vector in player. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Protected Attributes inherited from \mbox{\hyperlink{class_booster}{Booster}}}
+\begin{DoxyCompactItemize}
+\item 
+glm\+::vec3 \mbox{\hyperlink{class_booster_a69997c51af3b9a787bad35ae7576e3c5}{position}}
+\item 
+float \mbox{\hyperlink{class_booster_a895e4b3332f840f0b35d3327b18498d4}{orientation}} = 1.\+0f
+\item 
+bool \mbox{\hyperlink{class_booster_a2abf5989efbe9f658ea47e3456e7dd78}{de\+Actviated}} = false
+\item 
+std\+::string {\bfseries path} = std\+::string(MODELS\+\_\+\+DIRECTORY)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Class representing a speed booster. 
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_speed_booster_a9e60599400398ec7dadaf7a64360c8ce}\index{SpeedBooster@{SpeedBooster}!activate@{activate}}
+\index{activate@{activate}!SpeedBooster@{SpeedBooster}}
+\doxysubsubsection{\texorpdfstring{activate()}{activate()}}
+{\footnotesize\ttfamily \label{class_speed_booster_a9e60599400398ec7dadaf7a64360c8ce} 
+void Speed\+Booster\+::activate (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_player}{Player}} \&}]{player}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Activates booster, is done in game.\+cpp when a player is close enough to a booster. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em \doxylink{class_player}{Player}} & \doxylink{class_player}{Player} object \\
+\hline
+\end{DoxyParams}
+
+
+Implements \mbox{\hyperlink{class_booster_a4588c6ee889a663f35424ef830ba873f}{Booster}}.
+
+\Hypertarget{class_speed_booster_a809b14572699c90be126135724947931}\index{SpeedBooster@{SpeedBooster}!deactivate@{deactivate}}
+\index{deactivate@{deactivate}!SpeedBooster@{SpeedBooster}}
+\doxysubsubsection{\texorpdfstring{deactivate()}{deactivate()}}
+{\footnotesize\ttfamily \label{class_speed_booster_a809b14572699c90be126135724947931} 
+void Speed\+Booster\+::deactivate (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_player}{Player}} \&}]{player}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Handles the logic for the speed\+Booster. Will increase the speed for the player, with players set\+Speed function, and will then reset the speed to the the base speed when timer is up. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em \doxylink{class_player}{Player}} & \doxylink{class_player}{Player} object. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \mbox{\hyperlink{class_booster_af2c5fc2a1ec2b553bb8cfe7c9677c41c}{Booster}}.
+
+\Hypertarget{class_speed_booster_a2308d28fd816ebfd5bb742317d34bcb8}\index{SpeedBooster@{SpeedBooster}!draw@{draw}}
+\index{draw@{draw}!SpeedBooster@{SpeedBooster}}
+\doxysubsubsection{\texorpdfstring{draw()}{draw()}}
+{\footnotesize\ttfamily \label{class_speed_booster_a2308d28fd816ebfd5bb742317d34bcb8} 
+void Speed\+Booster\+::draw (\begin{DoxyParamCaption}\item[{glm\+::mat4}]{p\+Matrix}{, }\item[{glm\+::mat4}]{v\+Matrix}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Draws the speed booster. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+Matrix} & The projection matrix. \\
+\hline
+{\em v\+Matrix} & The view matrix. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \mbox{\hyperlink{class_booster_a58777698943db412241db944c02eb487}{Booster}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+speed\+Booster.\+h\end{DoxyCompactItemize}

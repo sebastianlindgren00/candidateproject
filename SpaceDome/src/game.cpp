@@ -425,7 +425,7 @@ void Game::update() {
     }
     if(keyStates[sgct::Key::LeftShift]) {
         // Charge
-        //setChargeActive(1, true);
+        setChargeActive(1, true);
     }
     if(keyStates[sgct::Key::L]) {
         // Get id
@@ -455,14 +455,6 @@ void Game::update() {
         maxStarsID++;
     }
 
-//    int type = boosterID % 2;
-   
-//     if((int)boosters.size() < 25 && currentFrameTime - lastBoosterSpawnTime >= boosterSpawnInterval){
-//         boosters.push_back(std::make_unique<Booster>(type));  
-//         lastBoosterSpawnTime = currentFrameTime;
-//         boosterID++;
-//     }
-
     //remove bullets that have expired - Move to Bullets class instead?
     mBullets.erase(std::remove_if(mBullets.begin(), mBullets.end(),
     [](const std::unique_ptr<Bullet>& bullet) -> bool {
@@ -477,11 +469,8 @@ void Game::update() {
     for (auto& star : mStars)
 		star->update(mStars);
 
-    
-    
-    for (auto& player : mPlayers) {
-        //pickUpBoosters(player->getID());
 
+    for (auto& player : mPlayers) {
         if(player->getDropStars()){
             for(int j = 0; j < player->getStars(); j ++){
                 mStars.push_back(std::make_unique<Star>(player->getPosition(),maxStarsID));
@@ -513,6 +502,7 @@ void Game::pickUpBoosters(int playerId) {
     for (auto it = boosters.begin(); it != boosters.end(); ) {
         float distance = glm::distance(player->getPosition(), (*it)->getPosition());
         if (distance < 0.25) {
+            (*it)->activate(*player);
             player->addBooster(std::move(*it));
             it = boosters.erase(it);
         } else {

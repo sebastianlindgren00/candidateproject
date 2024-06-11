@@ -455,10 +455,10 @@ GLuint Utility::createShaderProgram(const char* vertexSource, const char* fragme
 
     // Check for linking errors...
     glGetProgramiv(program, GL_LINK_STATUS, &success);
-if (!success) {
-    glGetProgramInfoLog(program, 512, NULL, infoLog);
-    std::cerr << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-}
+    if (!success) {
+        glGetProgramInfoLog(program, 512, NULL, infoLog);
+        std::cerr << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+    }
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 

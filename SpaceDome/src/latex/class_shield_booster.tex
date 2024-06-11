@@ -1,0 +1,127 @@
+\doxysection{Shield\+Booster Class Reference}
+\hypertarget{class_shield_booster}{}\label{class_shield_booster}\index{ShieldBooster@{ShieldBooster}}
+
+
+Class representing a shield booster.  
+
+
+
+
+{\ttfamily \#include $<$shield\+Booster.\+h$>$}
+
+Inheritance diagram for Shield\+Booster\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_shield_booster}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_shield_booster_a1f44bfc1de589ac843d3cdf80e14ce7f}\label{class_shield_booster_a1f44bfc1de589ac843d3cdf80e14ce7f} 
+{\bfseries Shield\+Booster} ()
+\begin{DoxyCompactList}\small\item\em Constructor for \doxylink{class_shield_booster}{Shield\+Booster} class. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_shield_booster_aecc3209ed6759f9383e0440c23c9f25f}{activate}} (\mbox{\hyperlink{class_player}{Player}} \&player) override
+\begin{DoxyCompactList}\small\item\em Acitvates shield booster by setting the m\+Has\+Shield variable for player to true. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_shield_booster_a7b864472aeae75532df53d0d494b8f24}{deactivate}} (\mbox{\hyperlink{class_player}{Player}} \&player) override
+\begin{DoxyCompactList}\small\item\em Decitvates shield booster by setting the m\+Has\+Shield variable for player to false. Is done if shield\+Hit\+Count is bigger than 0, ie. if hit by a bullet one time while having a shield. \end{DoxyCompactList}\item 
+\Hypertarget{class_shield_booster_a037f8051aeb4019aa1eafe5c4307668c}\label{class_shield_booster_a037f8051aeb4019aa1eafe5c4307668c} 
+void {\bfseries shield\+Hit} ()
+\begin{DoxyCompactList}\small\item\em Is called if the player has a shield and has been hit by a bullet. Will then increment shield\+Hit\+Count which is then used to deactivate the shield. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_shield_booster_abfda21c4b6fcf4e6f3237eb2ea1fe7d6}{draw}} (glm\+::mat4 p\+Matrix, glm\+::mat4 v\+Matrix) const override
+\begin{DoxyCompactList}\small\item\em Draws the shield booster. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{class_booster}{Booster}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries Booster} ()
+\begin{DoxyCompactList}\small\item\em Constructor for \doxylink{class_booster}{Booster} class. \end{DoxyCompactList}\item 
+void {\bfseries update\+Booster} ()
+\begin{DoxyCompactList}\small\item\em Rotates the booster. \end{DoxyCompactList}\item 
+glm\+::vec3 \mbox{\hyperlink{class_booster_ad4f8a756aea026f7c1ed4b0f6c3c3a75}{generate\+Booster\+Pos}} () const
+\begin{DoxyCompactList}\small\item\em Generate random position for the booster. \end{DoxyCompactList}\item 
+glm\+::vec3 \mbox{\hyperlink{class_booster_a56e30ec5ad31ca517e3e1042a556fb0f}{get\+Position}} () const
+\begin{DoxyCompactList}\small\item\em Gets the position of the booster. Is used in game.\+cpp to see if the player is close enough to get the booster. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_booster_adaa1b09c5d7d29cfce8d67805caa46c5}{is\+Deactivated}} ()
+\begin{DoxyCompactList}\small\item\em Checks if the booster is deactivated. The purpose of this function is to be able to remove deactivated boosters from the booster vector in player. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Protected Attributes inherited from \mbox{\hyperlink{class_booster}{Booster}}}
+\begin{DoxyCompactItemize}
+\item 
+glm\+::vec3 \mbox{\hyperlink{class_booster_a69997c51af3b9a787bad35ae7576e3c5}{position}}
+\item 
+float \mbox{\hyperlink{class_booster_a895e4b3332f840f0b35d3327b18498d4}{orientation}} = 1.\+0f
+\item 
+bool \mbox{\hyperlink{class_booster_a2abf5989efbe9f658ea47e3456e7dd78}{de\+Actviated}} = false
+\item 
+std\+::string {\bfseries path} = std\+::string(MODELS\+\_\+\+DIRECTORY)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Class representing a shield booster. 
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_shield_booster_aecc3209ed6759f9383e0440c23c9f25f}\index{ShieldBooster@{ShieldBooster}!activate@{activate}}
+\index{activate@{activate}!ShieldBooster@{ShieldBooster}}
+\doxysubsubsection{\texorpdfstring{activate()}{activate()}}
+{\footnotesize\ttfamily \label{class_shield_booster_aecc3209ed6759f9383e0440c23c9f25f} 
+void Shield\+Booster\+::activate (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_player}{Player}} \&}]{player}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Acitvates shield booster by setting the m\+Has\+Shield variable for player to true. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em \doxylink{class_player}{Player}} & \doxylink{class_player}{Player} object \\
+\hline
+\end{DoxyParams}
+
+
+Implements \mbox{\hyperlink{class_booster_a4588c6ee889a663f35424ef830ba873f}{Booster}}.
+
+\Hypertarget{class_shield_booster_a7b864472aeae75532df53d0d494b8f24}\index{ShieldBooster@{ShieldBooster}!deactivate@{deactivate}}
+\index{deactivate@{deactivate}!ShieldBooster@{ShieldBooster}}
+\doxysubsubsection{\texorpdfstring{deactivate()}{deactivate()}}
+{\footnotesize\ttfamily \label{class_shield_booster_a7b864472aeae75532df53d0d494b8f24} 
+void Shield\+Booster\+::deactivate (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_player}{Player}} \&}]{player}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Decitvates shield booster by setting the m\+Has\+Shield variable for player to false. Is done if shield\+Hit\+Count is bigger than 0, ie. if hit by a bullet one time while having a shield. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em \doxylink{class_player}{Player}} & \doxylink{class_player}{Player} object \\
+\hline
+\end{DoxyParams}
+
+
+Implements \mbox{\hyperlink{class_booster_af2c5fc2a1ec2b553bb8cfe7c9677c41c}{Booster}}.
+
+\Hypertarget{class_shield_booster_abfda21c4b6fcf4e6f3237eb2ea1fe7d6}\index{ShieldBooster@{ShieldBooster}!draw@{draw}}
+\index{draw@{draw}!ShieldBooster@{ShieldBooster}}
+\doxysubsubsection{\texorpdfstring{draw()}{draw()}}
+{\footnotesize\ttfamily \label{class_shield_booster_abfda21c4b6fcf4e6f3237eb2ea1fe7d6} 
+void Shield\+Booster\+::draw (\begin{DoxyParamCaption}\item[{glm\+::mat4}]{p\+Matrix}{, }\item[{glm\+::mat4}]{v\+Matrix}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Draws the shield booster. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+Matrix} & The projection matrix. \\
+\hline
+{\em v\+Matrix} & The view matrix. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \mbox{\hyperlink{class_booster_a58777698943db412241db944c02eb487}{Booster}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+shield\+Booster.\+h\end{DoxyCompactItemize}
