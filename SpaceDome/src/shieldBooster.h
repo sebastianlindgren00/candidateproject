@@ -24,7 +24,7 @@ public:
     }
 
      /**
-     * @brief Acitvates shield booster by setting the mHasShield variable for player to true
+     * @brief Acitvates shield booster by setting the mHasShield variable for player to true.
      * 
      * @param Player Player object
      */
@@ -32,13 +32,13 @@ public:
     void activate(Player& player) override;
 
     /**
-     * @brief Decitvates shield booster by setting the mHasShield variable for player to false. Is done if shieldHitCount is bigger than 0,
-     * i.e if the player is hit by a bullet one time while having a shield.
+     * @brief Checks for every frame if the terms for deactivation has been met which is if shieldHitCount is bigger than 0, i.e if the player 
+     * is hit by a bullet one time while having a shield. Decitvates shield booster by setting the mHasShield variable for player to false. 
      * 
      * @param Player Player object
      */
-
-    void deactivate(Player& player) override;
+    
+    void update(Player& player) override;
 
     /**
      * @brief Is called if the player has a shield and has been hit by a bullet. Will then increment shieldHitCount which is then used to 

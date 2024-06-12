@@ -21,12 +21,12 @@ public:
     void activate(Player& player) override;
 
     /**
-     * @brief Dectiviates speed booster by resetting the speed of the player. It will deactivate after the time limit for the booster is up. 
-     * 
+     * @brief Checks for every frame if the time passed since the booster was first activated exceeds the maximum duration. If true, it modifies the 
+     * player's speed to the base speed.
      * @param Player Player object.
      * 
      */
-    void deactivate(Player& player) override;
+    void update(Player& player) override;
 
     /**
      * @brief Draws the speed booster.

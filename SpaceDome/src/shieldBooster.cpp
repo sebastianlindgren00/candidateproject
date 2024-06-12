@@ -13,16 +13,17 @@ void ShieldBooster::activate(Player& player){
     player.setHasShield(true);
 }
 
-void ShieldBooster::deactivate(Player& player) {
+void ShieldBooster::update(Player& player) {
     
     if (shieldHitCount > 0) {
-        shieldHitCount = 0;
-        player.setHasShield(false);
         deActviated = true;
+        player.setHasShield(false);
+        shieldHitCount = 0;
     }
 }
 
 void ShieldBooster::shieldHit() {
     shieldHitCount++;
 }
+
 

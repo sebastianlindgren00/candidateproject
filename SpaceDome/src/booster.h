@@ -16,16 +16,15 @@ class Player;
 /**
  * @class Booster 
  * 
- * @brief This class provides two booster, one speed booster which makes the player go faster and a shield booster that makes the player
- * not die if hit by a bullet. The different boosters are subclasses derived from the abstract class Booster. There are three virtual functions:
- * activate, deactivate and draw.  
+ * @brief This class is an abstract base class for two subclasses which adds boosters to the game. One speed booster which makes the player 
+ * go faster and a shield booster that makes the player not die if hit by a bullet. The different boosters are subclasses derived from the 
+ * abstract class Booster. There are three virtual functions: activate, deactivate and draw.  
  */
 class Booster {
 
 public:
     /**
-     * @brief Constructor for Booster class. New boosters generate every third second and the maximum amount of boosters on the 
-     * field at the same time is 15. 
+     * @brief Constructor for Booster class.
      */
     Booster() { position = generateBoosterPos(); }
     /**
@@ -38,12 +37,13 @@ public:
     virtual void activate(Player& player) = 0;
 
     /**
-     * @brief Dectivates booster and is implented in the derived classes, is called by in players update function. 
+     * @brief Checks every frame if the booster's deactivation conditions have been met and then deactivates the booster by modifying 
+     * the properties of the provided player.
      * 
      * @param Player Player object
      */
 
-    virtual void deactivate(Player& player) = 0;
+    virtual void update(Player& player) = 0;
 
     /**
      * @brief Virtual function to draw the booster. The meshes are loaded in the subclasses and shaderProgramTexture is used, which is a global

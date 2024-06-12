@@ -90,7 +90,7 @@ int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets, float h
     if(boosters.size() != 0){
         for (auto it = boosters.begin(); it != boosters.end();) {
             //avaktiverar en booster
-             (*it)->deactivate(*this);
+             (*it)->update(*this);
              
             // för att inte ta upp onödigt minne tas boostern bort från vektorn efter att den avaktiveras
             if ((*it)->isDeactivated()) {

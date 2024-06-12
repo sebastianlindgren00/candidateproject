@@ -14,10 +14,10 @@ void SpeedBooster::activate(Player& player){
     player.setSpeed(boosterSpeed);
 }
 
-
-void SpeedBooster::deactivate(Player& player){
+void SpeedBooster::update(Player& player){
     if(sgct::time() - startTime > maxDuration){
         player.setSpeed(boosterBaseSpeed);
         deActviated = true;
     }
 }
+
