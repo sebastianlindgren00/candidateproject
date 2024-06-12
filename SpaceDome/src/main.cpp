@@ -64,6 +64,8 @@ GLuint shaderProgramFisheye;
 GLuint plainShaderProgram;
 GLuint ShaderProgramTextTexture;
 
+GLuint shaderProgramTextureBooster;
+
 //buffers and textures
 GLuint framebuffer = 0;
 GLuint textureColorbuffer = 0;
@@ -82,6 +84,8 @@ bool isGameStarted = false;
 
 std::unique_ptr<tcpsocket::io::TcpSocket> tcpSocket = std::make_unique<tcpsocket::io::TcpSocket>(Address, Port);
 
+
+
 void verifyFontPath(const std::string& fontPath) {
     std::ifstream file(fontPath);
     if (file.good()) {
@@ -95,7 +99,6 @@ void initOGL(GLFWwindow*) {
 
     std::string filePath2 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[4] + ".fbx";
     std::string filePath3 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[5] + ".fbx";
-    //std::string filePath4 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[7] + ".fbx";
     std::string filePath5 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[8] + ".fbx";
     std::string filePath6 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[6] + ".fbx";
     std::string filePath7 = std::string(MODELS_DIRECTORY) + "/" + allModelNames[3] + ".fbx";
@@ -112,26 +115,27 @@ void initOGL(GLFWwindow*) {
     shaderProgramText = Utility::createShaderProgram(vertexShaderSourceText, fragmentShaderSourceText);
     plainShaderProgram = Utility::createShaderProgram(vertexShaderSourcePlain, fragmentShaderSourcePlain);
     ShaderProgramTextTexture = Utility::createShaderProgram(vertexShaderSourceTextTexture, fragmentShaderSourceTextTexture);
-
-    //std::string baseDirectory = "../../models/";
-    //bulletsAssimp = std::make_unique<AssimpLoader>(filePath4);
+    
+    //använder en annan fragment shader som gör att den blinkar, om en spelare har en aktiv sköljd
+    shaderProgramTextureBooster = Utility::createShaderProgram(vertexShaderSourceTexture, fragmentShaderSourceTextureBooster);
     
     starsAssimp = std::make_unique<AssimpLoader>(filePath5);
     skyboxAssimp = std::make_unique<AssimpLoader>(filePath6);
     backgroundObjectsAssimp = std::make_unique<AssimpLoader>(filePath7);
+
     objectsAssimp.push_back(std::make_unique<AssimpLoader>(filePath2));
     objectsAssimp.push_back(std::make_unique<AssimpLoader>(filePath3));
-
+    
     redBulletAssimp= std::make_unique<AssimpLoader>(filePath8);
     greenBulletAssimp = std::make_unique<AssimpLoader>(filePath9);
 
     //load all models for team Red and than team Green
-    for( int i = 0; i < 18; i++){
+    for( int i = 17; i > 0 ;i--){
         std::string path = std::string(MODELS_DIRECTORY) + "/red/" + allShipsRed[i] + ".fbx";
         playerModelsRed.push_back(std::make_unique<AssimpLoader>(path));
     }
 
-    for( int i = 0; i < 18; i++){
+    for( int i = 17; i > 0 ;i--){
         std::string path = std::string(MODELS_DIRECTORY) + "/green/" + allShipsGreen[i] + ".fbx";
         playerModelsGreen.push_back(std::make_unique<AssimpLoader>(path));
     }
@@ -196,6 +200,8 @@ void decode(const std::vector<std::byte>& data) {
 
 
 }
+
+
 
 void postSyncPreDraw() {
 	if (!Engine::instance().isMaster()) {
@@ -264,7 +270,7 @@ void draw(const RenderData& data) {
             object->draw(backgroundObjectsAssimp, shaderProgram, projectionMatrix, modelMatrix*viewMatrix); 
         }
     }
-    
+
     //dont render the rest if game is not active
     if(!game.isGameActive()){
         return;
@@ -284,17 +290,18 @@ void draw(const RenderData& data) {
                 player->restoreTimer();
                 game.addBulletID();
             }
-
+        
         int hitBulletId = player->update(bullets, windowHeightOut);
         if (hitBulletId != -1) {
             bulletsToRemove.push_back(hitBulletId); // Collect bullet IDs to remove
         }
-        player->draw(playerModelsRed, playerModelsGreen, shaderProgramTexture, projectionMatrix, modelMatrix*viewMatrix);
+        player->draw(playerModelsRed, playerModelsGreen, shaderProgramTexture, shaderProgramTextureBooster,projectionMatrix, modelMatrix*viewMatrix);
     }
 
-
-
-    // Now remove the bullets that were marked for removal
+    for(const auto& booster : game.getBoosters()) {
+        booster->draw(projectionMatrix,modelMatrix*viewMatrix);
+    }
+    
     if (!bulletsToRemove.empty()) {
         game.getBullets().erase(
             std::remove_if(
@@ -349,14 +356,20 @@ void draw(const RenderData& data) {
 } 
 
     std::vector<std::tuple<std::string, float, float, float, glm::vec3>> printsPlayers;
+    glm::vec3 color = glm::vec3(1.0f,1.0f,1.0f);
+    
     for(auto& player : game.getPlayers()){
-            if(player->isAlive())
-            printsPlayers.push_back(std::make_tuple(player->getName(), player->getTextX(), player->getTextY(),textScaleX/1.5, glm::vec3(0.8f, 0.8f, 0.8f)));
-        }
+        
+        printsPlayers.push_back(std::make_tuple(player->getName(), player->getTextX(), player->getTextY(),textScaleX/1.5, glm::vec3(0.8f, 0.8f, 0.8f)));
+    }
+    
+    sgct::vec4 color1 = sgct::vec4(0.8f, 0.8f, 0.8f, 1.0f);
 
-    const sgct::vec4 color1 = sgct::vec4(0.8f, 0.8f, 0.8f, 1.0f);
+   
+
+    // vill inte ha color1 utan vill istället ha color
     for (auto& [text, x, y, scale, color] : printsPlayers){
-    text::print( 
+        text::print( 
         data.window,
         data.viewport,
         *text::FontManager::instance().font("CustomFont",20),
@@ -365,9 +378,8 @@ void draw(const RenderData& data) {
         y,
         color1,
         text
-        );
+        );}
     }
-   
     /*
     std::vector<std::tuple<std::string, float, float, float, glm::vec3>> printsPlayers;
     for(auto& player : game.getPlayers()){
@@ -396,7 +408,6 @@ void draw(const RenderData& data) {
     utilityInstance.renderPlane(plainShaderProgram, 0, projectionMatrix,viewMatrix);
     //utilityInstance.renderPlane(ShaderProgramTextTexture, textRenderer.getTexture(), projectionMatrix,viewMatrix);
 */
-}
 
 void draw2D(const RenderData& data) {
     /*
@@ -498,7 +509,7 @@ void globalKeyboardHandler(Key key, Modifier modifier, Action action, int, Windo
                 std::cout << "Failed to send player data over TCP socket\n";
             }
             */
-            Game::instance().addPlayer(id, "ZZZZZZZZZ");
+            Game::instance().addPlayer(id, "Z");
         }
     }
     
@@ -525,6 +536,8 @@ int main(int argc, char** argv) {
     Game::instance().addPlayer(0, "TIM");
     Game::instance().addPlayer(1, "VIKTOR");
     Game::instance().addPlayer(2, "BAS");
+
+    
 
     std::vector<std::string> arg(argv + 1, argv + argc);
     Configuration config = sgct::parseArguments(arg);

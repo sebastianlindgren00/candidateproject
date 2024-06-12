@@ -51,6 +51,9 @@ void Utility::setupShaderForDrawingMaterial(const GLuint shaderProgram, const gl
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+
+    float currentTime = glfwGetTime();
+    glUniform1f(glGetUniformLocation(shaderProgram,"time"),currentTime);
 }
 
 void Utility::setupShaderForDrawing(const GLuint shaderProgram, const glm::vec3& position, const glm::vec3& color, float orientation, float scale, int rotAxis, glm::mat4 pMatrix, glm::mat4 vMatrix) {
@@ -452,10 +455,10 @@ GLuint Utility::createShaderProgram(const char* vertexSource, const char* fragme
 
     // Check for linking errors...
     glGetProgramiv(program, GL_LINK_STATUS, &success);
-if (!success) {
-    glGetProgramInfoLog(program, 512, NULL, infoLog);
-    std::cerr << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-}
+    if (!success) {
+        glGetProgramInfoLog(program, 512, NULL, infoLog);
+        std::cerr << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+    }
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 

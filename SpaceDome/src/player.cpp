@@ -1,4 +1,5 @@
 #include "player.h" 
+#include "shieldBooster.h"
 
 Player::Player(const int id, const std::string& name, int team, int colorID, glm::vec3 color, glm::mat4 pMatrix, glm::mat4 vMatrix, int width, int height){
     mIsAlive = true;
@@ -55,6 +56,9 @@ void Player::updatePlayerData(playerData& data) {
 }
 
 int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets, float height) {
+
+    double currentTime = sgct::time();
+
     if(bulletTimer < shotAvailable){
         bulletTimer++;
     }
@@ -82,23 +86,43 @@ int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets, float h
         return -1; 
     }
 
-    //check if hit by an enemy team bullet, if so temporary disable
+    // om spelaren har åkt på en booster
+    if(boosters.size() != 0){
+        for (auto it = boosters.begin(); it != boosters.end();) {
+            //avaktiverar en booster
+             (*it)->update(*this);
+             
+            // för att inte ta upp onödigt minne tas boostern bort från vektorn efter att den avaktiveras
+            if ((*it)->isDeactivated()) {
+                it = boosters.erase(it); 
+            } else {
+                ++it;
+            }
+        }
+    }
+
     for (const auto& bullet : mBullets) {
         if (bullet->getTeam() != mTeam) {
             glm::vec3 bulletPos = bullet->getPosition();
             float distance = glm::distance(bulletPos, mPosition);
-
-            if (distance <= hitRadius) {
-                mIsAlive = false;
-                dropStars = true; 
-                std::cout << "Player with ID: " << mPlayerID << " Was Eliminated. \n";
-                return bullet->getID();
+                if (distance <= hitRadius) {
+                    // om spelaren inte har en sköljd ska den dö direkt, annars ska den avaktivera sköljden vilket görs genom shieldHit
+                    if(mHasShield){
+                        for(auto& booster : boosters){
+                            if (auto shieldBooster = dynamic_cast<ShieldBooster*>(booster.get())){
+                                shieldBooster->shieldHit();
+                                return bullet->getID();   
+                            }                         
+                        }
+                    }else{     
+                        mIsAlive = false;
+                        dropStars = true; 
+                        std::cout << "Player with ID: " << mPlayerID << " Was Eliminated. \n";
+                        return bullet->getID();
+                }
             }
         }
-    }
-		 
-    //handeling super charge, using? empty? filling? full?
-    mSpeed = 0.01;
+    }            
 
     if(superCharge <= 0){
         chargeActive = false;
@@ -125,19 +149,17 @@ int Player::update(const std::vector<std::unique_ptr<Bullet>>& mBullets, float h
     {
         mPosition.y *= -1;
     }
-    
+        
 
     setTurnSpeed(0);
-    return -1;
-}
+    return -1;}
 
-void Player::draw(const std::vector<std::unique_ptr<AssimpLoader>>& modelsRed ,const std::vector<std::unique_ptr<AssimpLoader>>& modelsGreen, const GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const {
+void Player::draw(const std::vector<std::unique_ptr<AssimpLoader>>& modelsRed ,const std::vector<std::unique_ptr<AssimpLoader>>& modelsGreen, const GLuint shaderProgramOriginal, const GLuint shaderProgramBooster, glm::mat4 pMatrix, glm::mat4 vMatrix) const {
 	if (!mIsAlive)
 		return;
-
-    //setup shaderProgram
-    Utility::setupShaderForDrawingMaterial(shaderProgram, mPosition, mOrientation, playerScale, 0, pMatrix, vMatrix);
-    
+ 
+    GLuint correctShaderProgram= mHasShield ? shaderProgramBooster : shaderProgramOriginal;
+    Utility::setupShaderForDrawingMaterial(correctShaderProgram, mPosition, mOrientation, playerScale, 0, pMatrix, vMatrix);
     
     //draw
     if(mTeam == 1){

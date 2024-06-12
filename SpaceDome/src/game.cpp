@@ -164,6 +164,8 @@ if(mPlayers.size() == allShipsGreen.size() + allShipsRed.size()){
     std::cout << "Player: " << name << " joined with ID: " << id << " and color ID: " << colorID << std::endl;
 }
 
+
+
 //allowing new players to get the lowest available ID
 int Game::getLowestAvailablePlayerID() {
     std::set<int> usedIDs;
@@ -326,6 +328,8 @@ void Game::update() {
 	return;
 	}
 
+    generateBoosters();
+
     if(mBGObjects.size() < windowHeight/(size_t)100) {
         mBGObjects.push_back(std::make_unique<BackgroundObject>(zPosBgObjects));
         if(counterForBGObjects == 3)
@@ -377,6 +381,7 @@ void Game::update() {
         greenTeamStars = 0;
         maxStarsID = 0;
         bulletID = 0;
+        
 
     //delete all stars and reset 
     for (auto it = mStars.begin(); it != mStars.end(); ) {
@@ -386,6 +391,8 @@ void Game::update() {
     for(auto it = mBullets.begin(); it != mBullets.end();) {
         it = mBullets.erase(it);
     }
+
+    boosters.clear();
 
     for (auto& player : mPlayers) {
         player->resetAllStars();
@@ -462,7 +469,7 @@ void Game::update() {
     for (auto& star : mStars)
 		star->update(mStars);
 
-    //update the players
+
     for (auto& player : mPlayers) {
         if(player->getDropStars()){
             for(int j = 0; j < player->getStars(); j ++){
@@ -471,20 +478,52 @@ void Game::update() {
             }
             player->setPosition(glm::vec3(0.0, 0.0, -10.0));
             player->nullStars();
-            player->setDropStars();
-        }
+            player->setDropStars();}
+        
 
         //pick up stars
         pickUpStars(player->getID());
         //hand in stars
         handInStars(player->getID());
 		//player->update(mBullets);
+        pickUpBoosters(player->getID());
+    }
+     for(auto& booster : boosters){
+        booster->rotate();
+
     }
     //update the bullets
     for (auto& bullet : mBullets)
         bullet->update();
 }
 
+void Game::pickUpBoosters(int playerId) {
+    auto& player = mPlayers[playerId];
+    for (auto it = boosters.begin(); it != boosters.end(); ) {
+        float distance = glm::distance(player->getPosition(), (*it)->getPosition());
+        if (distance < 0.25) {
+            (*it)->activate(*player);
+            player->addBooster(std::move(*it));
+            it = boosters.erase(it);
+        } else {
+            ++it;
+        }
+    }
+}
+
+void Game::generateBoosters() {
+    currentFrameTime = sgct::time();
+    if (boosters.size() < maxAmountOfBoosters && currentFrameTime - lastBoosterSpawnTime >= boosterSpawnInterval) {
+        int index = boosterID % 2;
+        if (index == 0) {
+            boosters.push_back(std::make_unique<ShieldBooster>());
+        } else {
+            boosters.push_back(std::make_unique<SpeedBooster>());
+        }
+        lastBoosterSpawnTime = currentFrameTime;
+        boosterID++;
+    }
+}
 
 std::vector<std::string> Game::getHiscoreList(const std::vector<std::unique_ptr<Player>>& players) {
 

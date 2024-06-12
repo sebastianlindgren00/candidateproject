@@ -1,5 +1,6 @@
 #pragma once
 
+#include "booster.h"
 #include "globals.h"
 #include <unordered_map>
 #include <string>
@@ -16,8 +17,9 @@
 #include "utility.h"
 #include "shader.h"
 #include "bullets.h"
+#include "booster.h"
 
-//#define M_PI 3.14159265358979323846
+class Booster;
 
 struct playerData {
 	int ID;
@@ -68,7 +70,6 @@ class Player
 public:
 	//Default constructor
 	Player();
-
 	//Constructor
 	Player(const int id, const std::string& name, int team, int colorID, glm::vec3 color, glm::mat4 pMatrix, glm::mat4 vMatrix, int width, int height);
 
@@ -249,7 +250,7 @@ public:
 	int update(const std::vector<std::unique_ptr<Bullet>>& mBullets, float height);
 
 	//Draw the player
-	void draw(const std::vector<std::unique_ptr<AssimpLoader>>& modelsRed ,const std::vector<std::unique_ptr<AssimpLoader>>& modelsGreen, const GLuint shaderProgram, glm::mat4 pMatrix, glm::mat4 vMatrix) const;
+	void draw(const std::vector<std::unique_ptr<AssimpLoader>>& modelsRed ,const std::vector<std::unique_ptr<AssimpLoader>>& modelsGreen, const GLuint shaderProgram, const GLuint shaderProgramBooster,glm::mat4 pMatrix, glm::mat4 vMatrix) const;
 
 	void updatePlayerData(playerData& data);
 
@@ -334,6 +335,15 @@ public:
 
 	bool getShotBullet() { return shotBullet;}
 
+	// boosters
+	void setSpeed(float speed) {mSpeed = speed;}
+    void setHasShield(bool hasShield) { 
+		mHasShield = hasShield;
+	}
+
+	void addBooster(std::unique_ptr<Booster> booster) {
+    	boosters.push_back(std::move(booster));
+	}
 
 private:
 	//Player information/data
@@ -357,7 +367,7 @@ private:
     glm::vec3 mPosition;
     float mOrientation = 0.0f;
 	float mTurnSpeed = 0.0f;
-	float mSpeed     = 0.0001f;
+	float mSpeed     = 0.01f;
 	glm::vec3 mPlayerColor;	
 	int mColorID;
 	float hitRadius = 0.2f;
@@ -367,11 +377,14 @@ private:
 	int respawnTimer = 0;
 
 	//info for bullets/shooting
+	
 	bool shotBullet = false;
 	int shotAvailable = 75;
 	int bulletTimer = 0;
 
 	glm::vec2 textPosition;
 	GLint mColLoc = -1;
-	
+
+	std::vector<std::unique_ptr<Booster>> boosters;
+	bool mHasShield = false;
 };

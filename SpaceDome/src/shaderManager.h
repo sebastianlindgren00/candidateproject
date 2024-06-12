@@ -46,6 +46,8 @@ void main() {
 
 )glsl";
 
+
+
 const char* vertexShaderSourceTexture = R"glsl(
 #version 330 core
 layout (location = 0) in vec3 aPos; // Position
@@ -267,4 +269,46 @@ void main() {
     }
     FragColor = texColor;
 }
+)glsl";
+
+
+const char* fragmentShaderSourceTextureBooster = R"glsl(
+#version 330 core
+out vec4 FragColor;
+
+in vec3 Normal; // Received from vertex shader
+in vec3 FragPos; // Received from vertex shader
+in vec2 TexCoords; // Received from vertex shader
+
+uniform vec3 lightPos; // Position of the light source in world space
+uniform vec3 viewPos; // Position of the camera in world space
+uniform vec3 lightColor; // Color of the light
+uniform sampler2D texture1; // The texture sampler
+
+uniform float time;
+
+void main() {
+    // Texture color
+    vec4 texColor = texture(texture1, TexCoords);
+
+    // Correct blink calculation with a minimum brightness
+    float blink = abs(sin(time * 2.0));
+    float minBrightness = 0.4; // Adjust this value to set the minimum brightness
+    blink = mix(minBrightness, 1.0, blink);
+
+    // Ambient light
+    float ambientStrength = 0.1;
+    vec3 ambient = ambientStrength * lightColor;
+
+    // Diffuse light
+    vec3 norm = normalize(Normal);
+    vec3 lightDir = normalize(lightPos - FragPos);
+    float diff = max(dot(norm, lightDir), 0.0);
+    vec3 diffuse = diff * lightColor;
+
+    // Combine the two components and apply the blink effect
+    vec3 result = (ambient + diffuse) * vec3(texColor) * blink;
+    FragColor = vec4(result, 1.0);
+}
+
 )glsl";
